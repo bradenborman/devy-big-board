@@ -10,6 +10,7 @@ cmds = [
 
 [phases.build]
 cmds = [
+  "chmod +x gradlew",
   "./gradlew clean build -x test"
 ]
 
