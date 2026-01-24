@@ -1,0 +1,37 @@
+package devybigboard.services;
+
+import devybigboard.exceptions.UnauthorizedException;
+import devybigboard.models.Player;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service for handling player verification with secret code authentication.
+ */
+@Service
+public class VerificationService {
+    
+    @Value("${app.verification.secret:default-secret-change-me}")
+    private String verificationSecret;
+    
+    private final PlayerService playerService;
+    
+    public VerificationService(PlayerService playerService) {
+        this.playerService = playerService;
+    }
+    
+    /**
+     * Verify a player using a secret code.
+     * 
+     * @param playerId the ID of the player to verify
+     * @param providedSecret the secret code provided by the user
+     * @return the verified player
+     * @throws UnauthorizedException if the secret code is incorrect
+     */
+    public Player verifyPlayer(Long playerId, String providedSecret) {
+        if (!verificationSecret.equals(providedSecret)) {
+            throw new UnauthorizedException("Invalid verification code");
+        }
+        return playerService.verifyPlayer(playerId);
+    }
+}

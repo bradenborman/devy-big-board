@@ -64,13 +64,13 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Test findByUuid retrieval
     - _Requirements: 2.2, 4.4_
 
-- [ ] 4. Player management service and API
-  - [ ] 4.1 Create PlayerDTO with validation annotations
+- [x] 4. Player management service and API
+  - [x] 4.1 Create PlayerDTO with validation annotations
     - Add @NotBlank for name and position
     - Add @Size constraints for all string fields
     - _Requirements: 2.3, 10.4_
   
-  - [ ] 4.2 Implement PlayerService
+  - [x] 4.2 Implement PlayerService
     - Implement createPlayer() with validation
     - Implement getVerifiedPlayers()
     - Implement verifyPlayer()
@@ -95,7 +95,7 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Verify getVerifiedPlayers() returns only verified=true
     - **Validates: Requirements 2.2**
   
-  - [ ] 4.6 Create PlayerController with REST endpoints
+  - [x] 4.6 Create PlayerController with REST endpoints
     - POST /api/players - create player
     - GET /api/players - get verified players
     - POST /api/players/{id}/verify - verify player with code

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import MainComponent from './mainComponent';
 import ConsentBanner from './ConsentBanner';

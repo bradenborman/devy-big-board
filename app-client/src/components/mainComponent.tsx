@@ -111,7 +111,7 @@ const MainComponent: React.FC = () => {
         setTierBreaks((prev) => prev.slice(0, -1));
     };
 
-    const clearTierBreaks = () => setTierBreaks([]);
+    // const clearTierBreaks = () => setTierBreaks([]);
 
     const addNewPlayer = (player: Player) => {
         setPlayerPool((prev) => [player, ...prev]);
