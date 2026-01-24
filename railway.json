@@ -5,7 +5,7 @@
     "buildCommand": "./gradlew clean build -x test"
   },
   "deploy": {
-    "startCommand": "java -Dserver.port=$PORT -Dspring.profiles.active=cloud -jar app-server/build/libs/devy-big-board.jar",
+    "startCommand": "java -Dserver.port=$PORT -jar app-server/build/libs/devy-big-board.jar",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }

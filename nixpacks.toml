@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs-20_x", "jdk21"]
+nixPkgs = ["nodejs_20", "jdk21"]
 
 [phases.install]
 cmds = [
-  "npm install -g pnpm@9.15.4",
-  "cd app-client && pnpm install --frozen-lockfile",
-  "cd .."
+  "corepack enable",
+  "corepack prepare pnpm@9.15.4 --activate",
+  "cd app-client && pnpm install --frozen-lockfile || pnpm install"
 ]
 
 [phases.build]
@@ -14,4 +14,4 @@ cmds = [
 ]
 
 [start]
-cmd = "java -Dserver.port=$PORT -Dspring.profiles.active=cloud -jar app-server/build/libs/devy-big-board.jar"
+cmd = "java -Dserver.port=$PORT -jar app-server/build/libs/devy-big-board.jar"

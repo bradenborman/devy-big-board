@@ -2,13 +2,10 @@ spring:
   application:
     name: devy-board-api
   
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
-  
   datasource:
-    url: jdbc:mysql://localhost:3306/devybigboard
-    username: root
-    password: password
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/devybigboard}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -21,7 +18,7 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
-    show-sql: true
+    show-sql: ${SHOW_SQL:true}
     properties:
       hibernate:
         format_sql: true
@@ -31,4 +28,4 @@ data:
 
 app:
   verification:
-    secret: default-secret-change-me
+    secret: ${VERIFICATION_SECRET:default-secret-change-me}
