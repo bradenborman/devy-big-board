@@ -21,22 +21,12 @@ public class DevyBoardService {
         this.playerDao = playerDao;
     }
 
+    // TODO: Refactor these methods to work with new JPA entities
+    // These methods use the old DAO pattern and Player record structure
+    // Will be reimplemented with Spring Data JPA repositories in later tasks
+    
     public String saveDraftAdpResults(String draftType, List<Player> draftedPlayers) {
-        List<PlayerWithAdp> playersWithAdp = new ArrayList<>();
-        for (int i = 0; i < draftedPlayers.size(); i++) {
-            Player p = draftedPlayers.get(i);
-            playersWithAdp.add(new PlayerWithAdp(
-                    p.name(),
-                    p.position(),
-                    p.team(),
-                    p.draftyear(),
-                    i + 1
-            ));
-        }
-
-        long draftId = draftDao.createDraft(draftType);
-        playersWithAdp.forEach(playerWithAdp -> draftDao.insertDraftPickResult(draftId, playerWithAdp));
-        return draftDao.queryForUUID(draftId);
+        throw new UnsupportedOperationException("Will be reimplemented with JPA repositories");
     }
 
     public List<PlayerWithAdp> getAllPlayers() {
@@ -44,7 +34,7 @@ public class DevyBoardService {
     }
 
     public CompletedDraftResponse getDraftByUuid(String uuid) {
-        return draftDao.draftByUUID(uuid);
+        throw new UnsupportedOperationException("Will be reimplemented with JPA repositories");
     }
 
     public List<PlayerWithAdp> getPlayersExcludingFilter(long filterId) {

@@ -13,9 +13,18 @@ apply plugin: 'com.github.node-gradle.node'
 
 node {
     version = '20.5.1'
-    pnpmVersion = '9.15.4'
+    npmVersion = '10.8.3'
     nodeModulesDir = file("${project.projectDir}")
     download = true
+}
+
+task installPnpm(type: NpmTask) {
+    args = ['install', '-g', 'pnpm@9.15.4']
+}
+
+task pnpmInstall(type: NpxTask, dependsOn: installPnpm) {
+    command = 'pnpm'
+    args = ['install']
 }
 
 task clientClean {
@@ -26,11 +35,12 @@ task clientClean {
     }
 }
 
-task clientBuild(type: PnpmTask, dependsOn: pnpmInstall) {
+task clientBuild(type: NpxTask, dependsOn: pnpmInstall) {
     this.project.afterEvaluate {
         getInputs().dir(file("${project.projectDir}/src"))
         getOutputs().dir(file("${project.projectDir}/build"))
     }
-
+    
+    command = 'pnpm'
     args = ['run', 'build']
 }

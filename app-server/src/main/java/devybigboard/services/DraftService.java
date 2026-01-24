@@ -29,11 +29,11 @@ public class DraftService {
     }
 
     public void addPlayerToFilter(long filterId, Player player) {
-        draftDao.addPlayerToFilter(filterId, player.name(), player.position(), player.team());
+        draftDao.addPlayerToFilter(filterId, player.getName(), player.getPosition(), player.getTeam());
     }
 
     public void removePlayerFromFilter(long filterId, Player player) {
-        draftDao.removePlayerFromFilter(filterId, player.name(), player.position(), player.team());
+        draftDao.removePlayerFromFilter(filterId, player.getName(), player.getPosition(), player.getTeam());
     }
 
     public void deleteLeagueFilter(long filterId) {

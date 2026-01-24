@@ -1,1 +1,1 @@
-web java $JAVA_OPTS -Dserver.port=$PORT -jar devybigboard-server/build/libs/devy-big-board.jar
+web: java $JAVA_OPTS -Dserver.port=$PORT -Dspring.profiles.active=cloud -jar app-server/build/libs/devy-big-board.jar

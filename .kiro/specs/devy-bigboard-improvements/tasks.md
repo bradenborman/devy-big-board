@@ -14,8 +14,8 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
   - Create nixpacks.toml with Java 21 and Node.js build settings
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-- [ ] 2. Database setup and entity models
-  - [ ] 2.1 Configure MySQL connection in application.properties
+- [x] 2. Database setup and entity models
+  - [x] 2.1 Configure MySQL connection in application.properties
     - Make a application-local.yml (git ignored that will have hardcoded values like creds)
     - Make a application-cloud.yml that will inject the values from ENV vars ${}
     - Add Railway MySQL connection string, username, password
@@ -23,18 +23,18 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Add HikariCP connection pool configuration
     - _Requirements: 1.1_
   
-  - [ ] 2.2 Create Player entity with JPA annotations
+  - [x] 2.2 Create Player entity with JPA annotations
     - Add fields: id, name, position, team, college, verified, totalSelections, sumDraftPositions, averageDraftPosition
     - Add timestamps (createdAt, updatedAt)
     - Add indexes on verified, position, averageDraftPosition
     - _Requirements: 1.2, 12.1_
   
-  - [ ] 2.3 Create Draft entity with JPA annotations
+  - [x] 2.3 Create Draft entity with JPA annotations
     - Add fields: id, uuid, draftName, status, participantCount, createdAt, completedAt
     - Add index on uuid and createdAt
     - _Requirements: 1.3, 12.1, 12.2_
   
-  - [ ] 2.4 Create DraftPick entity with JPA annotations
+  - [x] 2.4 Create DraftPick entity with JPA annotations
     - Add fields: id, draft (ManyToOne), player (ManyToOne), pickNumber, pickedAt
     - Add indexes on draft_id and player_id
     - Configure cascade delete for draft relationship
