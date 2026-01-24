@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter'
 
 	//SQL
@@ -35,7 +35,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-task copyClient(dependsOn: ":devybigboard-client:clientBuild") {
+task copyClient(dependsOn: ":app-client:clientBuild") {
 
 	doFirst {
 		delete "src/main/resources/static"
@@ -43,11 +43,11 @@ task copyClient(dependsOn: ":devybigboard-client:clientBuild") {
 	}
 	doLast {
 		copy {
-			from new File(project(":devybigboard-client").getProjectDir(), "build")
+			from new File(project(":app-client").getProjectDir(), "build")
 			into "src/main/resources/static"
 		}
 		copy {
-			from new File(project(":devybigboard-client").getProjectDir(), "build/index.html")
+			from new File(project(":app-client").getProjectDir(), "build/index.html")
 			into "src/main/resources/templates"
 		}
 	}
@@ -61,7 +61,7 @@ task finalizeBuild {
 	dependsOn 'build'
 	doLast {
 		def buildLibs = file("${buildDir}/libs")
-		def oldJar = file("${buildLibs}/devybigboard-server-${version}.jar")
+		def oldJar = file("${buildLibs}/app-server-${version}.jar")
 		def newJar = file("${buildLibs}/devy-big-board.jar")
 		if (oldJar.exists())
 			oldJar.renameTo(newJar)
@@ -70,7 +70,7 @@ task finalizeBuild {
 
 
 processResources.dependsOn(copyClient)
-clean.dependsOn(":devybigboard-client:clientClean")
+clean.dependsOn(":app-client:clientClean")
 build.finalizedBy(finalizeBuild)
 
 task stage(dependsOn: ['build', 'clean'])

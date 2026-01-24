@@ -10,6 +10,14 @@ build/
 **/resources/static
 **/resources/templates
 **application-secrets.yml
+**/application-local.yml
+
+# pnpm
+pnpm-lock.yaml
+.pnpm-store
+
+# Vite
+**/dist
 
 ### STS ###
 .apt_generated

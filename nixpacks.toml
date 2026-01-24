@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ["nodejs-20_x", "jdk21"]
+
+[phases.install]
+cmds = [
+  "npm install -g pnpm@9.15.4",
+  "cd app-client && pnpm install --frozen-lockfile",
+  "cd .."
+]
+
+[phases.build]
+cmds = [
+  "./gradlew clean build -x test"
+]
+
+[start]
+cmd = "java -Dserver.port=$PORT -Dspring.profiles.active=cloud -jar app-server/build/libs/devy-big-board.jar"

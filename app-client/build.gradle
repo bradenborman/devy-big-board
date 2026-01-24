@@ -13,7 +13,7 @@ apply plugin: 'com.github.node-gradle.node'
 
 node {
     version = '20.5.1'
-    npmVersion = '10.8.3'
+    pnpmVersion = '9.15.4'
     nodeModulesDir = file("${project.projectDir}")
     download = true
 }
@@ -22,10 +22,11 @@ task clientClean {
     doLast {
         delete "node_modules"
         delete "build"
+        delete "pnpm-lock.yaml"
     }
 }
 
-task clientBuild(type: NpmTask, dependsOn: npmInstall) {
+task clientBuild(type: PnpmTask, dependsOn: pnpmInstall) {
     this.project.afterEvaluate {
         getInputs().dir(file("${project.projectDir}/src"))
         getOutputs().dir(file("${project.projectDir}/build"))
