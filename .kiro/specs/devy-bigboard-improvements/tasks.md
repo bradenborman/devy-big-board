@@ -46,13 +46,13 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Test timestamp auto-population
     - _Requirements: 1.2, 1.3_
 
-- [ ] 3. Repository layer
-  - [ ] 3.1 Create PlayerRepository interface
+- [x] 3. Repository layer
+  - [x] 3.1 Create PlayerRepository interface
     - Add method: findByVerifiedTrue()
     - Extend JpaRepository<Player, Long>
     - _Requirements: 2.2_
   
-  - [ ] 3.2 Create DraftRepository interface
+  - [x] 3.2 Create DraftRepository interface
     - Add method: findByUuid(String uuid)
     - Add method: findTopNByOrderByCreatedAtDesc(int limit)
     - Extend JpaRepository<Draft, Long>
