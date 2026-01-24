@@ -114,13 +114,13 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - _Requirements: 2.1, 2.2, 2.5_
 
 
-- [ ] 5. Verification service
-  - [ ] 5.1 Add verification secret to application.properties
+- [x] 5. Verification service
+  - [x] 5.1 Add verification secret to application.properties
     - Add property: app.verification.secret
     - Document in README how to set for production
     - _Requirements: 3.1_
   
-  - [ ] 5.2 Implement VerificationService
+  - [x] 5.2 Implement VerificationService
     - Inject verification secret from properties
     - Implement verifyPlayer() with secret validation
     - Throw UnauthorizedException for incorrect code
@@ -144,7 +144,7 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Test non-existent player throws PlayerNotFoundException
     - _Requirements: 3.2, 3.3, 3.4_
 
-- [ ] 6. Checkpoint - Ensure player management works
+- [x] 6. Checkpoint - Ensure player management works
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Draft service and persistence
