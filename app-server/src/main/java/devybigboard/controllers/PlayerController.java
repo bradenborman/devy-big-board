@@ -52,21 +52,6 @@ public class PlayerController {
     }
     
     /**
-     * Get all verified players available for the draft pool.
-     * GET /api/players
-     * 
-     * @return 200 OK with list of verified players
-     */
-    @GetMapping
-    public ResponseEntity<List<PlayerResponse>> getVerifiedPlayers() {
-        List<Player> players = playerService.getVerifiedPlayers();
-        List<PlayerResponse> response = players.stream()
-            .map(PlayerResponse::new)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
-    }
-    
-    /**
      * Verify a player using a secret code.
      * POST /api/players/{id}/verify
      * 
