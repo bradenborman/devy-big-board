@@ -11,13 +11,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class VerificationService {
     
-    @Value("${app.verification.secret:default-secret-change-me}")
-    private String verificationSecret;
-    
+    private final String verificationSecret;
     private final PlayerService playerService;
     
-    public VerificationService(PlayerService playerService) {
+    public VerificationService(
+            PlayerService playerService,
+            @Value("${app.verification.secret:default-secret-change-me}") String verificationSecret) {
         this.playerService = playerService;
+        this.verificationSecret = verificationSecret;
     }
     
     /**

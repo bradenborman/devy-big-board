@@ -79,5 +79,32 @@ public class ApiController {
         draftService.deleteLeagueFilter(filterId);
     }
 
+    /**
+     * Save a completed draft.
+     * POST /api/drafts
+     * 
+     * @param draftDTO the draft data
+     * @return 201 Created with the saved draft data including UUID
+     */
+    @PostMapping("/drafts")
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    public devybigboard.models.DraftResponse saveDraft(@jakarta.validation.Valid @RequestBody devybigboard.models.DraftDTO draftDTO) {
+        devybigboard.models.Draft draft = draftService.saveDraft(draftDTO);
+        return new devybigboard.models.DraftResponse(draft);
+    }
+    
+    /**
+     * Get a draft by UUID.
+     * GET /api/drafts/{uuid}
+     * 
+     * @param uuid the draft UUID
+     * @return 200 OK with the draft data
+     * @throws devybigboard.exceptions.DraftNotFoundException if draft does not exist (returns 404)
+     */
+    @GetMapping("/drafts/{uuid}")
+    public devybigboard.models.DraftResponse getDraftByUuidNew(@PathVariable String uuid) {
+        devybigboard.models.Draft draft = draftService.getDraftByUuid(uuid);
+        return new devybigboard.models.DraftResponse(draft);
+    }
 
 }

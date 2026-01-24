@@ -147,13 +147,13 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
 - [x] 6. Checkpoint - Ensure player management works
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Draft service and persistence
-  - [ ] 7.1 Create DraftDTO and PickDTO with validation
+- [x] 7. Draft service and persistence
+  - [x] 7.1 Create DraftDTO and PickDTO with validation
     - Add validation annotations for required fields
     - Add @Min constraints for numeric fields
     - _Requirements: 4.2, 10.5_
   
-  - [ ] 7.2 Implement DraftService
+  - [x] 7.2 Implement DraftService
     - Implement saveDraft() with UUID generation
     - Implement getDraftByUuid()
     - Implement getRecentDrafts()
@@ -173,7 +173,7 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Verify retrieved data equals original
     - **Validates: Requirements 4.2, 4.4**
   
-  - [ ] 7.5 Create DraftController with REST endpoints
+  - [x] 7.5 Create DraftController with REST endpoints
     - POST /api/drafts - save draft
     - GET /api/drafts/{uuid} - get draft by UUID
     - _Requirements: 4.2, 4.4_
