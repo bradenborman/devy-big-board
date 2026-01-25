@@ -93,6 +93,8 @@ public class PlayerController {
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
         try {
+            System.out.println("[PlayerController] Uploading headshot for player ID: " + id);
+            
             if (file.isEmpty()) {
                 throw new ValidationException("File cannot be empty");
             }
@@ -105,34 +107,41 @@ public class PlayerController {
             
             // Verify player exists
             Player player = playerService.getPlayerById(id);
+            System.out.println("[PlayerController] Player found: " + player.getName());
             
             // Check if player already has an asset
             Optional<PlayerAsset> existingAsset = playerAssetRepository.findByPlayerId(id);
             
             // Delete old image from S3 if exists
             if (existingAsset.isPresent()) {
+                System.out.println("[PlayerController] Deleting old image: " + existingAsset.get().getImageUrl());
                 try {
                     assetService.deleteImageByUrl(existingAsset.get().getImageUrl());
                 } catch (Exception e) {
-                    // Log but don't fail if old image deletion fails
+                    System.err.println("[PlayerController] Failed to delete old image: " + e.getMessage());
                 }
             }
             
             // Upload to S3 in players/headshots folder
             String imageUrl = assetService.uploadImage(file, "players/headshots");
+            System.out.println("[PlayerController] Image uploaded to: " + imageUrl);
             
             // Create or update player asset
             PlayerAsset asset;
             if (existingAsset.isPresent()) {
                 asset = existingAsset.get();
                 asset.setImageUrl(imageUrl);
+                System.out.println("[PlayerController] Updating existing asset");
             } else {
                 asset = new PlayerAsset(id, imageUrl);
+                System.out.println("[PlayerController] Creating new asset");
             }
             playerAssetRepository.save(asset);
+            System.out.println("[PlayerController] Asset saved to database");
             
             return ResponseEntity.ok(new PlayerResponse(player, imageUrl));
         } catch (IOException e) {
+            System.err.println("[PlayerController] Upload failed: " + e.getMessage());
             throw new ValidationException("Failed to upload image: " + e.getMessage());
         }
     }
@@ -149,11 +158,17 @@ public class PlayerController {
         List<PlayerResponse> response = players.stream()
             .map(player -> {
                 Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
+                if (asset.isPresent()) {
+                    System.out.println("[PlayerController] Player " + player.getName() + " (ID: " + player.getId() + ") has image: " + asset.get().getImageUrl());
+                } else {
+                    System.out.println("[PlayerController] Player " + player.getName() + " (ID: " + player.getId() + ") has NO image");
+                }
                 return asset.isPresent() 
                     ? new PlayerResponse(player, asset.get().getImageUrl())
                     : new PlayerResponse(player);
             })
             .collect(Collectors.toList());
+        System.out.println("[PlayerController] Returning " + response.size() + " players");
         return ResponseEntity.ok(response);
     }
     

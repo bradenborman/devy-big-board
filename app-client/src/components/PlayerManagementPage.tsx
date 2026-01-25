@@ -38,12 +38,22 @@ const PlayerManagementPage: React.FC = () => {
 
     const fetchPlayers = async () => {
         try {
+            console.log('[PlayerManagement] Fetching players...');
             const response = await fetch('/api/players/manage');
             if (response.ok) {
                 const data = await response.json();
+                console.log('[PlayerManagement] Fetched players:', data);
+                console.log('[PlayerManagement] Players with images:', 
+                    data.filter((p: PlayerWithId) => p.imageUrl).map((p: PlayerWithId) => ({
+                        id: p.id,
+                        name: p.name,
+                        imageUrl: p.imageUrl
+                    }))
+                );
                 setPlayers(data);
             }
         } catch (error) {
+            console.error('[PlayerManagement] Failed to load players:', error);
             showToast('Failed to load players', 'error');
         } finally {
             setLoading(false);
@@ -370,20 +380,37 @@ const PlayerManagementPage: React.FC = () => {
                                                     )}
                                                 </div>
                                                 <div className="player-avatar">
-                                                    {player.imageUrl ? (
-                                                        <img 
-                                                            src={player.imageUrl} 
-                                                            alt={player.name}
-                                                            style={{ 
-                                                                width: '100%', 
-                                                                height: '100%', 
-                                                                objectFit: 'cover',
-                                                                borderRadius: '50%'
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        getPlayerInitials(player.name)
-                                                    )}
+                                                    {(() => {
+                                                        console.log(`[PlayerCard] ${player.name}:`, {
+                                                            id: player.id,
+                                                            hasImageUrl: !!player.imageUrl,
+                                                            imageUrl: player.imageUrl
+                                                        });
+                                                        
+                                                        if (player.imageUrl) {
+                                                            return (
+                                                                <img 
+                                                                    src={player.imageUrl} 
+                                                                    alt={player.name}
+                                                                    style={{ 
+                                                                        width: '100%', 
+                                                                        height: '100%', 
+                                                                        objectFit: 'cover',
+                                                                        borderRadius: '50%'
+                                                                    }}
+                                                                    onError={(e) => {
+                                                                        console.error(`[PlayerCard] Image failed to load for ${player.name}:`, player.imageUrl);
+                                                                        e.currentTarget.style.display = 'none';
+                                                                    }}
+                                                                    onLoad={() => {
+                                                                        console.log(`[PlayerCard] Image loaded successfully for ${player.name}`);
+                                                                    }}
+                                                                />
+                                                            );
+                                                        } else {
+                                                            return getPlayerInitials(player.name);
+                                                        }
+                                                    })()}
                                                 </div>
                                                 <div className="player-info">
                                                     <h3 className="player-name">{player.name}</h3>
