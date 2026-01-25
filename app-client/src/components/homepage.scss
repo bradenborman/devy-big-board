@@ -254,6 +254,13 @@
                     text-decoration: none;
                     opacity: 0.8;
                     transition: opacity 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+
+                    svg {
+                        vertical-align: middle;
+                    }
 
                     &:hover {
                         opacity: 1;
