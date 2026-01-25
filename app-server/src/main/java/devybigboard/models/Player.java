@@ -29,6 +29,9 @@ public class Player {
     
     private String college;
     
+    @Column(name = "draftyear")
+    private Integer draftyear;
+    
     @Column(nullable = false)
     private Boolean verified = false;
     
@@ -91,6 +94,14 @@ public class Player {
     
     public void setCollege(String college) {
         this.college = college;
+    }
+    
+    public Integer getDraftyear() {
+        return draftyear;
+    }
+    
+    public void setDraftyear(Integer draftyear) {
+        this.draftyear = draftyear;
     }
     
     public Boolean getVerified() {
