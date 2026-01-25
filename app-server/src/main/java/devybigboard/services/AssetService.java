@@ -30,7 +30,7 @@ public class AssetService {
      * Upload an image to S3
      * @param file The image file to upload
      * @param folder Optional folder path (e.g., "players", "logos")
-     * @return The public URL of the uploaded image
+     * @return The filename (not full URL)
      */
     public String uploadImage(MultipartFile file, String folder) throws IOException {
         String fileName = generateFileName(file.getOriginalFilename(), folder);
@@ -44,7 +44,8 @@ public class AssetService {
 
         s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-        return getPublicUrl(fileName);
+        // Return just the filename part (after the last /)
+        return fileName.substring(fileName.lastIndexOf('/') + 1);
     }
 
     /**

@@ -109,26 +109,27 @@ public class PlayerController {
             
             // Delete old image from S3 if exists
             if (existingAsset.isPresent()) {
-                System.out.println("[PlayerController] Deleting old image: " + existingAsset.get().getImageUrl());
+                String oldFilename = existingAsset.get().getFilename();
+                System.out.println("[PlayerController] Deleting old image: " + oldFilename);
                 try {
-                    assetService.deleteImageByUrl(existingAsset.get().getImageUrl());
+                    assetService.deleteImage("players/headshots/" + oldFilename);
                 } catch (Exception e) {
                     System.err.println("[PlayerController] Failed to delete old image: " + e.getMessage());
                 }
             }
             
-            // Upload to S3 in players/headshots folder
-            String imageUrl = assetService.uploadImage(file, "players/headshots");
-            System.out.println("[PlayerController] Image uploaded to: " + imageUrl);
+            // Upload to S3 in players/headshots folder - returns just filename
+            String filename = assetService.uploadImage(file, "players/headshots");
+            System.out.println("[PlayerController] Image uploaded with filename: " + filename);
             
             // Create or update player asset
             PlayerAsset asset;
             if (existingAsset.isPresent()) {
                 asset = existingAsset.get();
-                asset.setImageUrl(imageUrl);
+                asset.setFilename(filename);
                 System.out.println("[PlayerController] Updating existing asset");
             } else {
-                asset = new PlayerAsset(id, imageUrl);
+                asset = new PlayerAsset(id, filename);
                 System.out.println("[PlayerController] Creating new asset");
             }
             playerAssetRepository.save(asset);
@@ -174,12 +175,9 @@ public class PlayerController {
                 return ResponseEntity.notFound().build();
             }
             
-            String imageUrl = asset.get().getImageUrl();
-            System.out.println("[PlayerController] Fetching headshot for player ID " + id + " from: " + imageUrl);
-            
-            // Extract the S3 key from the URL
-            String key = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            String fullKey = "players/headshots/" + key;
+            String filename = asset.get().getFilename();
+            String fullKey = "players/headshots/" + filename;
+            System.out.println("[PlayerController] Fetching headshot for player ID " + id + " - filename: " + filename);
             
             // Read from S3
             InputStream imageStream = assetService.readImage(fullKey);

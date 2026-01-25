@@ -19,8 +19,8 @@ public class PlayerAsset {
     @Column(name = "player_id", nullable = false, unique = true)
     private Long playerId;
     
-    @Column(name = "image_url", nullable = false, length = 500)
-    private String imageUrl;
+    @Column(name = "filename", nullable = false, length = 255)
+    private String filename;
     
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -33,9 +33,9 @@ public class PlayerAsset {
     public PlayerAsset() {
     }
     
-    public PlayerAsset(Long playerId, String imageUrl) {
+    public PlayerAsset(Long playerId, String filename) {
         this.playerId = playerId;
-        this.imageUrl = imageUrl;
+        this.filename = filename;
     }
     
     public Long getId() {
@@ -54,12 +54,12 @@ public class PlayerAsset {
         this.playerId = playerId;
     }
     
-    public String getImageUrl() {
-        return imageUrl;
+    public String getFilename() {
+        return filename;
     }
     
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
     
     public LocalDateTime getCreatedAt() {
