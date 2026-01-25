@@ -59,21 +59,15 @@ public class PlayerController {
                 if (verificationService.isValidCode(playerDTO.getVerificationCode())) {
                     Player player = playerService.createPlayer(playerDTO);
                     player = playerService.verifyPlayer(player.getId());
-                    Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
                     return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(asset.isPresent() 
-                            ? new PlayerResponse(player, asset.get().getImageUrl())
-                            : new PlayerResponse(player));
+                        .body(new PlayerResponse(player));
                 }
             }
             
             // Otherwise create as pending
             Player player = playerService.createPlayer(playerDTO);
-            Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(asset.isPresent() 
-                    ? new PlayerResponse(player, asset.get().getImageUrl())
-                    : new PlayerResponse(player));
+                .body(new PlayerResponse(player));
         } catch (ValidationException e) {
             throw e; // Will be handled by global exception handler
         }
@@ -139,7 +133,7 @@ public class PlayerController {
             playerAssetRepository.save(asset);
             System.out.println("[PlayerController] Asset saved to database");
             
-            return ResponseEntity.ok(new PlayerResponse(player, imageUrl));
+            return ResponseEntity.ok(new PlayerResponse(player));
         } catch (IOException e) {
             System.err.println("[PlayerController] Upload failed: " + e.getMessage());
             throw new ValidationException("Failed to upload image: " + e.getMessage());
@@ -156,20 +150,66 @@ public class PlayerController {
     public ResponseEntity<List<PlayerResponse>> getAllPlayers() {
         List<Player> players = playerService.getAllPlayers();
         List<PlayerResponse> response = players.stream()
-            .map(player -> {
-                Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
-                if (asset.isPresent()) {
-                    System.out.println("[PlayerController] Player " + player.getName() + " (ID: " + player.getId() + ") has image: " + asset.get().getImageUrl());
-                } else {
-                    System.out.println("[PlayerController] Player " + player.getName() + " (ID: " + player.getId() + ") has NO image");
-                }
-                return asset.isPresent() 
-                    ? new PlayerResponse(player, asset.get().getImageUrl())
-                    : new PlayerResponse(player);
-            })
+            .map(PlayerResponse::new)
             .collect(Collectors.toList());
         System.out.println("[PlayerController] Returning " + response.size() + " players");
         return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * Get player headshot image by player ID.
+     * GET /api/players/manage/{id}/headshot
+     * 
+     * @param id the player ID
+     * @return The image file or 404 if not found
+     */
+    @GetMapping("/{id}/headshot")
+    public ResponseEntity<byte[]> getPlayerHeadshot(@PathVariable Long id) {
+        try {
+            Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(id);
+            
+            if (asset.isEmpty()) {
+                System.out.println("[PlayerController] No headshot found for player ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            
+            String imageUrl = asset.get().getImageUrl();
+            System.out.println("[PlayerController] Fetching headshot for player ID " + id + " from: " + imageUrl);
+            
+            // Extract the S3 key from the URL
+            String key = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+            String fullKey = "players/headshots/" + key;
+            
+            // Read from S3
+            InputStream imageStream = assetService.readImage(fullKey);
+            byte[] imageBytes = imageStream.readAllBytes();
+            imageStream.close();
+            
+            System.out.println("[PlayerController] Returning " + imageBytes.length + " bytes for player ID: " + id);
+            
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.IMAGE_JPEG)
+                    .body(imageBytes);
+        } catch (Exception e) {
+            System.err.println("[PlayerController] Error fetching headshot for player ID " + id + ": " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    /**
+     * Get list of player IDs that have headshots.
+     * GET /api/players/manage/headshots/available
+     * 
+     * @return List of player IDs with headshots
+     */
+    @GetMapping("/headshots/available")
+    public ResponseEntity<List<Long>> getPlayersWithHeadshots() {
+        List<PlayerAsset> assets = playerAssetRepository.findAll();
+        List<Long> playerIds = assets.stream()
+                .map(PlayerAsset::getPlayerId)
+                .collect(Collectors.toList());
+        System.out.println("[PlayerController] " + playerIds.size() + " players have headshots");
+        return ResponseEntity.ok(playerIds);
     }
     
     /**
@@ -196,12 +236,7 @@ public class PlayerController {
             }
             
             Player player = playerService.updatePlayer(id, playerDTO);
-            Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(id);
-            return ResponseEntity.ok(
-                asset.isPresent() 
-                    ? new PlayerResponse(player, asset.get().getImageUrl())
-                    : new PlayerResponse(player)
-            );
+            return ResponseEntity.ok(new PlayerResponse(player));
         } catch (UnauthorizedException | PlayerNotFoundException e) {
             throw e; // Will be handled by global exception handler
         }

@@ -31,9 +31,11 @@ const PlayerManagementPage: React.FC = () => {
     const [activeMenu, setActiveMenu] = useState<number | null>(null);
     const [expandedPositions, setExpandedPositions] = useState<Record<string, boolean>>({});
     const [selectedYears, setSelectedYears] = useState<number[]>([new Date().getFullYear()]);
+    const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         fetchPlayers();
+        fetchPlayersWithHeadshots();
     }, []);
 
     const fetchPlayers = async () => {
@@ -43,13 +45,6 @@ const PlayerManagementPage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('[PlayerManagement] Fetched players:', data);
-                console.log('[PlayerManagement] Players with images:', 
-                    data.filter((p: PlayerWithId) => p.imageUrl).map((p: PlayerWithId) => ({
-                        id: p.id,
-                        name: p.name,
-                        imageUrl: p.imageUrl
-                    }))
-                );
                 setPlayers(data);
             }
         } catch (error) {
@@ -57,6 +52,20 @@ const PlayerManagementPage: React.FC = () => {
             showToast('Failed to load players', 'error');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchPlayersWithHeadshots = async () => {
+        try {
+            console.log('[PlayerManagement] Fetching players with headshots...');
+            const response = await fetch('/api/players/manage/headshots/available');
+            if (response.ok) {
+                const playerIds: number[] = await response.json();
+                console.log('[PlayerManagement] Players with headshots:', playerIds);
+                setPlayersWithHeadshots(new Set(playerIds));
+            }
+        } catch (error) {
+            console.error('[PlayerManagement] Failed to load headshot info:', error);
         }
     };
 
@@ -118,7 +127,10 @@ const PlayerManagementPage: React.FC = () => {
                 setEditingPlayer(null);
                 showToast('Player updated successfully', 'success');
                 // Refresh to get latest image
-                setTimeout(() => fetchPlayers(), 500);
+                setTimeout(() => {
+                    fetchPlayers();
+                    fetchPlayersWithHeadshots();
+                }, 500);
             } else if (response.status === 403) {
                 showToast('Invalid verification code', 'error');
             } else {
@@ -381,16 +393,16 @@ const PlayerManagementPage: React.FC = () => {
                                                 </div>
                                                 <div className="player-avatar">
                                                     {(() => {
+                                                        const hasHeadshot = playersWithHeadshots.has(player.id!);
                                                         console.log(`[PlayerCard] ${player.name}:`, {
                                                             id: player.id,
-                                                            hasImageUrl: !!player.imageUrl,
-                                                            imageUrl: player.imageUrl
+                                                            hasHeadshot
                                                         });
                                                         
-                                                        if (player.imageUrl) {
+                                                        if (hasHeadshot) {
                                                             return (
                                                                 <img 
-                                                                    src={player.imageUrl} 
+                                                                    src={`/api/players/manage/${player.id}/headshot`}
                                                                     alt={player.name}
                                                                     style={{ 
                                                                         width: '100%', 
@@ -399,7 +411,7 @@ const PlayerManagementPage: React.FC = () => {
                                                                         borderRadius: '50%'
                                                                     }}
                                                                     onError={(e) => {
-                                                                        console.error(`[PlayerCard] Image failed to load for ${player.name}:`, player.imageUrl);
+                                                                        console.error(`[PlayerCard] Image failed to load for ${player.name}`);
                                                                         e.currentTarget.style.display = 'none';
                                                                     }}
                                                                     onLoad={() => {
