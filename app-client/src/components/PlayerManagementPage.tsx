@@ -25,7 +25,6 @@ const PlayerManagementPage: React.FC = () => {
     const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
     const [verificationCode, setVerificationCode] = useState('');
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-    const [filter, setFilter] = useState<'all' | 'verified' | 'pending'>('all');
     const [viewMode, setViewMode] = useState<ViewMode>('cards');
     const [activeMenu, setActiveMenu] = useState<number | null>(null);
     const [expandedPositions, setExpandedPositions] = useState<Record<string, boolean>>({});
@@ -157,9 +156,6 @@ const PlayerManagementPage: React.FC = () => {
             return false;
         }
         
-        // Apply status filter
-        if (filter === 'verified') return p.verified;
-        if (filter === 'pending') return !p.verified;
         return true;
     });
 
@@ -253,39 +249,16 @@ const PlayerManagementPage: React.FC = () => {
                 </div>
 
                 <div className="filter-section">
-                    <div className="status-filters">
-                        <button 
-                            className={filter === 'all' ? 'active' : ''} 
-                            onClick={() => setFilter('all')}
+                    <span className="filter-label">Draft Class:</span>
+                    {getAvailableYears().map(year => (
+                        <button
+                            key={year}
+                            className={selectedYears.includes(year) ? 'active' : ''}
+                            onClick={() => toggleYear(year)}
                         >
-                            All ({players.length})
+                            {year}
                         </button>
-                        <button 
-                            className={filter === 'verified' ? 'active' : ''} 
-                            onClick={() => setFilter('verified')}
-                        >
-                            Verified ({players.filter(p => p.verified).length})
-                        </button>
-                        <button 
-                            className={filter === 'pending' ? 'active' : ''} 
-                            onClick={() => setFilter('pending')}
-                        >
-                            Pending ({players.filter(p => !p.verified).length})
-                        </button>
-                    </div>
-                    
-                    <div className="year-filters">
-                        <span className="filter-label">Draft Class:</span>
-                        {getAvailableYears().map(year => (
-                            <button
-                                key={year}
-                                className={selectedYears.includes(year) ? 'active' : ''}
-                                onClick={() => toggleYear(year)}
-                            >
-                                {year}
-                            </button>
-                        ))}
-                    </div>
+                    ))}
                 </div>
 
                 {loading ? (
@@ -337,7 +310,7 @@ const PlayerManagementPage: React.FC = () => {
                         </table>
                         {filteredPlayers.length === 0 && (
                             <div className="empty-state">
-                                No {filter !== 'all' ? filter : ''} players found
+                                No players found for selected draft class{selectedYears.length > 1 ? 'es' : ''}
                             </div>
                         )}
                     </div>
@@ -420,7 +393,7 @@ const PlayerManagementPage: React.FC = () => {
                         })}
                         {filteredPlayers.length === 0 && (
                             <div className="empty-state">
-                                No {filter !== 'all' ? filter : ''} players found
+                                No players found for selected draft class{selectedYears.length > 1 ? 'es' : ''}
                             </div>
                         )}
                     </div>
