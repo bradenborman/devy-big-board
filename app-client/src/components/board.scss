@@ -14,7 +14,6 @@
         display: flex;
         gap: 32px;
         align-items: center;
-        justify-content: space-between;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
         .filter-section {
@@ -62,12 +61,12 @@
             }
         }
 
-        .export-section {
+        .actions-section {
             margin-left: auto;
+            display: flex;
+            gap: 12px;
 
-            .export-btn {
-                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-                color: white;
+            .action-btn {
                 border: none;
                 padding: 8px 20px;
                 border-radius: 8px;
@@ -75,18 +74,36 @@
                 font-size: 0.9em;
                 font-weight: 700;
                 transition: all 0.2s;
-                box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
                 display: flex;
                 align-items: center;
                 gap: 6px;
 
                 &:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.5);
                 }
 
                 &:active {
                     transform: translateY(0);
+                }
+
+                &.export-btn {
+                    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                    color: white;
+                    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+
+                    &:hover {
+                        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.5);
+                    }
+                }
+
+                &.exit-btn {
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    color: white;
+                    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+
+                    &:hover {
+                        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+                    }
                 }
             }
         }

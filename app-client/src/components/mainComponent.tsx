@@ -354,13 +354,16 @@ const MainComponent: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                            {isDraftComplete && (
-                                <div className="export-section">
-                                    <button className="export-btn" onClick={handleExportDraft}>
+                            <div className="actions-section">
+                                {isDraftComplete && (
+                                    <button className="action-btn export-btn" onClick={handleExportDraft}>
                                         📋 Export Draft
                                     </button>
-                                </div>
-                            )}
+                                )}
+                                <button className="action-btn exit-btn" onClick={resetDraft}>
+                                    🚪 Exit Draft
+                                </button>
+                            </div>
                         </div>
                     )}
                     
