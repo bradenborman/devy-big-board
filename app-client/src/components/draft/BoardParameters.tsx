@@ -28,7 +28,7 @@ const BoardParameters: React.FC<BoardParamsProps> = ({
                 <button className="return-home-btn" onClick={() => navigate('/')}>
                     ← Home
                 </button>
-                <h3>{new Date().getUTCFullYear()} Devy/Rookie Draft Big Board</h3>
+                <h3>{new Date().getUTCFullYear()} Devy/Rookie <br /> Draft Big Board</h3>
             </div>
 
             <div className="params-content">

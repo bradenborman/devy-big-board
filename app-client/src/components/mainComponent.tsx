@@ -213,7 +213,8 @@ const MainComponent: React.FC = () => {
             const playerToRemove = updatedPlayers[row - 1][col - 1];
             if (playerToRemove) {
                 updatedPlayers[row - 1][col - 1] = null;
-                setPlayerPool((prevPool) => [...prevPool, playerToRemove]);
+                // Add player to the front of the pool (likely a mistake, so keep visible)
+                setPlayerPool((prevPool) => [playerToRemove, ...prevPool]);
             }
             return updatedPlayers;
         });
@@ -230,7 +231,8 @@ const MainComponent: React.FC = () => {
                         updatedPlayers[r][c] = null;
 
                         if (removedPlayer) {
-                            setPlayerPool((prevPool) => [...prevPool, removedPlayer]);
+                            // Add player to the front of the pool (likely a mistake, so keep visible)
+                            setPlayerPool((prevPool) => [removedPlayer, ...prevPool]);
                         }
 
                         return updatedPlayers;
@@ -245,6 +247,7 @@ const MainComponent: React.FC = () => {
     const clearBoard = () => {
         loadPlayerPool();
         setPlayers(Array.from({ length: rounds }, () => Array(teams).fill(null)));
+        setTierBreaks([]); // Clear tier breaks when clearing the board
     };
 
     const exportDraft = () => {
