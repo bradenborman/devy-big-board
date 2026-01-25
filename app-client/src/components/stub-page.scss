@@ -1,6 +1,6 @@
 .stub-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
     color: white;
 
     .navbar {
@@ -173,8 +173,8 @@
             }
 
             .notify-btn {
-                background: white;
-                color: #667eea;
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
                 border: none;
                 padding: 1rem 2.5rem;
                 border-radius: 12px;
@@ -182,11 +182,11 @@
                 font-size: 1.05rem;
                 cursor: pointer;
                 transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+                box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
 
                 &:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+                    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5);
                 }
             }
         }

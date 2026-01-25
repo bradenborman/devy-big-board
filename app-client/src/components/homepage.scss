@@ -1,6 +1,6 @@
 .homepage {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
     color: white;
 
     .navbar {
@@ -81,7 +81,7 @@
                 margin-bottom: 1.5rem;
 
                 .gradient-text {
-                    background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+                    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                     background-clip: text;
@@ -117,7 +117,7 @@
                 .card-header {
                     font-size: 0.85rem;
                     font-weight: 700;
-                    color: #667eea;
+                    color: #2c5364;
                     text-transform: uppercase;
                     margin-bottom: 0.5rem;
                 }
@@ -141,13 +141,13 @@
                 }
 
                 &.card-2 {
-                    top: 50%;
+                    top: 10%;
                     right: 10%;
                     animation-delay: 1s;
                 }
 
                 &.card-3 {
-                    bottom: 10%;
+                    bottom: 20%;
                     left: 30%;
                     animation-delay: 2s;
                 }
@@ -274,13 +274,13 @@
         transition: all 0.3s ease;
 
         &.btn-primary {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
 
             &:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+                box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5);
             }
         }
 
@@ -298,13 +298,13 @@
         &.btn-large {
             padding: 1.25rem 3rem;
             font-size: 1.1rem;
-            background: white;
-            color: #667eea;
-            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.4);
 
             &:hover {
                 transform: translateY(-4px);
-                box-shadow: 0 12px 40px rgba(255, 255, 255, 0.4);
+                box-shadow: 0 12px 40px rgba(79, 172, 254, 0.5);
             }
         }
     }

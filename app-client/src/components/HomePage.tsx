@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
             <section className="hero">
                 <div className="hero-content">
                     <h1 className="hero-title">
-                        Master Your <span className="gradient-text">Devy Draft</span>
+                        Master Your<br /><span className="gradient-text">Devy Draft</span>
                     </h1>
                     <p className="hero-subtitle">
                         The ultimate tool for dynasty fantasy football rookie drafts. 
