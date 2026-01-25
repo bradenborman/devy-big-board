@@ -90,21 +90,26 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const totalPicks = teams * rounds;
     const currentPickNumber = getPickNumber(currentRound, currentPick);
     const progress = (currentPickNumber / totalPicks) * 100;
+    
+    // Check if draft is complete
+    const isDraftComplete = players.every(round => round.every(pick => pick !== null));
 
     return (
         <div className="mobile-draft">
             {/* Header */}
             <div className="mobile-draft-header">
-                <button className="header-btn" onClick={onExit}>
-                    ← Exit
+                <button className="leave-btn" onClick={onExit} title="Leave draft">
+                    ✕
                 </button>
                 <div className="header-title">
                     <div className="round-info">Round {currentRound}</div>
                     <div className="pick-info">Pick {currentPick} of {teams}</div>
                 </div>
-                <button className="header-btn" onClick={onExport}>
-                    Export
-                </button>
+                {isDraftComplete && (
+                    <button className="export-btn" onClick={onExport}>
+                        Export
+                    </button>
+                )}
             </div>
 
             {/* Progress Bar */}
