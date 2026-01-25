@@ -416,16 +416,33 @@
 
     .edit-modal, .delete-modal {
         min-width: 350px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
 
         p {
             margin: 1rem 0;
-            color: #333;
+            color: white;
+        }
+
+        input, select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
         }
 
         input[type="number"] {
             margin: 5px 0;
             padding: 8px;
             font-size: 14px;
+        }
+
+        button {
+            &:not(.cancel) {
+                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            }
         }
     }
 }
