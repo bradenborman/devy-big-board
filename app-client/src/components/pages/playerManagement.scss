@@ -474,8 +474,21 @@
         .cards-view {
             .position-section {
                 .player-cards-grid {
-                    grid-template-columns: 1fr;
+                    grid-template-columns: 1fr !important;
                     gap: 1rem;
+                }
+            }
+        }
+    }
+}
+
+// Ensure desktop keeps the grid layout
+@media (min-width: 769px) {
+    .player-management-page {
+        .cards-view {
+            .position-section {
+                .player-cards-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
                 }
             }
         }
