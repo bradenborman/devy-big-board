@@ -16,6 +16,41 @@
             color: white;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem;
+            border-radius: 8px;
+
+            button {
+                background: transparent;
+                color: rgba(255, 255, 255, 0.6);
+                border: none;
+                padding: 0.5rem 0.75rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1.2rem;
+                transition: all 0.2s;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: rgba(255, 255, 255, 0.9);
+                }
+
+                &.active {
+                    background: rgba(76, 175, 80, 0.3);
+                    color: #4CAF50;
+                }
+            }
+        }
+
         .add-btn {
             background: #4CAF50;
             color: white;
@@ -67,6 +102,7 @@
         padding: 3rem;
     }
 
+    // Table View Styles
     .players-table {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 8px;
@@ -159,6 +195,196 @@
 
             &:hover {
                 background: rgba(244, 67, 54, 0.3);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+        }
+    }
+
+    // Cards View Styles
+    .cards-view {
+        .position-section {
+            margin-bottom: 3rem;
+
+            .position-title {
+                color: white;
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                .count {
+                    font-size: 1.2rem;
+                    color: rgba(255, 255, 255, 0.6);
+                    font-weight: 400;
+                }
+            }
+
+            .player-cards-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.12);
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            }
+
+            .card-menu {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+
+                .menu-trigger {
+                    background: rgba(255, 255, 255, 0.1);
+                    border: none;
+                    color: rgba(255, 255, 255, 0.6);
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 1.2rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.2);
+                        color: white;
+                    }
+                }
+
+                .menu-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    margin-top: 0.5rem;
+                    background: rgba(30, 30, 30, 0.98);
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+                    overflow: hidden;
+                    z-index: 10;
+                    min-width: 140px;
+
+                    button {
+                        display: block;
+                        width: 100%;
+                        padding: 0.75rem 1rem;
+                        background: transparent;
+                        border: none;
+                        color: white;
+                        text-align: left;
+                        cursor: pointer;
+                        font-size: 0.9rem;
+                        transition: background 0.2s;
+
+                        &:hover {
+                            background: rgba(255, 255, 255, 0.1);
+                        }
+
+                        &:not(:last-child) {
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                        }
+                    }
+                }
+            }
+
+            .player-avatar {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2rem;
+                font-weight: 700;
+                color: white;
+                margin: 0 auto 1rem;
+                text-transform: uppercase;
+            }
+
+            .player-info {
+                text-align: center;
+
+                .player-name {
+                    color: white;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                }
+
+                .player-meta {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 0.5rem;
+
+                    .position-badge {
+                        background: rgba(76, 175, 80, 0.2);
+                        color: #4CAF50;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 12px;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                    }
+
+                    .team {
+                        color: rgba(255, 255, 255, 0.7);
+                        font-size: 0.9rem;
+                    }
+                }
+
+                .player-college {
+                    color: rgba(255, 255, 255, 0.6);
+                    font-size: 0.85rem;
+                    margin-bottom: 0.25rem;
+                }
+
+                .player-year {
+                    color: rgba(255, 255, 255, 0.5);
+                    font-size: 0.8rem;
+                    margin-bottom: 0.75rem;
+                }
+
+                .card-status {
+                    display: inline-block;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 12px;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    margin-top: 0.5rem;
+
+                    &.verified {
+                        background: rgba(76, 175, 80, 0.2);
+                        color: #4CAF50;
+                    }
+
+                    &.pending {
+                        background: rgba(255, 152, 0, 0.2);
+                        color: #FF9800;
+                    }
+                }
             }
         }
 

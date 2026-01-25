@@ -12,6 +12,8 @@ interface PlayerWithId extends Player {
     createdAt?: string;
 }
 
+type ViewMode = 'table' | 'cards';
+
 const PlayerManagementPage: React.FC = () => {
     const navigate = useNavigate();
     const [players, setPlayers] = useState<PlayerWithId[]>([]);
@@ -22,6 +24,8 @@ const PlayerManagementPage: React.FC = () => {
     const [verificationCode, setVerificationCode] = useState('');
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
     const [filter, setFilter] = useState<'all' | 'verified' | 'pending'>('all');
+    const [viewMode, setViewMode] = useState<ViewMode>('cards');
+    const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
     useEffect(() => {
         fetchPlayers();
@@ -146,6 +150,22 @@ const PlayerManagementPage: React.FC = () => {
         return true;
     });
 
+    const getPlayersByPosition = (position: string) => {
+        return filteredPlayers.filter(p => p.position === position);
+    };
+
+    const getPlayerInitials = (name: string) => {
+        const parts = name.split(' ');
+        if (parts.length >= 2) {
+            return parts[0][0] + parts[parts.length - 1][0];
+        }
+        return name.substring(0, 2);
+    };
+
+    const toggleMenu = (playerId: number) => {
+        setActiveMenu(activeMenu === playerId ? null : playerId);
+    };
+
     return (
         <div className="stub-page player-management-page">
             <nav className="navbar">
@@ -162,10 +182,28 @@ const PlayerManagementPage: React.FC = () => {
 
             <div className="management-content">
                 <div className="header-section">
-                    <h1>Player Management</h1>
-                    <button className="add-btn" onClick={() => setShowAddModal(true)}>
-                        + Add Player
-                    </button>
+                    <h1>Player Pool</h1>
+                    <div className="header-actions">
+                        <div className="view-toggle">
+                            <button 
+                                className={viewMode === 'cards' ? 'active' : ''} 
+                                onClick={() => setViewMode('cards')}
+                                title="Card View"
+                            >
+                                ⊞
+                            </button>
+                            <button 
+                                className={viewMode === 'table' ? 'active' : ''} 
+                                onClick={() => setViewMode('table')}
+                                title="Table View"
+                            >
+                                ☰
+                            </button>
+                        </div>
+                        <button className="add-btn" onClick={() => setShowAddModal(true)}>
+                            + Add Player
+                        </button>
+                    </div>
                 </div>
 
                 <div className="filter-section">
@@ -191,7 +229,7 @@ const PlayerManagementPage: React.FC = () => {
 
                 {loading ? (
                     <div className="loading">Loading players...</div>
-                ) : (
+                ) : viewMode === 'table' ? (
                     <div className="players-table">
                         <table>
                             <thead>
@@ -236,6 +274,75 @@ const PlayerManagementPage: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
+                        {filteredPlayers.length === 0 && (
+                            <div className="empty-state">
+                                No {filter !== 'all' ? filter : ''} players found
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="cards-view">
+                        {['QB', 'RB', 'WR', 'TE'].map(position => {
+                            const positionPlayers = getPlayersByPosition(position);
+                            if (positionPlayers.length === 0) return null;
+                            
+                            return (
+                                <div key={position} className="position-section">
+                                    <h2 className="position-title">
+                                        {position}s <span className="count">({positionPlayers.length})</span>
+                                    </h2>
+                                    <div className="player-cards-grid">
+                                        {positionPlayers.map(player => (
+                                            <div key={player.id} className="player-card">
+                                                <div className="card-menu">
+                                                    <button 
+                                                        className="menu-trigger"
+                                                        onClick={() => toggleMenu(player.id!)}
+                                                    >
+                                                        ⋮
+                                                    </button>
+                                                    {activeMenu === player.id && (
+                                                        <div className="menu-dropdown">
+                                                            <button onClick={() => {
+                                                                setEditingPlayer(player);
+                                                                setActiveMenu(null);
+                                                            }}>
+                                                                ✏️ Edit
+                                                            </button>
+                                                            <button onClick={() => {
+                                                                setDeleteConfirm(player.id!);
+                                                                setActiveMenu(null);
+                                                            }}>
+                                                                🗑️ Delete
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="player-avatar">
+                                                    {getPlayerInitials(player.name)}
+                                                </div>
+                                                <div className="player-info">
+                                                    <h3 className="player-name">{player.name}</h3>
+                                                    <div className="player-meta">
+                                                        <span className="position-badge">{player.position}</span>
+                                                        {player.team && <span className="team">{player.team}</span>}
+                                                    </div>
+                                                    {player.college && (
+                                                        <div className="player-college">{player.college}</div>
+                                                    )}
+                                                    {player.draftyear && (
+                                                        <div className="player-year">Class of {player.draftyear}</div>
+                                                    )}
+                                                    <div className={`card-status ${player.verified ? 'verified' : 'pending'}`}>
+                                                        {player.verified ? '✓ Verified' : '⏳ Pending'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
                         {filteredPlayers.length === 0 && (
                             <div className="empty-state">
                                 No {filter !== 'all' ? filter : ''} players found
