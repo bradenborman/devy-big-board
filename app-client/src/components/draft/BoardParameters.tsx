@@ -4,12 +4,22 @@ import { useNavigate } from 'react-router-dom';
 interface BoardParamsProps {
     teams: number;
     rounds: number;
+    rookiesOnly: boolean;
     handleTeamsChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     handleRoundsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleRookiesOnlyChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     createGrid: () => void;
 }
 
-const BoardParameters: React.FC<BoardParamsProps> = ({ teams, rounds, handleTeamsChange, handleRoundsChange, createGrid }) => {
+const BoardParameters: React.FC<BoardParamsProps> = ({ 
+    teams, 
+    rounds, 
+    rookiesOnly,
+    handleTeamsChange, 
+    handleRoundsChange, 
+    handleRookiesOnlyChange,
+    createGrid 
+}) => {
     const navigate = useNavigate();
 
     return (
@@ -44,6 +54,20 @@ const BoardParameters: React.FC<BoardParamsProps> = ({ teams, rounds, handleTeam
                         max="7"
                         step="1"
                     />
+                </div>
+
+                <div className="param-group checkbox-group">
+                    <label className="checkbox-label">
+                        <input
+                            type="checkbox"
+                            checked={rookiesOnly}
+                            onChange={handleRookiesOnlyChange}
+                        />
+                        <span>Rookies only?</span>
+                    </label>
+                    <small className="help-text">
+                        Only show players from the current draft class ({new Date().getUTCFullYear()})
+                    </small>
                 </div>
 
                 <button className="create-board-btn" onClick={createGrid}>

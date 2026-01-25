@@ -11,6 +11,7 @@ interface MobileDraftProps {
     onRemovePlayer: (row: number, col: number) => void;
     onExport: () => void;
     onExit: () => void;
+    rookiesOnly?: boolean;
 }
 
 const MobileDraft: React.FC<MobileDraftProps> = ({
@@ -22,6 +23,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     onRemovePlayer,
     onExport,
     onExit
+    // rookiesOnly is handled by parent component filtering
 }) => {
     const [currentRound, setCurrentRound] = useState(1);
     const [currentPick, setCurrentPick] = useState(1);

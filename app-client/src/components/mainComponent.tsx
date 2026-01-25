@@ -22,6 +22,7 @@ const MainComponent: React.FC = () => {
 
     const [teams, setTeams] = useState<number>(teamsFromURL || 12);
     const [rounds, setRounds] = useState<number>(roundsFromURL || 3);
+    const [rookiesOnly, setRookiesOnly] = useState<boolean>(false);
     const [players, setPlayers] = useState<(Player | null)[][]>(
         hasValidParams
             ? Array.from({ length: roundsFromURL }, () => Array(teamsFromURL).fill(null))
@@ -152,13 +153,19 @@ const MainComponent: React.FC = () => {
     const loadPlayerPool = () => {
         fetch("/api/players")
             .then((res) => res.json())
-            .then((data: Player[]) => setPlayerPool(data))
+            .then((data: Player[]) => {
+                // Filter to current year only if rookiesOnly is enabled
+                const filteredData = rookiesOnly 
+                    ? data.filter(player => player.draftyear === currentYear)
+                    : data;
+                setPlayerPool(filteredData);
+            })
             .catch((err) => console.error("Failed to fetch players:", err));
     };
 
     useEffect(() => {
         loadPlayerPool();
-    }, []);
+    }, [rookiesOnly]);
 
     const createGrid = () => {
         const searchParams = new URLSearchParams(location.search);
@@ -295,8 +302,10 @@ const MainComponent: React.FC = () => {
                 <BoardParameters
                     teams={teams}
                     rounds={rounds}
+                    rookiesOnly={rookiesOnly}
                     handleTeamsChange={(e) => setTeams(Number(e.target.value))}
                     handleRoundsChange={(e) => setRounds(Number(e.target.value))}
+                    handleRookiesOnlyChange={(e) => setRookiesOnly(e.target.checked)}
                     createGrid={createGrid}
                 />
             ) : (
@@ -338,20 +347,22 @@ const MainComponent: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                            <div className="filter-section">
-                                <span className="filter-label">Draft Class:</span>
-                                <div className="filter-buttons">
-                                    {yearRange.map((year) => (
-                                        <button
-                                            key={year}
-                                            className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
-                                            onClick={() => toggleYearFilter(year)}
-                                        >
-                                            {year}
-                                        </button>
-                                    ))}
+                            {!rookiesOnly && (
+                                <div className="filter-section">
+                                    <span className="filter-label">Draft Class:</span>
+                                    <div className="filter-buttons">
+                                        {yearRange.map((year) => (
+                                            <button
+                                                key={year}
+                                                className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
+                                                onClick={() => toggleYearFilter(year)}
+                                            >
+                                                {year}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div className="helper-section">
                                 <button 
                                     className="helper-btn" 
@@ -411,6 +422,7 @@ const MainComponent: React.FC = () => {
                             onRemovePlayer={removeDraftedPlayer}
                             onExport={exportDraft}
                             onExit={() => navigate('/')}
+                            rookiesOnly={rookiesOnly}
                         />
                     ) : (
                         <div className="board-content-wrapper">
