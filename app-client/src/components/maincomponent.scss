@@ -31,22 +31,23 @@
 
             .params-header {
                 background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                padding: 24px 32px;
+                padding: 60px 32px 24px;
                 position: relative;
 
                 .return-home-btn {
                     position: absolute;
-                    top: 20px;
-                    left: 20px;
+                    top: 16px;
+                    left: 16px;
                     background: rgba(255, 255, 255, 0.2);
                     color: white;
                     border: 2px solid rgba(255, 255, 255, 0.3);
-                    padding: 6px 14px;
+                    padding: 8px 16px;
                     border-radius: 8px;
                     cursor: pointer;
-                    font-size: 0.85em;
+                    font-size: 0.9em;
                     font-weight: 600;
                     transition: all 0.2s ease;
+                    z-index: 10;
 
                     &:hover {
                         background: rgba(255, 255, 255, 0.3);
