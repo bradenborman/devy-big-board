@@ -43,6 +43,17 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
 
     const hasHeadshot = player?.id && playersWithHeadshots.has(player.id);
 
+    const splitName = (fullName: string) => {
+        const firstSpaceIndex = fullName.indexOf(' ');
+        if (firstSpaceIndex === -1) {
+            // No space found, return as single name
+            return { firstName: fullName, lastName: '' };
+        }
+        const firstName = fullName.substring(0, firstSpaceIndex);
+        const lastName = fullName.substring(firstSpaceIndex + 1);
+        return { firstName, lastName };
+    };
+
     return (
         <div
             className={`draft-spot${isTierBreak ? ' tier-break' : ''}`}
@@ -75,7 +86,22 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
                         )}
                     </div>
                     <div className="player-info">
-                        <div className="player-name">{player.name}</div>
+                        <div className="player-name">
+                            {(() => {
+                                const { firstName, lastName } = splitName(player.name);
+                                return (
+                                    <>
+                                        <span className="first-name">{firstName}</span>
+                                        {lastName && (
+                                            <>
+                                                <br />
+                                                <span className="last-name">{lastName}</span>
+                                            </>
+                                        )}
+                                    </>
+                                );
+                            })()}
+                        </div>
                         <div className="player-meta">
                             <span className={`position-badge ${player.position}`}>{player.position}</span>
                             <span className="team-name">{player.team}</span>
