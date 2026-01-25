@@ -40,49 +40,87 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
 
     if (!visible) return null;
 
+    // Generate year options (current year + next 5 years)
+    const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear + i);
+
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2>Add Player</h2>
-                <input placeholder="Name *" value={name} onChange={(e) => setName(e.target.value)} />
-
-                <select value={position} onChange={(e) => setPosition(e.target.value)}>
-                    <option value="">Select Position *</option>
-                    <option value="QB">QB</option>
-                    <option value="RB">RB</option>
-                    <option value="WR">WR</option>
-                    <option value="TE">TE</option>
-                </select>
-
-                <input placeholder="Team" value={team} onChange={(e) => setTeam(e.target.value)} />
-                
-                <input placeholder="College" value={college} onChange={(e) => setCollege(e.target.value)} />
-
-                <label className="slider-label">
-                    Draft Year: <strong>{draftyear}</strong>
-                </label>
-                <input
-                    type="range"
-                    min={currentYear}
-                    max={currentYear + 5}
-                    value={draftyear}
-                    onChange={(e) => setDraftyear(Number(e.target.value))}
-                />
-
-                <div className="verification-section">
-                    <input 
-                        type="password"
-                        placeholder="Verification Code (optional)" 
-                        value={verificationCode} 
-                        onChange={(e) => setVerificationCode(e.target.value)} 
-                    />
-                    <small className="help-text">
-                        Leave blank to submit as pending. Admins can verify later.
-                    </small>
+            <div className="modal-content add-player-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2>Add New Player</h2>
+                    <button className="close-btn" onClick={onClose}>×</button>
                 </div>
 
-                <button onClick={handleSubmit}>Add Player</button>
-                <button className="cancel" onClick={onClose}>Cancel</button>
+                <div className="modal-body">
+                    <div className="form-group">
+                        <label>Player Name *</label>
+                        <input 
+                            placeholder="e.g., Caleb Williams" 
+                            value={name} 
+                            onChange={(e) => setName(e.target.value)} 
+                        />
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Position *</label>
+                            <select value={position} onChange={(e) => setPosition(e.target.value)}>
+                                <option value="">Select</option>
+                                <option value="QB">QB</option>
+                                <option value="RB">RB</option>
+                                <option value="WR">WR</option>
+                                <option value="TE">TE</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Draft Year *</label>
+                            <select value={draftyear} onChange={(e) => setDraftyear(Number(e.target.value))}>
+                                {yearOptions.map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>NFL Team</label>
+                        <input 
+                            placeholder="e.g., Chicago Bears" 
+                            value={team} 
+                            onChange={(e) => setTeam(e.target.value)} 
+                        />
+                    </div>
+                    
+                    <div className="form-group">
+                        <label>College</label>
+                        <input 
+                            placeholder="e.g., USC" 
+                            value={college} 
+                            onChange={(e) => setCollege(e.target.value)} 
+                        />
+                    </div>
+
+                    <div className="form-group verification-group">
+                        <label>Admin Verification Code</label>
+                        <input 
+                            type="password"
+                            placeholder="Optional - leave blank for pending status" 
+                            value={verificationCode} 
+                            onChange={(e) => setVerificationCode(e.target.value)} 
+                        />
+                        <small className="help-text">
+                            💡 Only admins have this code. Players without it will be marked as pending.
+                        </small>
+                    </div>
+                </div>
+
+                <div className="modal-footer">
+                    <button className="btn-cancel" onClick={onClose}>Cancel</button>
+                    <button className="btn-submit" onClick={handleSubmit} disabled={!name || !position}>
+                        Add Player
+                    </button>
+                </div>
             </div>
         </div>
     );

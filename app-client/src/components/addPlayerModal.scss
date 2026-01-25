@@ -1,68 +1,234 @@
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 200;
+    animation: fadeIn 0.2s ease;
 }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.add-player-modal {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 
     h2 {
-        margin-bottom: 10px;
+        margin: 0;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
     }
 
-    input {
-        margin: 5px 0;
-        padding: 8px;
-        font-size: 14px;
-    }
-
-    button {
-        margin-top: 10px;
-        padding: 8px;
+    .close-btn {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 2rem;
         cursor: pointer;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+        line-height: 1;
+        padding: 0;
 
-        &.cancel {
-            background: #ccc;
-            margin-top: 5px;
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+    }
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    .form-group {
+        margin-bottom: 1.5rem;
+
+        label {
+            display: block;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
+
+            &:focus {
+                outline: none;
+                border-color: rgba(76, 175, 80, 0.6);
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+
+            option {
+                background: #1e3c72;
+                color: white;
+            }
+        }
+
+        &.verification-group {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .help-text {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
         }
     }
 
-    select {
-        margin: 5px 0;
-        padding: 8px;
-        font-size: 14px;
-    }
-
-    .slider-label {
-        margin-top: 10px;
-        font-size: 14px;
-    }
-
-    input[type="password"] {
-        font-family: inherit;
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
     }
 }
 
-.verification-section {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    
-    .help-text {
-        display: block;
-        margin-top: 0.5rem;
-        font-size: 0.85rem;
-        color: #666;
-        font-style: italic;
+.modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+
+    button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.btn-cancel {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        &.btn-submit {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+
+            &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 600px) {
+    .add-player-modal {
+        width: 95%;
+        max-width: none;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        flex-direction: column-reverse;
+
+        button {
+            width: 100%;
+        }
     }
 }

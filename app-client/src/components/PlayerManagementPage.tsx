@@ -29,6 +29,7 @@ const PlayerManagementPage: React.FC = () => {
     const [viewMode, setViewMode] = useState<ViewMode>('cards');
     const [activeMenu, setActiveMenu] = useState<number | null>(null);
     const [expandedPositions, setExpandedPositions] = useState<Record<string, boolean>>({});
+    const [selectedYears, setSelectedYears] = useState<number[]>([new Date().getFullYear()]);
 
     useEffect(() => {
         fetchPlayers();
@@ -151,6 +152,11 @@ const PlayerManagementPage: React.FC = () => {
         // In card view, only show verified players
         if (viewMode === 'cards' && !p.verified) return false;
         
+        // Filter by draft year
+        if (selectedYears.length > 0 && p.draftyear && !selectedYears.includes(p.draftyear)) {
+            return false;
+        }
+        
         // Apply status filter
         if (filter === 'verified') return p.verified;
         if (filter === 'pending') return !p.verified;
@@ -174,6 +180,24 @@ const PlayerManagementPage: React.FC = () => {
             ...prev,
             [position]: !prev[position]
         }));
+    };
+
+    const toggleYear = (year: number) => {
+        setSelectedYears(prev => {
+            if (prev.includes(year)) {
+                return prev.filter(y => y !== year);
+            } else {
+                return [...prev, year].sort();
+            }
+        });
+    };
+
+    const getAvailableYears = () => {
+        const years = new Set<number>();
+        players.forEach(p => {
+            if (p.draftyear) years.add(p.draftyear);
+        });
+        return Array.from(years).sort();
     };
 
     const getPlayerInitials = (name: string) => {
@@ -229,24 +253,39 @@ const PlayerManagementPage: React.FC = () => {
                 </div>
 
                 <div className="filter-section">
-                    <button 
-                        className={filter === 'all' ? 'active' : ''} 
-                        onClick={() => setFilter('all')}
-                    >
-                        All ({players.length})
-                    </button>
-                    <button 
-                        className={filter === 'verified' ? 'active' : ''} 
-                        onClick={() => setFilter('verified')}
-                    >
-                        Verified ({players.filter(p => p.verified).length})
-                    </button>
-                    <button 
-                        className={filter === 'pending' ? 'active' : ''} 
-                        onClick={() => setFilter('pending')}
-                    >
-                        Pending ({players.filter(p => !p.verified).length})
-                    </button>
+                    <div className="status-filters">
+                        <button 
+                            className={filter === 'all' ? 'active' : ''} 
+                            onClick={() => setFilter('all')}
+                        >
+                            All ({players.length})
+                        </button>
+                        <button 
+                            className={filter === 'verified' ? 'active' : ''} 
+                            onClick={() => setFilter('verified')}
+                        >
+                            Verified ({players.filter(p => p.verified).length})
+                        </button>
+                        <button 
+                            className={filter === 'pending' ? 'active' : ''} 
+                            onClick={() => setFilter('pending')}
+                        >
+                            Pending ({players.filter(p => !p.verified).length})
+                        </button>
+                    </div>
+                    
+                    <div className="year-filters">
+                        <span className="filter-label">Draft Class:</span>
+                        {getAvailableYears().map(year => (
+                            <button
+                                key={year}
+                                className={selectedYears.includes(year) ? 'active' : ''}
+                                onClick={() => toggleYear(year)}
+                            >
+                                {year}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {loading ? (

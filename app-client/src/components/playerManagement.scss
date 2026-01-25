@@ -70,8 +70,23 @@
 
     .filter-section {
         display: flex;
+        flex-direction: column;
         gap: 1rem;
         margin-bottom: 2rem;
+
+        .status-filters, .year-filters {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
 
         button {
             background: rgba(255, 255, 255, 0.1);
