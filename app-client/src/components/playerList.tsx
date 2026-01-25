@@ -45,45 +45,47 @@ const PlayerList: React.FC<PlayerListProps> = ({ playerPool, addPlayerToNextOpen
     }
 
     return (
-        <div className="player-list">
-            <div className="filters">
-                <span className="filter-label">Position</span>
-                <div className="filter-buttons">
-                    <button
-                        className={`filter-btn ${activePositionFilters.length === 0 ? 'active' : ''}`}
-                        onClick={() => togglePositionFilter('ALL')}
-                    >
-                        All
-                    </button>
-                    {['QB', 'RB', 'WR', 'TE'].map((position) => (
+        <>
+            <div className="filter-toolbar">
+                <div className="filter-section">
+                    <span className="filter-label">Position:</span>
+                    <div className="filter-buttons">
                         <button
-                            key={position}
-                            className={`filter-btn ${activePositionFilters.includes(position) ? 'active' : ''}`}
-                            onClick={() => togglePositionFilter(position)}
+                            className={`filter-btn ${activePositionFilters.length === 0 ? 'active' : ''}`}
+                            onClick={() => togglePositionFilter('ALL')}
                         >
-                            {position}
+                            All
                         </button>
-                    ))}
+                        {['QB', 'RB', 'WR', 'TE'].map((position) => (
+                            <button
+                                key={position}
+                                className={`filter-btn ${activePositionFilters.includes(position) ? 'active' : ''}`}
+                                onClick={() => togglePositionFilter(position)}
+                            >
+                                {position}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <div className="filter-section">
+                    <span className="filter-label">Draft Class:</span>
+                    <div className="filter-buttons">
+                        {yearRange.map((year) => (
+                            <button
+                                key={year}
+                                className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
+                                onClick={() => toggleYearFilter(year)}
+                            >
+                                {year}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
-            <div className="filters">
-                <span className="filter-label">Draft Class</span>
-                <div className="filter-buttons">
-                    {yearRange.map((year) => (
-                        <button
-                            key={year}
-                            className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
-                            onClick={() => toggleYearFilter(year)}
-                        >
-                            {year}
-                        </button>
-                    ))}
-                </div>
-            </div>
-            <div className='scroll-list'>
+            <div className="player-list">
                 <ul>
                     {filteredPlayers.length === 0 ? (
-                        <li className="empty-list">No players left</li>
+                        <li className="empty-list">No players match filters</li>
                     ) : (
                         filteredPlayers.map((player, index) => (
                             <li key={index} className="player-entry">
@@ -98,7 +100,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ playerPool, addPlayerToNextOpen
                     )}
                 </ul>
             </div>
-        </div>
+        </>
     );
 };
 

@@ -4,46 +4,34 @@
     gap: 0px;
     align-items: flex-start;
     background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    flex-direction: column;
 
-    .player-list {
-        width: 320px;
-        min-width: 320px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        flex-shrink: 0;
+    .filter-toolbar {
+        width: 100%;
         background: rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
-        padding: 0;
-        height: 100vh;
-        max-height: 100vh;
-        user-select: none;
+        padding: 16px 24px;
         display: flex;
-        flex-direction: column;
+        gap: 32px;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-        .filters {
-            padding: 20px 20px 16px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.2);
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
 
-            &:first-child {
-                .filter-label {
-                    font-size: 0.75rem;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    color: rgba(255, 255, 255, 0.5);
-                    margin-bottom: 10px;
-                    display: block;
-                    font-weight: 600;
-                }
-            }
-
-            &:last-of-type {
-                margin-bottom: 0;
+            .filter-label {
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: rgba(255, 255, 255, 0.6);
+                font-weight: 600;
+                white-space: nowrap;
             }
 
             .filter-buttons {
                 display: flex;
-                flex-wrap: wrap;
                 gap: 8px;
             }
 
@@ -51,13 +39,12 @@
                 background: rgba(255, 255, 255, 0.08);
                 color: rgba(255, 255, 255, 0.7);
                 border: 2px solid rgba(255, 255, 255, 0.1);
-                padding: 8px 16px;
-                border-radius: 8px;
+                padding: 6px 14px;
+                border-radius: 6px;
                 cursor: pointer;
-                font-size: 0.9em;
+                font-size: 0.85em;
                 font-weight: 600;
                 transition: all 0.2s;
-                flex: 0 0 auto;
 
                 &:hover {
                     background: rgba(255, 255, 255, 0.12);
@@ -73,31 +60,43 @@
                 }
             }
         }
+    }
 
-        .scroll-list {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 12px 20px 20px 20px;
+    .board-content-wrapper {
+        display: flex;
+        flex: 1;
+        width: 100%;
+        overflow: hidden;
+    }
 
-            /* Custom scrollbar */
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
+    .player-list {
+        width: 280px;
+        min-width: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex-shrink: 0;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 16px;
+        height: calc(100vh - 65px);
+        user-select: none;
 
-            &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 10px;
-                margin: 4px 0;
-            }
+        /* Custom scrollbar */
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
 
-            &::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.2);
-                border-radius: 10px;
-                
-                &:hover {
-                    background: rgba(255, 255, 255, 0.3);
-                }
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.3);
             }
         }
 
@@ -111,17 +110,16 @@
             display: grid;
             grid-template-columns: auto 1fr auto;
             align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            margin: 6px 0;
+            gap: 10px;
+            padding: 10px 12px;
+            margin: 4px 0;
             background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            font-size: 0.95em;
+            border-radius: 8px;
+            font-size: 0.9em;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             border: 2px solid transparent;
-            min-height: 52px;
 
             &:hover {
                 background: rgba(255, 255, 255, 0.12);
@@ -133,8 +131,8 @@
                 font-weight: 700;
                 text-transform: uppercase;
                 color: #4CAF50;
-                font-size: 0.85em;
-                min-width: 32px;
+                font-size: 0.8em;
+                min-width: 28px;
             }
 
             .player-name {
@@ -144,9 +142,9 @@
                 white-space: nowrap;
                 
                 .player-adp {
-                    font-size: 0.8em;
+                    font-size: 0.75em;
                     color: rgba(255, 255, 255, 0.5);
-                    margin-left: 8px;
+                    margin-left: 6px;
                     font-weight: 600;
                 }
             }
@@ -155,22 +153,22 @@
                 background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
                 border: none;
                 color: white;
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: bold;
-                width: 28px;
-                height: 28px;
-                min-width: 28px;
+                width: 26px;
+                height: 26px;
+                min-width: 26px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+                box-shadow: 0 2px 6px rgba(76, 175, 80, 0.4);
 
                 &:hover {
                     transform: scale(1.1);
-                    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.5);
+                    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.5);
                 }
             }
         }
@@ -178,8 +176,9 @@
         .empty-list {
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
-            padding: 2rem;
+            padding: 2rem 1rem;
             font-style: italic;
+            font-size: 0.9em;
         }
     }
 

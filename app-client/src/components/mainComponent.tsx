@@ -296,13 +296,15 @@ const MainComponent: React.FC = () => {
                         playerListOpen={playerListOpen}
                     />
 
-                    <BigBoard
-                        rounds={rounds}
-                        teams={teams}
-                        players={players}
-                        removeDraftedPlayer={removeDraftedPlayer}
-                        tierBreaks={tierBreaks}
-                    />
+                    <div className="board-content-wrapper">
+                        <BigBoard
+                            rounds={rounds}
+                            teams={teams}
+                            players={players}
+                            removeDraftedPlayer={removeDraftedPlayer}
+                            tierBreaks={tierBreaks}
+                        />
+                    </div>
                 </div>
             )}
         </div>
