@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Player } from './bigBoard';
 
 interface DraftSpotProps {
@@ -18,6 +18,19 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
     isTierBreak = false,
     onRightClick
 }) => {
+    const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    useEffect(() => {
+        // Fetch list of players with headshots once
+        fetch('/api/players/manage/headshots/available')
+            .then(res => res.json())
+            .then((playerIds: number[]) => {
+                setPlayersWithHeadshots(new Set(playerIds));
+            })
+            .catch(err => console.error('Failed to fetch headshot info:', err));
+    }, []);
+
     const getPositionIcon = (position: string) => {
         switch (position) {
             case 'QB': return '🏈';
@@ -27,6 +40,8 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
             default: return '👤';
         }
     };
+
+    const hasHeadshot = player?.id && playersWithHeadshots.has(player.id);
 
     return (
         <div
@@ -41,7 +56,23 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
                 <>
                     <div className="slot">{`${row}.${col}`}</div>
                     <div className="player-avatar">
-                        <span className="avatar-icon">{getPositionIcon(player.position)}</span>
+                        {hasHeadshot ? (
+                            <>
+                                <img 
+                                    src={`/api/players/manage/${player.id}/headshot`}
+                                    alt={player.name}
+                                    className="avatar-image"
+                                    style={{ display: imageLoaded ? 'block' : 'none' }}
+                                    onLoad={() => setImageLoaded(true)}
+                                    onError={() => setImageLoaded(false)}
+                                />
+                                {!imageLoaded && (
+                                    <span className="avatar-icon">{getPositionIcon(player.position)}</span>
+                                )}
+                            </>
+                        ) : (
+                            <span className="avatar-icon">{getPositionIcon(player.position)}</span>
+                        )}
                     </div>
                     <div className="player-info">
                         <div className="player-name">{player.name}</div>
