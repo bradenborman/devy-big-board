@@ -25,7 +25,6 @@ public class PlayerDao {
                    FROM draft_picks dp
                    JOIN drafts d ON d.id = dp.draft_id
                    WHERE dp.player_id = p.id
-                     AND d.type = 'offline'
                ), 999) AS adp
         FROM players p
         WHERE p.verified = true
@@ -52,7 +51,6 @@ public class PlayerDao {
                    FROM draft_picks dp
                    JOIN drafts d ON d.id = dp.draft_id
                    WHERE dp.player_id = p.id
-                     AND d.type = 'offline'
                ), 999) AS adp
         FROM players p
         WHERE p.verified = true
