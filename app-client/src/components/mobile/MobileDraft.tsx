@@ -52,16 +52,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const handleDraftPlayer = (player: Player) => {
         onDraftPlayer(player, currentRound, currentPick);
         setShowPlayerSheet(false);
-        advanceToNextPick();
-    };
-
-    const advanceToNextPick = () => {
-        if (currentPick < teams) {
-            setCurrentPick(currentPick + 1);
-        } else if (currentRound < rounds) {
-            setCurrentRound(currentRound + 1);
-            setCurrentPick(1);
-        }
+        // Don't auto-advance - let user see their pick and manually advance
     };
 
     const goToPreviousPick = () => {
@@ -82,6 +73,25 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         }
     };
 
+    const getPreviousPickPlayer = () => {
+        // Get the player from the previous pick
+        if (currentPick > 1) {
+            return players[currentRound - 1]?.[currentPick - 2];
+        } else if (currentRound > 1) {
+            return players[currentRound - 2]?.[teams - 1];
+        }
+        return null;
+    };
+
+    const getPreviousPickLabel = () => {
+        if (currentPick > 1) {
+            return `${currentRound}.${currentPick - 1}`;
+        } else if (currentRound > 1) {
+            return `${currentRound - 1}.${teams}`;
+        }
+        return null;
+    };
+
     const filteredPlayers = playerPool.filter(player => {
         const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
@@ -89,6 +99,8 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     });
 
     const currentPlayer = getCurrentPickPlayer();
+    const previousPlayer = getPreviousPickPlayer();
+    const previousPickLabel = getPreviousPickLabel();
     const totalPicks = teams * rounds;
     const currentPickNumber = getPickNumber(currentRound, currentPick);
     const progress = (currentPickNumber / totalPicks) * 100;
@@ -126,6 +138,37 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
 
             {/* Current Pick Card */}
             <div className="current-pick-section">
+                {/* Last Picked Section */}
+                {previousPlayer && previousPickLabel && (
+                    <div className="last-picked-section">
+                        <div className="last-picked-label">Last Picked: {previousPickLabel}</div>
+                        <div className="last-picked-card">
+                            <div className="player-avatar-small">
+                                {playersWithHeadshots.has(previousPlayer.id!) ? (
+                                    <img 
+                                        src={`/api/players/manage/${previousPlayer.id}/headshot`}
+                                        alt={previousPlayer.name}
+                                        className="avatar-image"
+                                    />
+                                ) : (
+                                    <span className="avatar-icon-small">🏈</span>
+                                )}
+                            </div>
+                            <div className="last-picked-info">
+                                <div className="player-name-small">{previousPlayer.name}</div>
+                                <div className="player-meta-small">
+                                    <span className={`position-badge-small ${previousPlayer.position}`}>
+                                        {previousPlayer.position}
+                                    </span>
+                                    {previousPlayer.team && (
+                                        <span className="team-name-small">{previousPlayer.team}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="pick-label">Current Pick: {currentRound}.{currentPick}</div>
                 
                 {currentPlayer ? (
