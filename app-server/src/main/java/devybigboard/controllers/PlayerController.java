@@ -59,15 +59,21 @@ public class PlayerController {
                 if (verificationService.isValidCode(playerDTO.getVerificationCode())) {
                     Player player = playerService.createPlayer(playerDTO);
                     player = playerService.verifyPlayer(player.getId());
+                    Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
                     return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new PlayerResponse(player));
+                        .body(asset.isPresent() 
+                            ? new PlayerResponse(player, asset.get().getImageUrl())
+                            : new PlayerResponse(player));
                 }
             }
             
             // Otherwise create as pending
             Player player = playerService.createPlayer(playerDTO);
+            Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new PlayerResponse(player));
+                .body(asset.isPresent() 
+                    ? new PlayerResponse(player, asset.get().getImageUrl())
+                    : new PlayerResponse(player));
         } catch (ValidationException e) {
             throw e; // Will be handled by global exception handler
         }
@@ -141,7 +147,12 @@ public class PlayerController {
     public ResponseEntity<List<PlayerResponse>> getAllPlayers() {
         List<Player> players = playerService.getAllPlayers();
         List<PlayerResponse> response = players.stream()
-            .map(PlayerResponse::new)
+            .map(player -> {
+                Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(player.getId());
+                return asset.isPresent() 
+                    ? new PlayerResponse(player, asset.get().getImageUrl())
+                    : new PlayerResponse(player);
+            })
             .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
@@ -170,7 +181,12 @@ public class PlayerController {
             }
             
             Player player = playerService.updatePlayer(id, playerDTO);
-            return ResponseEntity.ok(new PlayerResponse(player));
+            Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(id);
+            return ResponseEntity.ok(
+                asset.isPresent() 
+                    ? new PlayerResponse(player, asset.get().getImageUrl())
+                    : new PlayerResponse(player)
+            );
         } catch (UnauthorizedException | PlayerNotFoundException e) {
             throw e; // Will be handled by global exception handler
         }

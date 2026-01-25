@@ -107,6 +107,8 @@ const PlayerManagementPage: React.FC = () => {
                 setPlayers(players.map(p => p.id === updated.id ? updated : p));
                 setEditingPlayer(null);
                 showToast('Player updated successfully', 'success');
+                // Refresh to get latest image
+                setTimeout(() => fetchPlayers(), 500);
             } else if (response.status === 403) {
                 showToast('Invalid verification code', 'error');
             } else {

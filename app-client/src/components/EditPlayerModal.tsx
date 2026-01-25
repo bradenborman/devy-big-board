@@ -110,7 +110,7 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
 
         try {
             // Update player data first
-            onSubmit(updatedPlayer, verificationCode);
+            await onSubmit(updatedPlayer, verificationCode);
 
             // If there's a new cropped image, upload it
             if (croppedImageBlob && player.id) {
