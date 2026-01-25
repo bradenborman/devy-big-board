@@ -146,19 +146,52 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                 </div>
             </div>
 
-            {/* Current Pick Card */}
-            <div 
-                className="current-pick-section"
-                onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
-                onTouchEnd={onTouchEnd}
-            >
-                {/* Swipe indicator */}
-                <div className="swipe-indicator">
-                    <span className="swipe-hint">← Swipe to navigate →</span>
+            {/* Draft History Carousel - Previous Picks */}
+            {currentPickNumber > 1 && (
+                <div 
+                    className="draft-history-carousel"
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                >
+                    <div className="carousel-label">Previous Picks</div>
+                    <div className="carousel-track">
+                        {Array.from({ length: currentPickNumber - 1 }).reverse().slice(0, 5).map((_, index) => {
+                            const pickNum = currentPickNumber - 1 - index;
+                            const round = Math.floor((pickNum - 1) / teams) + 1;
+                            const pick = ((pickNum - 1) % teams) + 1;
+                            const player = players[round - 1]?.[pick - 1];
+                            
+                            if (!player) return null;
+                            
+                            return (
+                                <div key={pickNum} className="carousel-card">
+                                    <div className="carousel-pick-label">{round}.{pick}</div>
+                                    <div className="carousel-avatar">
+                                        {playersWithHeadshots.has(player.id!) ? (
+                                            <img 
+                                                src={`/api/players/manage/${player.id}/headshot`}
+                                                alt={player.name}
+                                                className="avatar-image"
+                                            />
+                                        ) : (
+                                            <span className="avatar-icon-small">🏈</span>
+                                        )}
+                                    </div>
+                                    <div className="carousel-player-name">{player.name}</div>
+                                    <span className={`carousel-position-badge ${player.position}`}>
+                                        {player.position}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
+            )}
 
-                <div className="pick-label">Pick: {currentRound}.{currentPick}</div>
+            {/* Current Pick - Always Visible */}
+            <div className="current-pick-container">
+                <div className="current-pick-label">Current Pick: {currentRound}.{currentPick}</div>
                 
                 {currentPlayer ? (
                     <div className="drafted-player-card">
@@ -206,34 +239,22 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                 )}
             </div>
 
-            {/* Navigation Dots */}
-            <div className="navigation-dots">
-                <button 
-                    className="nav-arrow"
-                    onClick={goToPreviousPick}
-                    disabled={currentRound === 1 && currentPick === 1}
-                >
-                    ‹
-                </button>
-                <div className="dots-container">
-                    {Array.from({ length: Math.min(totalPicks, 10) }).map((_, index) => {
-                        const pickNum = currentPickNumber - 5 + index;
-                        if (pickNum < 1 || pickNum > totalPicks) return null;
+            {/* Upcoming Picks Preview */}
+            <div className="upcoming-picks">
+                <div className="upcoming-label">Up Next</div>
+                <div className="upcoming-track">
+                    {Array.from({ length: Math.min(3, totalPicks - currentPickNumber) }).map((_, index) => {
+                        const pickNum = currentPickNumber + 1 + index;
+                        const round = Math.floor((pickNum - 1) / teams) + 1;
+                        const pick = ((pickNum - 1) % teams) + 1;
+                        
                         return (
-                            <div
-                                key={pickNum}
-                                className={`dot ${pickNum === currentPickNumber ? 'active' : ''} ${players[Math.floor((pickNum - 1) / teams)]?.[((pickNum - 1) % teams)] ? 'filled' : ''}`}
-                            />
+                            <div key={pickNum} className="upcoming-card">
+                                <div className="upcoming-pick-number">{round}.{pick}</div>
+                            </div>
                         );
                     })}
                 </div>
-                <button 
-                    className="nav-arrow"
-                    onClick={goToNextPick}
-                    disabled={currentRound === rounds && currentPick === teams}
-                >
-                    ›
-                </button>
             </div>
 
             {/* Draft Button - only show if current pick is empty */}
