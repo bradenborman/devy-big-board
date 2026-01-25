@@ -107,8 +107,7 @@
         }
 
         .player-entry {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
+            display: flex;
             align-items: center;
             gap: 10px;
             padding: 10px 12px;
@@ -140,35 +139,13 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                flex: 1;
                 
                 .player-adp {
                     font-size: 0.75em;
                     color: rgba(255, 255, 255, 0.5);
                     margin-left: 6px;
                     font-weight: 600;
-                }
-            }
-
-            .add-btn {
-                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-                border: none;
-                color: white;
-                font-size: 14px;
-                font-weight: bold;
-                width: 26px;
-                height: 26px;
-                min-width: 26px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                box-shadow: 0 2px 6px rgba(76, 175, 80, 0.4);
-
-                &:hover {
-                    transform: scale(1.1);
-                    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.5);
                 }
             }
         }

@@ -88,13 +88,10 @@ const PlayerList: React.FC<PlayerListProps> = ({ playerPool, addPlayerToNextOpen
                         <li className="empty-list">No players match filters</li>
                     ) : (
                         filteredPlayers.map((player, index) => (
-                            <li key={index} className="player-entry">
+                            <li key={index} className="player-entry" onClick={() => addPlayerToNextOpenSpot(player)}>
                                 <span className="player-position">{player.position}</span>
                                 <span className="player-name"> {player.name}<span className="player-adp">{player.adp.toFixed(1)}</span>
                                 </span>
-                                <button className="add-btn" onClick={() => addPlayerToNextOpenSpot(player)}>
-                                    +
-                                </button>
                             </li>
                         ))
                     )}
