@@ -248,19 +248,16 @@
             }
 
             .player-cards-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                display: grid !important;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
                 gap: 1.5rem;
-                
-                // Force grid layout on desktop
-                @media (min-width: 769px) {
-                    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                }
-                
-                // Single column on mobile
-                @media (max-width: 768px) {
-                    grid-template-columns: 1fr;
-                    gap: 1rem;
+                width: 100%;
+            }
+            
+            // Mobile override
+            @media (max-width: 768px) {
+                .player-cards-grid {
+                    grid-template-columns: 1fr !important;
                 }
             }
 
