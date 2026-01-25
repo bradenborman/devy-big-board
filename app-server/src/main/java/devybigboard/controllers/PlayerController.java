@@ -195,6 +195,9 @@ public class PlayerController {
             
             return ResponseEntity.ok()
                     .contentType(org.springframework.http.MediaType.IMAGE_JPEG)
+                    .cacheControl(org.springframework.http.CacheControl.maxAge(7, java.util.concurrent.TimeUnit.DAYS)
+                            .cachePublic())
+                    .eTag(filename) // Use filename as ETag for cache validation
                     .body(imageBytes);
         } catch (Exception e) {
             System.err.println("[PlayerController] Error fetching headshot for player ID " + id + ": " + e.getMessage());
