@@ -42,3 +42,14 @@ CREATE TABLE IF NOT EXISTS draft_picks (
     FOREIGN KEY (draft_id) REFERENCES drafts(id) ON DELETE CASCADE,
     FOREIGN KEY (player_id) REFERENCES players(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Player assets table (for headshots)
+CREATE TABLE IF NOT EXISTS player_assets (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    player_id BIGINT NOT NULL,
+    image_url VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_player_asset (player_id),
+    FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
