@@ -260,6 +260,7 @@
         height: 100%;
         max-width: 100%;
         background: transparent;
+        overflow-x: auto; // Allow horizontal scroll as fallback
 
         .menu {
             width: 100%;
@@ -299,10 +300,20 @@
             max-height: 100vh;
             overflow: auto;
             display: grid;
-            grid-template-columns: repeat(var(--teams), minmax(100px, 1fr));
+            grid-template-columns: repeat(var(--teams), minmax(0, 1fr));
             grid-template-rows: repeat(var(--rounds), minmax(100px, 160px));
             gap: 20px 12px;
             background: transparent;
+            width: 100%;
+
+            // Reduce gap for larger team counts
+            @media (min-width: 1024px) {
+                &[style*="--teams: 14"],
+                &[style*="--teams: 16"] {
+                    gap: 16px 8px;
+                    padding: 24px 16px;
+                }
+            }
 
             .grid-row {
                 display: contents;
@@ -326,6 +337,7 @@
         justify-content: center;
         gap: 8px;
         min-height: 140px;
+        min-width: 0; // Allow cards to shrink below content size
 
         &:hover {
             transform: translateY(-2px);
