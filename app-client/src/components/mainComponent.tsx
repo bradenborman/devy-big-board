@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import html2canvas from 'html2canvas';
 
 import BigBoard, { Player } from './draft/BigBoard';
 import MobileDraft from './mobile/MobileDraft';
@@ -250,46 +251,37 @@ const MainComponent: React.FC = () => {
         setTierBreaks([]); // Clear tier breaks when clearing the board
     };
 
-    const exportDraft = () => {
-        let draftText = "<h2>Rookie Fantasy Football Draft Order:</h2><ul>";
+    const exportDraft = async () => {
+        const boardElement = document.querySelector('.big-board-wrapper');
+        if (!boardElement) {
+            alert('Draft board not found');
+            return;
+        }
 
-        players.forEach((row, rIndex) => {
-            if (rIndex > 0) {
-                draftText += "<br>";
-            }
-            row.forEach((player, cIndex) => {
-                const round = rIndex + 1;
-                const pick = cIndex + 1;
-                draftText += `<li>${round}.${pick.toString().padStart(2, '0')} ${player ? player.name : '---'}</li>`;
+        try {
+            // Create canvas from the board
+            const canvas = await html2canvas(boardElement as HTMLElement, {
+                backgroundColor: '#0f2027',
+                scale: 2, // Higher quality
+                logging: false,
+                useCORS: true,
+                allowTaint: true
             });
-        });
 
-        draftText += "</ul>";
-
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Draft Order</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        h2 { text-align: center; margin-top:0px;}
-                        ul { list-style-type: none; padding: 0; }
-                        li { font-size: 18px; margin: 5px 0; }
-                        @media print {
-                            @page { margin: 0; }
-                            body { margin: 1in; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${draftText}
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
+            // Convert to blob and download
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = `draft-board-${teams}team-${rounds}rounds.png`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }
+            }, 'image/png');
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Failed to export draft board');
         }
     };
 
@@ -297,8 +289,7 @@ const MainComponent: React.FC = () => {
     const isDraftComplete = players.length > 0 && players.every(row => row.every(cell => cell !== null));
 
     const handleExportDraft = () => {
-        // Placeholder for future export functionality
-        console.log('Export draft clicked');
+        exportDraft();
     };
 
     return (

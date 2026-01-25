@@ -1,8 +1,13 @@
 .player-management-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
     .management-content {
         max-width: 1400px;
         margin: 2rem auto;
-        padding: 0 2rem;
+        padding: 0 2rem 4rem 2rem;
+        flex: 1;
     }
 
     .header-section {
@@ -442,6 +447,36 @@
         button {
             &:not(.cancel) {
                 background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            }
+        }
+    }
+}
+
+// Mobile styles
+@media (max-width: 768px) {
+    .player-management-page {
+        .management-content {
+            margin: 1rem auto;
+            padding: 0 1rem 6rem 1rem;
+        }
+
+        .header-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        .cards-view {
+            .position-section {
+                .player-cards-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1rem;
+                }
             }
         }
     }
