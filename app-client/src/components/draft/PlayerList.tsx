@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player } from './bigBoard';
+import { Player } from './BigBoard';
 
 interface PlayerListProps {
     playerPool: Player[];

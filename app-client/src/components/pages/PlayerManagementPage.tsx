@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AddPlayerModal from './AddPlayerModal';
-import EditPlayerModal from './EditPlayerModal';
-import { Player } from './bigBoard';
-import Toast from './Toast';
+import AddPlayerModal from '../modals/AddPlayerModal';
+import EditPlayerModal from '../modals/EditPlayerModal';
+import { Player } from '../draft/BigBoard';
+import Toast from '../shared/Toast';
 import './stub-page.scss';
 import './playerManagement.scss';
 

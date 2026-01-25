@@ -1,16 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { Player } from './bigBoard';
+import { Player } from '../draft/BigBoard';
 import './addPlayerModal.scss';
 
-interface AddPlayerModalProps {
-    visible: boolean;
-    onClose: () => void;
-    onSubmit: (player: Player, verificationCode?: string) => void;
+interface PlayerWithId extends Player {
+    id?: number;
+    verified?: boolean;
+    imageUrl?: string;
 }
 
-const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSubmit }) => {
+interface EditPlayerModalProps {
+    visible: boolean;
+    player: PlayerWithId | null;
+    onClose: () => void;
+    onSubmit: (player: PlayerWithId, verificationCode: string) => void;
+}
+
+const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onClose, onSubmit }) => {
     const [name, setName] = useState('');
     const [position, setPosition] = useState('');
     const [team, setTeam] = useState('');
@@ -20,6 +27,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
     const [draftyear, setDraftyear] = useState<number>(currentYear);
     
     // Image upload states
+    const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [crop, setCrop] = useState<Crop>({
         unit: '%',
@@ -32,6 +40,17 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
     const imgRef = useRef<HTMLImageElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null);
+
+    useEffect(() => {
+        if (player) {
+            setName(player.name);
+            setPosition(player.position);
+            setTeam(player.team || '');
+            setCollege(player.college || '');
+            setDraftyear(player.draftyear || currentYear);
+            setCurrentImageUrl(player.imageUrl || null);
+        }
+    }, [player]);
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -78,61 +97,40 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
     };
 
     const handleSubmit = async () => {
-        if (!name || !position) return;
+        if (!name || !position || !verificationCode || !player?.id) return;
 
-        const newPlayer: Player = {
+        const updatedPlayer: PlayerWithId = {
+            ...player,
             name,
             position,
             team,
             college,
-            draftyear,
-            adp: -1
+            draftyear
         };
 
         try {
-            const response = await fetch('/api/players/manage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...newPlayer,
-                    verificationCode: verificationCode || undefined
-                })
-            });
+            // Update player data first
+            await onSubmit(updatedPlayer, verificationCode);
 
-            if (!response.ok) {
-                throw new Error('Failed to create player');
-            }
-
-            const createdPlayer = await response.json();
-
-            if (croppedImageBlob && createdPlayer.id) {
+            // If there's a new cropped image, upload it
+            if (croppedImageBlob && player.id) {
                 const formData = new FormData();
                 formData.append('file', croppedImageBlob, 'headshot.jpg');
 
-                await fetch(`/api/players/manage/${createdPlayer.id}/headshot`, {
+                await fetch(`/api/players/manage/${player.id}/headshot`, {
                     method: 'POST',
                     body: formData
                 });
             }
 
-            onSubmit(newPlayer, verificationCode || undefined);
             resetForm();
-            onClose();
         } catch (error) {
-            console.error('Error creating player:', error);
-            alert('Failed to create player. Please try again.');
+            console.error('Error updating player:', error);
         }
     };
 
     const resetForm = () => {
-        setName('');
-        setPosition('');
-        setTeam('');
-        setCollege('');
         setVerificationCode('');
-        setDraftyear(currentYear);
         setSelectedImage(null);
         setCroppedImageBlob(null);
         setCompletedCrop(null);
@@ -144,19 +142,25 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
         setCroppedImageBlob(blob);
     };
 
-    if (!visible) return null;
+    const handleClose = () => {
+        resetForm();
+        onClose();
+    };
+
+    if (!visible || !player) return null;
 
     const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear + i);
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" onClick={handleClose}>
             <div className="modal-content add-player-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Add New Player</h2>
-                    <button className="close-btn" onClick={onClose}>×</button>
+                    <h2>Edit Player</h2>
+                    <button className="close-btn" onClick={handleClose}>×</button>
                 </div>
 
                 <div className="modal-body">
+                    {/* Image Upload Section */}
                     <div className="form-group image-upload-section">
                         <label>Player Headshot</label>
                         <input
@@ -172,13 +176,36 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                                 className="image-upload-placeholder"
                                 onClick={() => fileInputRef.current?.click()}
                             >
-                                <div className="upload-icon">📷</div>
-                                <p>Click to upload headshot</p>
-                                <small>Recommended: Square image, min 200x200px</small>
-                                {croppedImageBlob && (
-                                    <div style={{ marginTop: '1rem', color: '#4CAF50' }}>
-                                        ✓ Image ready to upload
-                                    </div>
+                                {currentImageUrl ? (
+                                    <>
+                                        <img 
+                                            src={currentImageUrl} 
+                                            alt={name}
+                                            style={{ 
+                                                maxWidth: '200px', 
+                                                maxHeight: '200px',
+                                                borderRadius: '8px',
+                                                marginBottom: '1rem'
+                                            }}
+                                        />
+                                        <p>Click to change headshot</p>
+                                        {croppedImageBlob && (
+                                            <div style={{ marginTop: '0.5rem', color: '#4CAF50' }}>
+                                                ✓ New image ready to upload
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="upload-icon">📷</div>
+                                        <p>Click to upload headshot</p>
+                                        <small>Recommended: Square image, min 200x200px</small>
+                                        {croppedImageBlob && (
+                                            <div style={{ marginTop: '1rem', color: '#4CAF50' }}>
+                                                ✓ Image ready to upload
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         ) : (
@@ -211,10 +238,13 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                                     </button>
                                     <button 
                                         type="button"
-                                        className="btn-change-image"
-                                        onClick={() => fileInputRef.current?.click()}
+                                        className="btn-cancel-crop"
+                                        onClick={() => {
+                                            setSelectedImage(null);
+                                            setCroppedImageBlob(null);
+                                        }}
                                     >
-                                        Change Image
+                                        Cancel
                                     </button>
                                 </div>
                             </div>
@@ -271,23 +301,27 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                     </div>
 
                     <div className="form-group verification-group">
-                        <label>Admin Verification Code</label>
+                        <label>Admin Verification Code *</label>
                         <input 
                             type="password"
-                            placeholder="Optional - leave blank for pending status" 
+                            placeholder="Required to update player" 
                             value={verificationCode} 
                             onChange={(e) => setVerificationCode(e.target.value)} 
                         />
                         <small className="help-text">
-                            💡 Only admins have this code. Players without it will be marked as pending.
+                            🔒 Verification code is required to save changes
                         </small>
                     </div>
                 </div>
 
                 <div className="modal-footer">
-                    <button className="btn-cancel" onClick={onClose}>Cancel</button>
-                    <button className="btn-submit" onClick={handleSubmit} disabled={!name || !position}>
-                        Add Player
+                    <button className="btn-cancel" onClick={handleClose}>Cancel</button>
+                    <button 
+                        className="btn-submit" 
+                        onClick={handleSubmit} 
+                        disabled={!name || !position || !verificationCode}
+                    >
+                        Update Player
                     </button>
                 </div>
             </div>
@@ -295,4 +329,4 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
     );
 };
 
-export default AddPlayerModal;
+export default EditPlayerModal;

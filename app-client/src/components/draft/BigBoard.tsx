@@ -1,5 +1,5 @@
 import React from 'react';
-import DraftSpot from './draftSpot';
+import DraftSpot from './DraftSpot';
 
 
 export interface Player {

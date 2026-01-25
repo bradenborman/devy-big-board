@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Player } from './bigBoard';
+import { Player } from './BigBoard';
 
 interface DraftSpotProps {
     player: Player | null;

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import BigBoard, { Player } from './bigBoard';
-import MobileDraft from './MobileDraft';
-import PlayerList from './playerList';
-import BoardParameters from './boardParametes';
-import BubbleMenu from './BubbleMenu';
+import BigBoard, { Player } from './draft/BigBoard';
+import MobileDraft from './mobile/MobileDraft';
+import PlayerList from './draft/PlayerList';
+import BoardParameters from './draft/BoardParameters';
+import BubbleMenu from './shared/BubbleMenu';
 
 import './maincomponent.scss';
 

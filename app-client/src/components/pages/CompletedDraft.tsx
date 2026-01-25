@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CompletedDraftResponse, DraftPick } from '../models/CompletedDraftResponse';
+import { CompletedDraftResponse, DraftPick } from '../../models/CompletedDraftResponse';
 
 import './completedDraft.scss';
 

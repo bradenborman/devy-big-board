@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Player } from './bigBoard';
+import { Player } from '../draft/BigBoard';
 import './mobileDraft.scss';
 
 interface MobileDraftProps {
