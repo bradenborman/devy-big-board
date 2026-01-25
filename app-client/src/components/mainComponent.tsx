@@ -4,8 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import BigBoard, { Player } from './bigBoard';
 import PlayerList from './playerList';
 import BoardParameters from './boardParametes';
-import ContextMenu from './ContextMenu';
-import AddPlayerModal from './AddPlayerModal';
 import BubbleMenu from './BubbleMenu';
 
 import './maincomponent.scss';
@@ -36,10 +34,6 @@ const MainComponent: React.FC = () => {
 
     const [playerPool, setPlayerPool] = useState<Player[]>([]);
     const [tierBreaks, setTierBreaks] = useState<{ row: number; col: number }[]>([]);
-
-    const [menuVisible, setMenuVisible] = useState(false);
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-    const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
 
     const currentYear = new Date().getFullYear();
     const yearRange = Array.from({ length: 4 }, (_, i) => currentYear + i);
@@ -96,14 +90,6 @@ const MainComponent: React.FC = () => {
         setPlayers([]);
         setIsGridCreated(false);
         setTierBreaks([]);
-        setMenuVisible(false);
-        setShowAddPlayerModal(false);
-    };
-
-    const handleContextMenu = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setMenuPosition({ x: e.pageX, y: e.pageY });
-        setMenuVisible(true);
     };
 
     const addTierBreakAfterLastPick = () => {
@@ -123,10 +109,6 @@ const MainComponent: React.FC = () => {
 
     const removeLastTierBreak = () => {
         setTierBreaks((prev) => prev.slice(0, -1));
-    };
-
-    const addNewPlayer = (player: Player) => {
-        setPlayerPool((prev) => [player, ...prev]);
     };
 
     const loadPlayerPool = () => {
@@ -271,51 +253,18 @@ const MainComponent: React.FC = () => {
                     createGrid={createGrid}
                 />
             ) : (
-                <div className="board-container" onContextMenu={handleContextMenu}>
-                    <ContextMenu
-                        visible={menuVisible}
-                        position={menuPosition}
-                        onClose={() => setMenuVisible(false)}
-                        onAddTierBreak={addTierBreakAfterLastPick}
-                        onRemoveLastTierBreak={removeLastTierBreak}
-                        onResetDraft={resetDraft}
-                        onClearBoard={() => {
-                            clearBoard();
-                            setMenuVisible(false);
-                        }}
-                        onExportDraft={() => {
-                            exportDraft();
-                            setMenuVisible(false);
-                        }}
-                        onLastPlayerRemove={() => {
-                            removeLastPick();
-                            setMenuVisible(false);
-                        }}
-                        onAddPlayerClick={() => {
-                            setMenuVisible(false);
-                            setShowAddPlayerModal(true);
-                        }}
-                        isBoardPopulated={isBoardPopulated}
-                    />
+                <div className="board-container">
                     <BubbleMenu
                         onClearBoard={clearBoard}
                         onExportDraft={exportDraft}
                         onLastPlayerRemove={removeLastPick}
-                        onAddPlayerClick={() => {
-                            setShowAddPlayerModal(true);
-                        }}
+                        onAddPlayerClick={() => {}}
                         onAddTierBreak={addTierBreakAfterLastPick}
                         onRemoveLastTierBreak={removeLastTierBreak}
                         onResetDraft={resetDraft}
                         isBoardPopulated={isBoardPopulated}
                         playerListOpen={playerListOpen}
                         setPlayerListOpen={setPlayerListOpen}
-                    />
-
-                    <AddPlayerModal
-                        visible={showAddPlayerModal}
-                        onClose={() => setShowAddPlayerModal(false)}
-                        onSubmit={addNewPlayer}
                     />
                     
                     {playerListOpen && (
@@ -352,6 +301,42 @@ const MainComponent: React.FC = () => {
                                             {year}
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+                            <div className="helper-section">
+                                <button 
+                                    className="helper-btn" 
+                                    onClick={clearBoard}
+                                    disabled={!isBoardPopulated}
+                                    title="Clear Board"
+                                >
+                                    ❌
+                                </button>
+                                <button 
+                                    className="helper-btn" 
+                                    onClick={removeLastPick}
+                                    disabled={!isBoardPopulated}
+                                    title="Undo Last Pick"
+                                >
+                                    ↩️
+                                </button>
+                                <div className="tier-break-group">
+                                    <span className="helper-label">Tier Break:</span>
+                                    <button 
+                                        className="helper-btn" 
+                                        onClick={addTierBreakAfterLastPick}
+                                        disabled={!isBoardPopulated}
+                                        title="Add Tier Break"
+                                    >
+                                        ➕
+                                    </button>
+                                    <button 
+                                        className="helper-btn" 
+                                        onClick={removeLastTierBreak}
+                                        title="Remove Last Tier Break"
+                                    >
+                                        ➖
+                                    </button>
                                 </div>
                             </div>
                             <div className="actions-section">
