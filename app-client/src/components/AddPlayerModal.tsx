@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 import { Player } from './bigBoard';
 import './addPlayerModal.scss';
 
@@ -16,31 +18,134 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
     const [verificationCode, setVerificationCode] = useState('');
     const currentYear = new Date().getFullYear();
     const [draftyear, setDraftyear] = useState<number>(currentYear);
+    
+    // Image upload states
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [crop, setCrop] = useState<Crop>({
+        unit: '%',
+        width: 50,
+        height: 50,
+        x: 25,
+        y: 25
+    });
+    const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null);
 
-    const handleSubmit = () => {
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                setSelectedImage(reader.result?.toString() || null);
+            });
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    };
+
+    const getCroppedImg = async (): Promise<Blob | null> => {
+        if (!completedCrop || !imgRef.current) return null;
+
+        const image = imgRef.current;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) return null;
+
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
+
+        canvas.width = completedCrop.width;
+        canvas.height = completedCrop.height;
+
+        ctx.drawImage(
+            image,
+            completedCrop.x * scaleX,
+            completedCrop.y * scaleY,
+            completedCrop.width * scaleX,
+            completedCrop.height * scaleY,
+            0,
+            0,
+            completedCrop.width,
+            completedCrop.height
+        );
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, 'image/jpeg', 0.95);
+        });
+    };
+
+    const handleSubmit = async () => {
         if (!name || !position) return;
 
-        onSubmit({
+        const newPlayer: Player = {
             name,
             position,
             team,
             college,
             draftyear,
             adp: -1
-        }, verificationCode || undefined);
+        };
 
+        try {
+            const response = await fetch('/api/players/manage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...newPlayer,
+                    verificationCode: verificationCode || undefined
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create player');
+            }
+
+            const createdPlayer = await response.json();
+
+            if (croppedImageBlob && createdPlayer.id) {
+                const formData = new FormData();
+                formData.append('file', croppedImageBlob, 'headshot.jpg');
+
+                await fetch(`/api/players/manage/${createdPlayer.id}/headshot`, {
+                    method: 'POST',
+                    body: formData
+                });
+            }
+
+            onSubmit(newPlayer, verificationCode || undefined);
+            resetForm();
+            onClose();
+        } catch (error) {
+            console.error('Error creating player:', error);
+            alert('Failed to create player. Please try again.');
+        }
+    };
+
+    const resetForm = () => {
         setName('');
         setPosition('');
         setTeam('');
         setCollege('');
         setVerificationCode('');
         setDraftyear(currentYear);
-        onClose();
+        setSelectedImage(null);
+        setCroppedImageBlob(null);
+        setCompletedCrop(null);
+    };
+
+    const handleCropComplete = async (crop: PixelCrop) => {
+        setCompletedCrop(crop);
+        const blob = await getCroppedImg();
+        setCroppedImageBlob(blob);
     };
 
     if (!visible) return null;
 
-    // Generate year options (current year + next 5 years)
     const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear + i);
 
     return (
@@ -52,6 +157,51 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                 </div>
 
                 <div className="modal-body">
+                    <div className="form-group image-upload-section">
+                        <label>Player Headshot</label>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageSelect}
+                            style={{ display: 'none' }}
+                        />
+                        
+                        {!selectedImage ? (
+                            <div 
+                                className="image-upload-placeholder"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <div className="upload-icon">📷</div>
+                                <p>Click to upload headshot</p>
+                                <small>Recommended: Square image, min 200x200px</small>
+                            </div>
+                        ) : (
+                            <div className="image-crop-container">
+                                <ReactCrop
+                                    crop={crop}
+                                    onChange={(c) => setCrop(c)}
+                                    onComplete={handleCropComplete}
+                                    aspect={1}
+                                >
+                                    <img
+                                        ref={imgRef}
+                                        src={selectedImage}
+                                        alt="Crop preview"
+                                        style={{ maxWidth: '100%' }}
+                                    />
+                                </ReactCrop>
+                                <button 
+                                    type="button"
+                                    className="btn-change-image"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    Change Image
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     <div className="form-group">
                         <label>Player Name *</label>
                         <input 

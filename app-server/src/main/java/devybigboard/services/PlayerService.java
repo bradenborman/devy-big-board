@@ -129,6 +129,17 @@ public class PlayerService {
     }
     
     /**
+     * Save a player entity.
+     * 
+     * @param player the player to save
+     * @return the saved player entity
+     */
+    @Transactional
+    public Player savePlayer(Player player) {
+        return playerRepository.save(player);
+    }
+    
+    /**
      * Validate player data from DTO.
      * 
      * @param dto the player DTO to validate

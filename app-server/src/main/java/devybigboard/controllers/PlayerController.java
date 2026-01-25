@@ -6,13 +6,16 @@ import devybigboard.exceptions.ValidationException;
 import devybigboard.models.Player;
 import devybigboard.models.PlayerDTO;
 import devybigboard.models.PlayerResponse;
+import devybigboard.services.AssetService;
 import devybigboard.services.PlayerService;
 import devybigboard.services.VerificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +29,12 @@ public class PlayerController {
     
     private final PlayerService playerService;
     private final VerificationService verificationService;
+    private final AssetService assetService;
     
-    public PlayerController(PlayerService playerService, VerificationService verificationService) {
+    public PlayerController(PlayerService playerService, VerificationService verificationService, AssetService assetService) {
         this.playerService = playerService;
         this.verificationService = verificationService;
+        this.assetService = assetService;
     }
     
     /**
@@ -59,6 +64,54 @@ public class PlayerController {
                 .body(new PlayerResponse(player));
         } catch (ValidationException e) {
             throw e; // Will be handled by global exception handler
+        }
+    }
+    
+    /**
+     * Upload player headshot image.
+     * POST /api/players/{id}/headshot
+     * 
+     * @param id the player ID
+     * @param file the image file
+     * @return 200 OK with the updated player data including image URL
+     * @throws PlayerNotFoundException if the player does not exist (returns 404)
+     */
+    @PostMapping("/{id}/headshot")
+    public ResponseEntity<PlayerResponse> uploadHeadshot(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new ValidationException("File cannot be empty");
+            }
+            
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new ValidationException("File must be an image");
+            }
+            
+            // Upload to S3 in players/headshots folder
+            String imageUrl = assetService.uploadImage(file, "players/headshots");
+            
+            // Update player with image URL
+            Player player = playerService.getPlayerById(id);
+            
+            // Delete old image if exists
+            if (player.getImageUrl() != null && !player.getImageUrl().isEmpty()) {
+                try {
+                    assetService.deleteImageByUrl(player.getImageUrl());
+                } catch (Exception e) {
+                    // Log but don't fail if old image deletion fails
+                }
+            }
+            
+            player.setImageUrl(imageUrl);
+            player = playerService.savePlayer(player);
+            
+            return ResponseEntity.ok(new PlayerResponse(player));
+        } catch (IOException e) {
+            throw new ValidationException("Failed to upload image: " + e.getMessage());
         }
     }
     

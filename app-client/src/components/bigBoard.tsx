@@ -10,6 +10,7 @@ export interface Player {
     college?: string;
     draftyear: number;
     adp: number;
+    imageUrl?: string;
 }
 
 interface BigBoardProps {

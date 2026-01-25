@@ -32,6 +32,9 @@ public class Player {
     @Column(name = "draftyear")
     private Integer draftyear;
     
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+    
     @Column(nullable = false)
     private Boolean verified = false;
     
@@ -102,6 +105,14 @@ public class Player {
     
     public void setDraftyear(Integer draftyear) {
         this.draftyear = draftyear;
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public Boolean getVerified() {

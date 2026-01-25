@@ -232,3 +232,68 @@
         }
     }
 }
+
+
+// Image Upload Section
+.image-upload-section {
+    .image-upload-placeholder {
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: rgba(255, 255, 255, 0.05);
+
+        &:hover {
+            border-color: rgba(76, 175, 80, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+
+        small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+    }
+
+    .image-crop-container {
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+
+        .ReactCrop {
+            max-height: 400px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-change-image {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+        }
+    }
+}

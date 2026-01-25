@@ -14,6 +14,7 @@ public class PlayerResponse {
     private String team;
     private String college;
     private Integer draftyear;
+    private String imageUrl;
     private Boolean verified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -29,6 +30,7 @@ public class PlayerResponse {
         this.team = player.getTeam();
         this.college = player.getCollege();
         this.draftyear = player.getDraftyear();
+        this.imageUrl = player.getImageUrl();
         this.verified = player.getVerified();
         this.createdAt = player.getCreatedAt();
         this.updatedAt = player.getUpdatedAt();
@@ -81,6 +83,14 @@ public class PlayerResponse {
     
     public void setDraftyear(Integer draftyear) {
         this.draftyear = draftyear;
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     
     public Boolean getVerified() {
