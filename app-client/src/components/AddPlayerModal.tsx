@@ -175,6 +175,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                                 <div className="upload-icon">📷</div>
                                 <p>Click to upload headshot</p>
                                 <small>Recommended: Square image, min 200x200px</small>
+                                {croppedImageBlob && (
+                                    <div style={{ marginTop: '1rem', color: '#4CAF50' }}>
+                                        ✓ Image ready to upload
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="image-crop-container">
@@ -191,13 +196,27 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                                         style={{ maxWidth: '100%' }}
                                     />
                                 </ReactCrop>
-                                <button 
-                                    type="button"
-                                    className="btn-change-image"
-                                    onClick={() => fileInputRef.current?.click()}
-                                >
-                                    Change Image
-                                </button>
+                                <div className="crop-actions">
+                                    <button 
+                                        type="button"
+                                        className="btn-apply-crop"
+                                        onClick={() => {
+                                            if (croppedImageBlob) {
+                                                setSelectedImage(null);
+                                            }
+                                        }}
+                                        disabled={!croppedImageBlob}
+                                    >
+                                        ✓ Apply Crop
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        className="btn-change-image"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        Change Image
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>

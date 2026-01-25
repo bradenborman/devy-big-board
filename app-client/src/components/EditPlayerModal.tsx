@@ -189,12 +189,22 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
                                             }}
                                         />
                                         <p>Click to change headshot</p>
+                                        {croppedImageBlob && (
+                                            <div style={{ marginTop: '0.5rem', color: '#4CAF50' }}>
+                                                ✓ New image ready to upload
+                                            </div>
+                                        )}
                                     </>
                                 ) : (
                                     <>
                                         <div className="upload-icon">📷</div>
                                         <p>Click to upload headshot</p>
                                         <small>Recommended: Square image, min 200x200px</small>
+                                        {croppedImageBlob && (
+                                            <div style={{ marginTop: '1rem', color: '#4CAF50' }}>
+                                                ✓ Image ready to upload
+                                            </div>
+                                        )}
                                     </>
                                 )}
                             </div>
@@ -213,16 +223,30 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
                                         style={{ maxWidth: '100%' }}
                                     />
                                 </ReactCrop>
-                                <button 
-                                    type="button"
-                                    className="btn-change-image"
-                                    onClick={() => {
-                                        setSelectedImage(null);
-                                        setCroppedImageBlob(null);
-                                    }}
-                                >
-                                    Cancel Crop
-                                </button>
+                                <div className="crop-actions">
+                                    <button 
+                                        type="button"
+                                        className="btn-apply-crop"
+                                        onClick={() => {
+                                            if (croppedImageBlob) {
+                                                setSelectedImage(null);
+                                            }
+                                        }}
+                                        disabled={!croppedImageBlob}
+                                    >
+                                        ✓ Apply Crop
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        className="btn-cancel-crop"
+                                        onClick={() => {
+                                            setSelectedImage(null);
+                                            setCroppedImageBlob(null);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
