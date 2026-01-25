@@ -107,6 +107,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
 
             const createdPlayer = await response.json();
 
+            // Upload headshot if available
             if (croppedImageBlob && createdPlayer.id) {
                 const formData = new FormData();
                 formData.append('file', croppedImageBlob, 'headshot.jpg');
@@ -117,7 +118,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onSub
                 });
             }
 
-            onSubmit(newPlayer, verificationCode || undefined);
+            // Notify parent to refresh the player list
+            onSubmit(createdPlayer, verificationCode || undefined);
             resetForm();
             onClose();
         } catch (error) {

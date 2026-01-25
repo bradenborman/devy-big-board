@@ -74,36 +74,18 @@ const PlayerManagementPage: React.FC = () => {
         setTimeout(() => setToast(null), 3000);
     };
 
-    const handleAddPlayer = async (player: Player, code?: string) => {
-        try {
-            const response = await fetch('/api/players/manage', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: player.name,
-                    position: player.position,
-                    team: player.team,
-                    college: player.college,
-                    draftyear: player.draftyear,
-                    verificationCode: code
-                })
-            });
-
-            if (response.ok) {
-                const newPlayer = await response.json();
-                setPlayers([...players, newPlayer]);
-                showToast(
-                    newPlayer.verified 
-                        ? 'Player added and verified!' 
-                        : 'Player added as pending. Awaiting verification.',
-                    'success'
-                );
-            } else {
-                showToast('Failed to add player', 'error');
-            }
-        } catch (error) {
-            showToast('Failed to add player', 'error');
-        }
+    const handleAddPlayer = async (createdPlayer: Player) => {
+        // Player was already created by the modal, just update the UI
+        setPlayers([...players, createdPlayer]);
+        const playerWithId = createdPlayer as PlayerWithId;
+        showToast(
+            playerWithId.verified 
+                ? 'Player added and verified!' 
+                : 'Player added as pending. Awaiting verification.',
+            'success'
+        );
+        // Refresh headshot info
+        fetchPlayersWithHeadshots();
     };
 
     const handleUpdatePlayer = async (player: PlayerWithId, code: string) => {
