@@ -47,32 +47,38 @@ const PlayerList: React.FC<PlayerListProps> = ({ playerPool, addPlayerToNextOpen
     return (
         <div className="player-list">
             <div className="filters">
-                <button
-                    className={`filter-btn ${activePositionFilters.length === 0 ? 'active' : ''}`}
-                    onClick={() => togglePositionFilter('ALL')}
-                >
-                    All
-                </button>
-                {['QB', 'RB', 'WR', 'TE'].map((position) => (
+                <span className="filter-label">Position</span>
+                <div className="filter-buttons">
                     <button
-                        key={position}
-                        className={`filter-btn ${activePositionFilters.includes(position) ? 'active' : ''}`}
-                        onClick={() => togglePositionFilter(position)}
+                        className={`filter-btn ${activePositionFilters.length === 0 ? 'active' : ''}`}
+                        onClick={() => togglePositionFilter('ALL')}
                     >
-                        {position}
+                        All
                     </button>
-                ))}
+                    {['QB', 'RB', 'WR', 'TE'].map((position) => (
+                        <button
+                            key={position}
+                            className={`filter-btn ${activePositionFilters.includes(position) ? 'active' : ''}`}
+                            onClick={() => togglePositionFilter(position)}
+                        >
+                            {position}
+                        </button>
+                    ))}
+                </div>
             </div>
             <div className="filters">
-                {yearRange.map((year) => (
-                    <button
-                        key={year}
-                        className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
-                        onClick={() => toggleYearFilter(year)}
-                    >
-                        {year}
-                    </button>
-                ))}
+                <span className="filter-label">Draft Class</span>
+                <div className="filter-buttons">
+                    {yearRange.map((year) => (
+                        <button
+                            key={year}
+                            className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
+                            onClick={() => toggleYearFilter(year)}
+                        >
+                            {year}
+                        </button>
+                    ))}
+                </div>
             </div>
             <div className='scroll-list'>
                 <ul>

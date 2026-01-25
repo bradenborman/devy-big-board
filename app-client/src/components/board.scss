@@ -11,49 +11,94 @@
         overflow-y: auto;
         overflow-x: hidden;
         flex-shrink: 0;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
         background: rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
-        padding: 20px;
+        padding: 0;
         height: 100vh;
         max-height: 100vh;
         user-select: none;
+        display: flex;
+        flex-direction: column;
 
         .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            width: 100%;
-            padding: 12px 0;
+            padding: 20px 20px 16px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 16px;
+            background: rgba(0, 0, 0, 0.2);
+
+            &:first-child {
+                .filter-label {
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    color: rgba(255, 255, 255, 0.5);
+                    margin-bottom: 10px;
+                    display: block;
+                    font-weight: 600;
+                }
+            }
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+
+            .filter-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
 
             .filter-btn {
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
-                border: 2px solid transparent;
+                background: rgba(255, 255, 255, 0.08);
+                color: rgba(255, 255, 255, 0.7);
+                border: 2px solid rgba(255, 255, 255, 0.1);
                 padding: 8px 16px;
                 border-radius: 8px;
                 cursor: pointer;
                 font-size: 0.9em;
                 font-weight: 600;
                 transition: all 0.2s;
+                flex: 0 0 auto;
 
                 &:hover {
-                    background: rgba(255, 255, 255, 0.15);
+                    background: rgba(255, 255, 255, 0.12);
+                    border-color: rgba(255, 255, 255, 0.2);
+                    color: white;
                 }
 
                 &.active {
-                    background: rgba(76, 175, 80, 0.3);
+                    background: rgba(76, 175, 80, 0.25);
                     border-color: #4CAF50;
                     color: #4CAF50;
+                    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
                 }
             }
         }
 
         .scroll-list {
+            flex: 1;
             overflow-y: auto;
-            max-height: calc(100vh - 200px);
+            overflow-x: hidden;
+            padding: 12px 20px 20px 20px;
+
+            /* Custom scrollbar */
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
+                margin: 4px 0;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+            }
         }
 
         ul {
