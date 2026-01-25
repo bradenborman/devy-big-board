@@ -30,11 +30,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const [showPlayerSheet, setShowPlayerSheet] = useState(false);
     const [positionFilter, setPositionFilter] = useState<string>('ALL');
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
-    const [touchStart, setTouchStart] = useState<number | null>(null);
-    const [touchEnd, setTouchEnd] = useState<number | null>(null);
-
-    // Minimum swipe distance (in px)
-    const minSwipeDistance = 50;
+    const carouselRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         fetch('/api/players/manage/headshots/available')
@@ -53,24 +49,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         return (round - 1) * teams + pick;
     };
 
-    const handleDraftPlayer = (player: Player) => {
-        onDraftPlayer(player, currentRound, currentPick);
-        setShowPlayerSheet(false);
-        // Auto-advance to next pick
-        setTimeout(() => {
-            goToNextPick();
-        }, 100); // Small delay to show the selection
-    };
-
-    const goToPreviousPick = () => {
-        if (currentPick > 1) {
-            setCurrentPick(currentPick - 1);
-        } else if (currentRound > 1) {
-            setCurrentRound(currentRound - 1);
-            setCurrentPick(teams);
-        }
-    };
-
     const goToNextPick = () => {
         if (currentPick < teams) {
             setCurrentPick(currentPick + 1);
@@ -80,44 +58,41 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         }
     };
 
-    const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(null);
-        setTouchStart(e.targetTouches[0].clientX);
-    };
-
-    const onTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-
-    const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-        
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-        
-        if (isLeftSwipe) {
-            // Swipe left = go to next pick
+    const handleDraftPlayer = (player: Player) => {
+        onDraftPlayer(player, currentRound, currentPick);
+        setShowPlayerSheet(false);
+        // Auto-advance to next pick
+        setTimeout(() => {
             goToNextPick();
-        }
-        if (isRightSwipe) {
-            // Swipe right = go to previous pick
-            goToPreviousPick();
-        }
+        }, 100); // Small delay to show the selection
     };
-
-    const filteredPlayers = playerPool.filter(player => {
-        const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
-        return matchesPosition;
-    });
 
     const currentPlayer = getCurrentPickPlayer();
     const totalPicks = teams * rounds;
     const currentPickNumber = getPickNumber(currentRound, currentPick);
     const progress = (currentPickNumber / totalPicks) * 100;
     
+    const filteredPlayers = playerPool.filter(player => {
+        const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
+        return matchesPosition;
+    });
+    
     // Check if draft is complete
     const isDraftComplete = players.every(round => round.every(pick => pick !== null));
+
+    // Scroll carousel to show current pick
+    React.useEffect(() => {
+        if (carouselRef.current) {
+            const currentPickIndex = currentPickNumber - 1;
+            const cardWidth = 110 + 12; // card width + gap (0.75rem = 12px)
+            const scrollPosition = currentPickIndex * cardWidth - (window.innerWidth / 2) + (cardWidth / 2);
+            
+            carouselRef.current.scrollTo({
+                left: Math.max(0, scrollPosition),
+                behavior: 'smooth'
+            });
+        }
+    }, [currentRound, currentPick, currentPickNumber]);
 
     return (
         <div className="mobile-draft">
@@ -154,9 +129,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                 </div>
                 <div 
                     className="draft-carousel"
-                    onTouchStart={onTouchStart}
-                    onTouchMove={onTouchMove}
-                    onTouchEnd={onTouchEnd}
+                    ref={carouselRef}
                 >
                     <div className="carousel-track">
                         {Array.from({ length: totalPicks }).map((_, index) => {
@@ -310,6 +283,9 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                                                 </span>
                                                 {player.team && (
                                                     <span className="team-name">{player.team}</span>
+                                                )}
+                                                {player.adp > 0 && (
+                                                    <span className="adp-badge">ADP: {player.adp.toFixed(1)}</span>
                                                 )}
                                             </div>
                                         </div>

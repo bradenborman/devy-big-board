@@ -84,9 +84,9 @@ const HomePage: React.FC = () => {
                         <p>The community can add missing players to keep the database up-to-date and comprehensive.</p>
                     </div>
                     <div className="feature-card">
-                        <div className="feature-icon">🔄</div>
-                        <h3>Drag & Drop</h3>
-                        <p>Intuitive interface lets you quickly add players to your board with a single click.</p>
+                        <div className="feature-icon">📊</div>
+                        <h3>Tier Break Tool</h3>
+                        <p>Build your draft board with visual tier breaks to organize players by value tiers.</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">📤</div>

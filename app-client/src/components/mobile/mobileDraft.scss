@@ -565,6 +565,7 @@
                         display: flex;
                         gap: 0.5rem;
                         align-items: center;
+                        flex-wrap: wrap;
 
                         .position-badge {
                             font-weight: 700;
@@ -583,6 +584,15 @@
                             color: #64748b;
                             font-size: 0.9rem;
                             font-weight: 500;
+                        }
+
+                        .adp-badge {
+                            color: #64748b;
+                            font-size: 0.85rem;
+                            font-weight: 600;
+                            background: #f1f5f9;
+                            padding: 3px 8px;
+                            border-radius: 6px;
                         }
                     }
                 }
