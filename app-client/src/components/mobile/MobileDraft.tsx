@@ -56,7 +56,10 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const handleDraftPlayer = (player: Player) => {
         onDraftPlayer(player, currentRound, currentPick);
         setShowPlayerSheet(false);
-        // Don't auto-advance - let user see their pick and manually advance
+        // Auto-advance to next pick
+        setTimeout(() => {
+            goToNextPick();
+        }, 100); // Small delay to show the selection
     };
 
     const goToPreviousPick = () => {
