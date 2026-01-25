@@ -20,10 +20,10 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
 }) => {
     const getPositionIcon = (position: string) => {
         switch (position) {
-            case 'QB': return '🎯';
-            case 'RB': return '⚡';
+            case 'QB': return '🏈';
+            case 'RB': return '🏈';
             case 'WR': return '🏈';
-            case 'TE': return '🎪';
+            case 'TE': return '🏈';
             default: return '👤';
         }
     };

@@ -61,28 +61,46 @@ const MainComponent: React.FC = () => {
     }, [hasValidParams, roundsFromURL, teamsFromURL]);
 
     /*
-    Logic that makes a call to update ADP when its filled out 
+    Logic that makes a call to save the draft when it's filled out 
     */
     useEffect(() => {
         const allFilled = players.length > 0 && players.every(row => row.every(cell => cell !== null));
 
         if (allFilled) {
             const flatPlayers = players.flat().filter((p): p is Player => p !== null);
+            
+            // Prepare draft data for the new API
+            const draftData = {
+                draftName: `${teams}-Team ${rounds}-Round Draft - ${new Date().toLocaleDateString()}`,
+                participantCount: teams,
+                picks: flatPlayers.map((player, index) => ({
+                    playerId: player.id || 0, // Use player ID
+                    pickNumber: index + 1
+                }))
+            };
 
-            fetch(`/api/draft/complete?draftType=offline`, {
+            fetch(`/api/drafts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(flatPlayers),
+                body: JSON.stringify(draftData),
             })
                 .then(async res => {
-                    if (!res.ok) throw new Error("Failed to submit draft.");
-                    const uuid = await res.text();
-                    navigate(`/draft/${uuid}`);
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(`Failed to save draft: ${errorText}`);
+                    }
+                    const response = await res.json();
+                    console.log('Draft saved successfully:', response);
+                    // Don't navigate automatically - let user stay on the board
+                    // They can use the Export button when ready
                 })
-                .catch(err => console.error("Error submitting draft:", err));
+                .catch(err => {
+                    console.error("Error saving draft:", err);
+                    // Still show the export button even if save fails
+                });
 
         }
-    }, [players]);
+    }, [players, teams, rounds]);
 
     const resetDraft = () => {
         setTeams(12);
