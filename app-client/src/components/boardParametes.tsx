@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface BoardParamsProps {
     teams: number;
@@ -9,8 +10,14 @@ interface BoardParamsProps {
 }
 
 const BoardParameters: React.FC<BoardParamsProps> = ({ teams, rounds, handleTeamsChange, handleRoundsChange, createGrid }) => {
+    const navigate = useNavigate();
+
     return (
         <div className="board-parameters">
+            <button className="return-home-btn" onClick={() => navigate('/')}>
+                ← Return Home
+            </button>
+            
             <h3>{new Date().getUTCFullYear()} Devy/Rookie Draft Big Board</h3>
 
             <label>
