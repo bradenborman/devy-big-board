@@ -53,21 +53,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         advanceToNextPick();
     };
 
-    const handleUndoLastPick = () => {
-        const currentPlayer = getCurrentPickPlayer();
-        if (currentPlayer) {
-            onRemovePlayer(currentRound, currentPick);
-        } else {
-            // Go back to previous pick
-            if (currentPick > 1) {
-                setCurrentPick(currentPick - 1);
-            } else if (currentRound > 1) {
-                setCurrentRound(currentRound - 1);
-                setCurrentPick(teams);
-            }
-        }
-    };
-
     const advanceToNextPick = () => {
         if (currentPick < teams) {
             setCurrentPick(currentPick + 1);
@@ -203,13 +188,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                     Select Player
                 </button>
             )}
-
-            {/* Quick Actions */}
-            <div className="quick-actions">
-                <button className="action-btn" onClick={handleUndoLastPick}>
-                    ↶ Undo
-                </button>
-            </div>
 
             {/* Player Selection Sheet */}
             {showPlayerSheet && (

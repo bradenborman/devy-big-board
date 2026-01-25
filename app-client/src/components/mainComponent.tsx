@@ -301,20 +301,22 @@ const MainComponent: React.FC = () => {
                 />
             ) : (
                 <div className="board-container">
-                    <BubbleMenu
-                        onClearBoard={clearBoard}
-                        onExportDraft={exportDraft}
-                        onLastPlayerRemove={removeLastPick}
-                        onAddPlayerClick={() => {}}
-                        onAddTierBreak={addTierBreakAfterLastPick}
-                        onRemoveLastTierBreak={removeLastTierBreak}
-                        onResetDraft={resetDraft}
-                        isBoardPopulated={isBoardPopulated}
-                        playerListOpen={playerListOpen}
-                        setPlayerListOpen={setPlayerListOpen}
-                    />
+                    {!isMobile && (
+                        <BubbleMenu
+                            onClearBoard={clearBoard}
+                            onExportDraft={exportDraft}
+                            onLastPlayerRemove={removeLastPick}
+                            onAddPlayerClick={() => {}}
+                            onAddTierBreak={addTierBreakAfterLastPick}
+                            onRemoveLastTierBreak={removeLastTierBreak}
+                            onResetDraft={resetDraft}
+                            isBoardPopulated={isBoardPopulated}
+                            playerListOpen={playerListOpen}
+                            setPlayerListOpen={setPlayerListOpen}
+                        />
+                    )}
                     
-                    {playerListOpen && (
+                    {!isMobile && playerListOpen && (
                         <div className="filter-toolbar">
                             <div className="filter-section">
                                 <span className="filter-label">Position:</span>
