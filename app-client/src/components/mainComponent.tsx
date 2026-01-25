@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import BigBoard, { Player } from './bigBoard';
+import MobileDraft from './MobileDraft';
 import PlayerList from './playerList';
 import BoardParameters from './boardParametes';
 import BubbleMenu from './BubbleMenu';
@@ -34,9 +35,18 @@ const MainComponent: React.FC = () => {
 
     const [playerPool, setPlayerPool] = useState<Player[]>([]);
     const [tierBreaks, setTierBreaks] = useState<{ row: number; col: number }[]>([]);
+    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
     const currentYear = new Date().getFullYear();
     const yearRange = Array.from({ length: 4 }, (_, i) => currentYear + i);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const togglePositionFilter = (position: string) => {
         if (position === 'ALL') {
@@ -176,6 +186,15 @@ const MainComponent: React.FC = () => {
                 }
             }
             return prevPlayers;
+        });
+    };
+
+    const addPlayerToSpot = (player: Player, row: number, col: number) => {
+        setPlayers((prevPlayers) => {
+            const updatedPlayers = prevPlayers.map((rowArr) => [...rowArr]);
+            updatedPlayers[row - 1][col - 1] = player;
+            setPlayerPool((prevPool) => prevPool.filter((p) => p.name !== player.name));
+            return updatedPlayers;
         });
     };
 
@@ -380,23 +399,36 @@ const MainComponent: React.FC = () => {
                         </div>
                     )}
                     
-                    <div className="board-content-wrapper">
-                        <PlayerList
-                            playerPool={playerPool}
-                            addPlayerToNextOpenSpot={addPlayerToNextOpenSpot}
-                            playerListOpen={playerListOpen}
-                            activePositionFilters={activePositionFilters}
-                            activeYearFilters={activeYearFilters}
-                        />
-                        
-                        <BigBoard
-                            rounds={rounds}
+                    {isMobile ? (
+                        <MobileDraft
                             teams={teams}
+                            rounds={rounds}
                             players={players}
-                            removeDraftedPlayer={removeDraftedPlayer}
-                            tierBreaks={tierBreaks}
+                            playerPool={playerPool}
+                            onDraftPlayer={addPlayerToSpot}
+                            onRemovePlayer={removeDraftedPlayer}
+                            onExport={exportDraft}
+                            onExit={() => navigate('/')}
                         />
-                    </div>
+                    ) : (
+                        <div className="board-content-wrapper">
+                            <PlayerList
+                                playerPool={playerPool}
+                                addPlayerToNextOpenSpot={addPlayerToNextOpenSpot}
+                                playerListOpen={playerListOpen}
+                                activePositionFilters={activePositionFilters}
+                                activeYearFilters={activeYearFilters}
+                            />
+                            
+                            <BigBoard
+                                rounds={rounds}
+                                teams={teams}
+                                players={players}
+                                removeDraftedPlayer={removeDraftedPlayer}
+                                tierBreaks={tierBreaks}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
         </div>
