@@ -1,9 +1,11 @@
 package devybigboard.controllers;
 
+import devybigboard.dao.PlayerAssetRepository;
 import devybigboard.exceptions.PlayerNotFoundException;
 import devybigboard.exceptions.UnauthorizedException;
 import devybigboard.exceptions.ValidationException;
 import devybigboard.models.Player;
+import devybigboard.models.PlayerAsset;
 import devybigboard.models.PlayerDTO;
 import devybigboard.models.PlayerResponse;
 import devybigboard.services.AssetService;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -30,11 +33,14 @@ public class PlayerController {
     private final PlayerService playerService;
     private final VerificationService verificationService;
     private final AssetService assetService;
+    private final PlayerAssetRepository playerAssetRepository;
     
-    public PlayerController(PlayerService playerService, VerificationService verificationService, AssetService assetService) {
+    public PlayerController(PlayerService playerService, VerificationService verificationService, 
+                          AssetService assetService, PlayerAssetRepository playerAssetRepository) {
         this.playerService = playerService;
         this.verificationService = verificationService;
         this.assetService = assetService;
+        this.playerAssetRepository = playerAssetRepository;
     }
     
     /**
@@ -91,25 +97,35 @@ public class PlayerController {
                 throw new ValidationException("File must be an image");
             }
             
-            // Upload to S3 in players/headshots folder
-            String imageUrl = assetService.uploadImage(file, "players/headshots");
-            
-            // Update player with image URL
+            // Verify player exists
             Player player = playerService.getPlayerById(id);
             
-            // Delete old image if exists
-            if (player.getImageUrl() != null && !player.getImageUrl().isEmpty()) {
+            // Check if player already has an asset
+            Optional<PlayerAsset> existingAsset = playerAssetRepository.findByPlayerId(id);
+            
+            // Delete old image from S3 if exists
+            if (existingAsset.isPresent()) {
                 try {
-                    assetService.deleteImageByUrl(player.getImageUrl());
+                    assetService.deleteImageByUrl(existingAsset.get().getImageUrl());
                 } catch (Exception e) {
                     // Log but don't fail if old image deletion fails
                 }
             }
             
-            player.setImageUrl(imageUrl);
-            player = playerService.savePlayer(player);
+            // Upload to S3 in players/headshots folder
+            String imageUrl = assetService.uploadImage(file, "players/headshots");
             
-            return ResponseEntity.ok(new PlayerResponse(player));
+            // Create or update player asset
+            PlayerAsset asset;
+            if (existingAsset.isPresent()) {
+                asset = existingAsset.get();
+                asset.setImageUrl(imageUrl);
+            } else {
+                asset = new PlayerAsset(id, imageUrl);
+            }
+            playerAssetRepository.save(asset);
+            
+            return ResponseEntity.ok(new PlayerResponse(player, imageUrl));
         } catch (IOException e) {
             throw new ValidationException("Failed to upload image: " + e.getMessage());
         }
