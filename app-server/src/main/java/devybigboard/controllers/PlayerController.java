@@ -246,7 +246,7 @@ public class PlayerController {
             Player player = playerService.updatePlayer(id, playerDTO);
             
             // If player is not verified and code is valid, verify it
-            if (!player.isVerified()) {
+            if (!player.getVerified()) {
                 player = playerService.verifyPlayer(id);
             }
             
