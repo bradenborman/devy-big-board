@@ -17,12 +17,13 @@ const MainComponent: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const teamsFromURL = Number(params.get('teams'));
     const roundsFromURL = Number(params.get('rounds'));
+    const rookiesOnlyFromURL = params.get('rookiesOnly') === 'true';
 
     const hasValidParams = (teamsFromURL > 0 && teamsFromURL <= 16) && (roundsFromURL > 0 && roundsFromURL <= 15);
 
     const [teams, setTeams] = useState<number>(teamsFromURL || 12);
     const [rounds, setRounds] = useState<number>(roundsFromURL || 3);
-    const [rookiesOnly, setRookiesOnly] = useState<boolean>(false);
+    const [rookiesOnly, setRookiesOnly] = useState<boolean>(rookiesOnlyFromURL || false);
     const [players, setPlayers] = useState<(Player | null)[][]>(
         hasValidParams
             ? Array.from({ length: roundsFromURL }, () => Array(teamsFromURL).fill(null))
@@ -172,6 +173,7 @@ const MainComponent: React.FC = () => {
 
         searchParams.set('teams', teams.toString());
         searchParams.set('rounds', rounds.toString());
+        searchParams.set('rookiesOnly', rookiesOnly.toString());
 
         navigate({ pathname: location.pathname, search: searchParams.toString() });
 
