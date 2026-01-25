@@ -79,9 +79,9 @@ const HomePage: React.FC = () => {
                         <p>Track average draft position across all completed drafts to make informed decisions.</p>
                     </div>
                     <div className="feature-card">
-                        <div className="feature-icon">🎯</div>
-                        <h3>Tier Breaks</h3>
-                        <p>Organize players into tiers and visualize drop-offs in talent at each position.</p>
+                        <div className="feature-icon">👥</div>
+                        <h3>Crowd-Sourced Players</h3>
+                        <p>The community can add missing players to keep the database up-to-date and comprehensive.</p>
                     </div>
                     <div className="feature-card">
                         <div className="feature-icon">🔄</div>
