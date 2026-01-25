@@ -196,6 +196,9 @@ const PlayerManagementPage: React.FC = () => {
         return Array.from(years).sort();
     };
 
+    const verifiedPlayerCount = players.filter(p => p.verified).length;
+    const pendingPlayerCount = players.filter(p => !p.verified).length;
+
     const getPlayerInitials = (name: string) => {
         const parts = name.split(' ');
         if (parts.length >= 2) {
@@ -224,7 +227,13 @@ const PlayerManagementPage: React.FC = () => {
 
             <div className="management-content">
                 <div className="header-section">
-                    <h1>Player Pool</h1>
+                    <div>
+                        <h1>Player Pool</h1>
+                        <p className="pool-stats">
+                            {filteredPlayers.length} player{filteredPlayers.length !== 1 ? 's' : ''} 
+                            {viewMode === 'table' && ` (${verifiedPlayerCount} verified, ${pendingPlayerCount} pending)`}
+                        </p>
+                    </div>
                     <div className="header-actions">
                         <div className="view-toggle">
                             <button 
@@ -250,15 +259,21 @@ const PlayerManagementPage: React.FC = () => {
 
                 <div className="filter-section">
                     <span className="filter-label">Draft Class:</span>
-                    {getAvailableYears().map(year => (
-                        <button
-                            key={year}
-                            className={selectedYears.includes(year) ? 'active' : ''}
-                            onClick={() => toggleYear(year)}
-                        >
-                            {year}
-                        </button>
-                    ))}
+                    {getAvailableYears().length > 0 ? (
+                        getAvailableYears().map(year => (
+                            <button
+                                key={year}
+                                className={selectedYears.includes(year) ? 'active' : ''}
+                                onClick={() => toggleYear(year)}
+                            >
+                                {year}
+                            </button>
+                        ))
+                    ) : (
+                        <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}>
+                            No draft years available
+                        </span>
+                    )}
                 </div>
 
                 {loading ? (
