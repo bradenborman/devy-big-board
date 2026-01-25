@@ -68,6 +68,21 @@ The application uses:
 
 ### Building and Running
 
+#### Quick Start Scripts
+
+For convenience, use the provided scripts to start the server with the local profile:
+
+**Windows:**
+```bash
+start-local.bat
+```
+
+**Mac/Linux:**
+```bash
+chmod +x start-local.sh  # First time only
+./start-local.sh
+```
+
 #### Local Development
 
 ```bash
@@ -77,8 +92,10 @@ npm install -g pnpm
 # Build the entire project (backend + frontend)
 ./gradlew clean build
 
-# Run the Spring Boot application
-./gradlew :app-server:bootRun
+# Run the Spring Boot application with local profile
+./gradlew :app-server:bootRun --args="--spring.profiles.active=local"
+
+# Or use the quick start scripts above
 
 # Run frontend dev server (separate terminal)
 cd app-client
