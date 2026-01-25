@@ -347,6 +347,8 @@
         .player-avatar {
             width: 64px;
             height: 64px;
+            max-width: 100%;
+            aspect-ratio: 1 / 1;
             border-radius: 50%;
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             display: flex;
@@ -356,6 +358,7 @@
             border: 2px solid #cbd5e0;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
 
             .avatar-icon {
                 font-size: 32px;

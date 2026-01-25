@@ -22,7 +22,7 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
     const [position, setPosition] = useState('');
     const [team, setTeam] = useState('');
     const [college, setCollege] = useState('');
-    const [verificationCode, setVerificationCode] = useState('rocks');
+    const [verificationCode, setVerificationCode] = useState('');
     const currentYear = new Date().getFullYear();
     const [draftyear, setDraftyear] = useState<number>(currentYear);
     

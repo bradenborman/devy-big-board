@@ -222,6 +222,8 @@ public class PlayerController {
      * Update an existing player (requires verification code).
      * PUT /api/players/{id}
      * 
+     * If the player is pending and a valid verification code is provided, the player will be verified.
+     * 
      * @param id the player ID
      * @param playerDTO the updated player data (must include verificationCode)
      * @return 200 OK with the updated player data
@@ -242,6 +244,12 @@ public class PlayerController {
             }
             
             Player player = playerService.updatePlayer(id, playerDTO);
+            
+            // If player is not verified and code is valid, verify it
+            if (!player.isVerified()) {
+                player = playerService.verifyPlayer(id);
+            }
+            
             return ResponseEntity.ok(new PlayerResponse(player));
         } catch (UnauthorizedException | PlayerNotFoundException e) {
             throw e; // Will be handled by global exception handler
