@@ -24,9 +24,7 @@ public class PlayerDao {
                    SELECT AVG(dp.pick_number)
                    FROM draft_picks dp
                    JOIN drafts d ON d.id = dp.draft_id
-                   WHERE dp.name = p.name
-                     AND dp.position = p.position
-                     AND dp.team = p.team
+                   WHERE dp.player_id = p.id
                      AND d.type = 'offline'
                ), 999) AS adp
         FROM players p
@@ -49,9 +47,7 @@ public class PlayerDao {
                    SELECT AVG(dp.pick_number)
                    FROM draft_picks dp
                    JOIN drafts d ON d.id = dp.draft_id
-                   WHERE dp.name = p.name
-                     AND dp.position = p.position
-                     AND dp.team = p.team
+                   WHERE dp.player_id = p.id
                      AND d.type = 'offline'
                ), 999) AS adp
         FROM players p

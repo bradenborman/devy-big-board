@@ -16,15 +16,16 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: false
     properties:
       hibernate:
         format_sql: false
-
-data:
-  initial-load: false
+  
+  sql:
+    init:
+      mode: always
 
 app:
   verification:

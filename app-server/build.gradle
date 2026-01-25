@@ -28,8 +28,14 @@ dependencies {
 	//SQL
 	implementation 'mysql:mysql-connector-java:8.0.33'
 
+	// Export dependencies
+	implementation 'com.opencsv:opencsv:5.9'
+	implementation 'org.apache.pdfbox:pdfbox:3.0.1'
+	// Jackson is already included via spring-boot-starter-web
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {

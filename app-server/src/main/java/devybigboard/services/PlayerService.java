@@ -8,12 +8,10 @@ import devybigboard.models.PlayerDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 /**
- * Service for managing player operations including creation, verification, and ADP calculations.
+ * Service for managing player operations including creation and verification.
  */
 @Service
 public class PlayerService {
@@ -42,8 +40,6 @@ public class PlayerService {
         player.setTeam(playerDTO.getTeam());
         player.setCollege(playerDTO.getCollege());
         player.setVerified(false);
-        player.setTotalSelections(0);
-        player.setSumDraftPositions(0L);
         
         return playerRepository.save(player);
     }
@@ -71,31 +67,6 @@ public class PlayerService {
         
         player.setVerified(true);
         return playerRepository.save(player);
-    }
-    
-    /**
-     * Update the Average Draft Position (ADP) for a player after they are drafted.
-     * ADP is calculated as: sum of all draft positions / total number of selections
-     * 
-     * @param playerId the ID of the player
-     * @param pickNumber the pick number in the current draft
-     * @throws PlayerNotFoundException if player does not exist
-     */
-    @Transactional
-    public void updateADP(Long playerId, int pickNumber) {
-        Player player = playerRepository.findById(playerId)
-            .orElseThrow(() -> new PlayerNotFoundException(playerId));
-        
-        // Update selection statistics
-        player.setTotalSelections(player.getTotalSelections() + 1);
-        player.setSumDraftPositions(player.getSumDraftPositions() + pickNumber);
-        
-        // Calculate new ADP: sum / total, rounded to 2 decimal places
-        BigDecimal adp = BigDecimal.valueOf(player.getSumDraftPositions())
-            .divide(BigDecimal.valueOf(player.getTotalSelections()), 2, RoundingMode.HALF_UP);
-        player.setAverageDraftPosition(adp);
-        
-        playerRepository.save(player);
     }
     
     /**

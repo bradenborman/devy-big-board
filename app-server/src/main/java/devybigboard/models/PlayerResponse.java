@@ -1,6 +1,5 @@
 package devybigboard.models;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -15,8 +14,6 @@ public class PlayerResponse {
     private String team;
     private String college;
     private Boolean verified;
-    private Integer totalSelections;
-    private BigDecimal averageDraftPosition;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -31,8 +28,6 @@ public class PlayerResponse {
         this.team = player.getTeam();
         this.college = player.getCollege();
         this.verified = player.getVerified();
-        this.totalSelections = player.getTotalSelections();
-        this.averageDraftPosition = player.getAverageDraftPosition();
         this.createdAt = player.getCreatedAt();
         this.updatedAt = player.getUpdatedAt();
     }
@@ -84,22 +79,6 @@ public class PlayerResponse {
     
     public void setVerified(Boolean verified) {
         this.verified = verified;
-    }
-    
-    public Integer getTotalSelections() {
-        return totalSelections;
-    }
-    
-    public void setTotalSelections(Integer totalSelections) {
-        this.totalSelections = totalSelections;
-    }
-    
-    public BigDecimal getAverageDraftPosition() {
-        return averageDraftPosition;
-    }
-    
-    public void setAverageDraftPosition(BigDecimal averageDraftPosition) {
-        this.averageDraftPosition = averageDraftPosition;
     }
     
     public LocalDateTime getCreatedAt() {

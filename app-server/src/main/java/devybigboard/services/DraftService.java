@@ -50,8 +50,8 @@ public class DraftService {
     }
 
     /**
-     * Save a completed draft with UUID generation and ADP updates.
-     * Generates a unique UUID for the draft and updates ADP for all picked players.
+     * Save a completed draft with UUID generation.
+     * Generates a unique UUID for the draft.
      * 
      * @param draftDTO the draft data transfer object
      * @return the saved draft entity
@@ -77,9 +77,6 @@ public class DraftService {
             pick.setPickNumber(pickDTO.getPickNumber());
             pick.setPickedAt(LocalDateTime.now());
             picks.add(pick);
-            
-            // Update ADP for each picked player
-            playerService.updateADP(pickDTO.getPlayerId(), pickDTO.getPickNumber());
         }
         
         draft.setPicks(picks);

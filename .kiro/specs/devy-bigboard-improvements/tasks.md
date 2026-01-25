@@ -184,14 +184,14 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Test non-existent UUID returns 404
     - _Requirements: 4.2, 4.4, 4.5_
 
-- [ ] 8. Export functionality
-  - [ ] 8.1 Add export dependencies to build.gradle
+- [x] 8. Export functionality
+  - [x] 8.1 Add export dependencies to build.gradle
     - Add OpenCSV for CSV export
     - Add Apache PDFBox for PDF export
     - Add Jackson for JSON (already included)
     - _Requirements: 5.1, 5.2, 5.3_
   
-  - [ ] 8.2 Implement ExportService
+  - [x] 8.2 Implement ExportService
     - Implement exportToCSV() with proper formatting
     - Implement exportToJSON() with complete data
     - Implement exportToPDF() with printable layout
@@ -209,7 +209,7 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Verify JSON is valid and contains all fields
     - **Validates: Requirements 5.2**
   
-  - [ ] 8.5 Add export endpoints to DraftController
+  - [x] 8.5 Add export endpoints to DraftController
     - GET /api/drafts/{uuid}/export/csv
     - GET /api/drafts/{uuid}/export/json
     - GET /api/drafts/{uuid}/export/pdf
@@ -229,8 +229,8 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
     - Test export failure returns 500
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 9. Shareable links and draft viewing
-  - [ ] 9.1 Update DraftController to return shareable URL
+- [x] 9. Shareable links and draft viewing
+  - [x] 9.1 Update DraftController to return shareable URL
     - Modify POST /api/drafts response to include shareable URL
     - Format: {baseUrl}/drafts/{uuid}
     - _Requirements: 6.1_
