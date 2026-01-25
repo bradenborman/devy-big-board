@@ -246,7 +246,7 @@
 
     .current-pick-info {
         text-align: center;
-        padding: 0.75rem 1.25rem 0.5rem;
+        padding: 0.5rem 1.25rem 0.25rem;
         flex-shrink: 0;
 
         .pick-label {
@@ -264,7 +264,8 @@
         flex-direction: column;
         padding: 0 1.25rem 1rem;
         overflow: hidden;
-        justify-content: center;
+        justify-content: flex-start;
+        padding-top: 0.5rem;
 
         .selected-player-display {
             text-align: center;
@@ -382,7 +383,7 @@
             background: rgba(255, 255, 255, 0.08);
             border: 2px dashed rgba(255, 255, 255, 0.25);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -414,7 +415,7 @@
         backdrop-filter: blur(4px);
         z-index: 1000;
         display: flex;
-        align-items: flex-end;
+        align-items: stretch;
         animation: fadeIn 0.2s ease;
     }
 
@@ -425,7 +426,7 @@
         border-radius: 0;
         display: flex;
         flex-direction: column;
-        animation: slideUp 0.3s ease;
+        animation: slideUpFull 0.3s ease;
 
         .sheet-header {
             display: flex;
@@ -593,6 +594,17 @@
 @keyframes slideUp {
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
+}
+
+@keyframes slideUpFull {
+    from { 
+        opacity: 0;
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0); 
+    }
 }
 
 @keyframes slideDown {
