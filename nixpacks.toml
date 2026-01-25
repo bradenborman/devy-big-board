@@ -11,6 +11,8 @@ cmds = [
 [phases.build]
 cmds = [
   "chmod +x gradlew",
+  "cd app-client && pnpm run build",
+  "cp -r app-client/build/* app-server/src/main/resources/static/",
   "./gradlew clean build -x test"
 ]
 
