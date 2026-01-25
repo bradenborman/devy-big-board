@@ -19,7 +19,7 @@ public class PlayerDao {
 
     public List<PlayerWithAdp> getAllPlayers() {
         String sql = """
-        SELECT p.name, p.position, p.team, p.draftyear,
+        SELECT p.id, p.name, p.position, p.team, p.draftyear,
                COALESCE((
                    SELECT AVG(dp.pick_number)
                    FROM draft_picks dp
@@ -34,6 +34,7 @@ public class PlayerDao {
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Integer draftyear = rs.getObject("draftyear", Integer.class);
             return new PlayerWithAdp(
+                rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("position"),
                 rs.getString("team"),
@@ -45,7 +46,7 @@ public class PlayerDao {
 
     public List<PlayerWithAdp> getPlayersExcludingFilter(long filterId) {
         String sql = """
-        SELECT p.name, p.position, p.team, p.draftyear,
+        SELECT p.id, p.name, p.position, p.team, p.draftyear,
                COALESCE((
                    SELECT AVG(dp.pick_number)
                    FROM draft_picks dp
@@ -72,6 +73,7 @@ public class PlayerDao {
                 .query(sql, params, (rs, rowNum) -> {
                     Integer draftyear = rs.getObject("draftyear", Integer.class);
                     return new PlayerWithAdp(
+                        rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("position"),
                         rs.getString("team"),

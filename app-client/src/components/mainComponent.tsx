@@ -69,15 +69,25 @@ const MainComponent: React.FC = () => {
         if (allFilled) {
             const flatPlayers = players.flat().filter((p): p is Player => p !== null);
             
+            // Check if all players have IDs
+            const playersWithoutIds = flatPlayers.filter(p => !p.id);
+            if (playersWithoutIds.length > 0) {
+                console.error('Some players are missing IDs:', playersWithoutIds);
+                alert('Error: Some players are missing IDs. Cannot save draft.');
+                return;
+            }
+            
             // Prepare draft data for the new API
             const draftData = {
                 draftName: `${teams}-Team ${rounds}-Round Draft - ${new Date().toLocaleDateString()}`,
                 participantCount: teams,
                 picks: flatPlayers.map((player, index) => ({
-                    playerId: player.id || 0, // Use player ID
+                    playerId: player.id!,
                     pickNumber: index + 1
                 }))
             };
+
+            console.log('Saving draft with data:', draftData);
 
             fetch(`/api/drafts`, {
                 method: 'POST',
@@ -87,16 +97,16 @@ const MainComponent: React.FC = () => {
                 .then(async res => {
                     if (!res.ok) {
                         const errorText = await res.text();
+                        console.error('Server error response:', errorText);
                         throw new Error(`Failed to save draft: ${errorText}`);
                     }
                     const response = await res.json();
                     console.log('Draft saved successfully:', response);
-                    // Don't navigate automatically - let user stay on the board
-                    // They can use the Export button when ready
+                    alert(`Draft saved! UUID: ${response.uuid}`);
                 })
                 .catch(err => {
                     console.error("Error saving draft:", err);
-                    // Still show the export button even if save fails
+                    alert(`Failed to save draft: ${err.message}`);
                 });
 
         }
