@@ -31,6 +31,11 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const [searchTerm, setSearchTerm] = useState('');
     const [positionFilter, setPositionFilter] = useState<string>('ALL');
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+    // Minimum swipe distance (in px)
+    const minSwipeDistance = 50;
 
     useEffect(() => {
         fetch('/api/players/manage/headshots/available')
@@ -73,23 +78,30 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         }
     };
 
-    const getPreviousPickPlayer = () => {
-        // Get the player from the previous pick
-        if (currentPick > 1) {
-            return players[currentRound - 1]?.[currentPick - 2];
-        } else if (currentRound > 1) {
-            return players[currentRound - 2]?.[teams - 1];
-        }
-        return null;
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
     };
 
-    const getPreviousPickLabel = () => {
-        if (currentPick > 1) {
-            return `${currentRound}.${currentPick - 1}`;
-        } else if (currentRound > 1) {
-            return `${currentRound - 1}.${teams}`;
+    const onTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+        
+        if (isLeftSwipe) {
+            // Swipe left = go to next pick
+            goToNextPick();
         }
-        return null;
+        if (isRightSwipe) {
+            // Swipe right = go to previous pick
+            goToPreviousPick();
+        }
     };
 
     const filteredPlayers = playerPool.filter(player => {
@@ -99,8 +111,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     });
 
     const currentPlayer = getCurrentPickPlayer();
-    const previousPlayer = getPreviousPickPlayer();
-    const previousPickLabel = getPreviousPickLabel();
     const totalPicks = teams * rounds;
     const currentPickNumber = getPickNumber(currentRound, currentPick);
     const progress = (currentPickNumber / totalPicks) * 100;
@@ -137,39 +147,18 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
             </div>
 
             {/* Current Pick Card */}
-            <div className="current-pick-section">
-                {/* Last Picked Section */}
-                {previousPlayer && previousPickLabel && (
-                    <div className="last-picked-section">
-                        <div className="last-picked-label">Last Picked: {previousPickLabel}</div>
-                        <div className="last-picked-card">
-                            <div className="player-avatar-small">
-                                {playersWithHeadshots.has(previousPlayer.id!) ? (
-                                    <img 
-                                        src={`/api/players/manage/${previousPlayer.id}/headshot`}
-                                        alt={previousPlayer.name}
-                                        className="avatar-image"
-                                    />
-                                ) : (
-                                    <span className="avatar-icon-small">🏈</span>
-                                )}
-                            </div>
-                            <div className="last-picked-info">
-                                <div className="player-name-small">{previousPlayer.name}</div>
-                                <div className="player-meta-small">
-                                    <span className={`position-badge-small ${previousPlayer.position}`}>
-                                        {previousPlayer.position}
-                                    </span>
-                                    {previousPlayer.team && (
-                                        <span className="team-name-small">{previousPlayer.team}</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+            <div 
+                className="current-pick-section"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+            >
+                {/* Swipe indicator */}
+                <div className="swipe-indicator">
+                    <span className="swipe-hint">← Swipe to navigate →</span>
+                </div>
 
-                <div className="pick-label">Current Pick: {currentRound}.{currentPick}</div>
+                <div className="pick-label">Pick: {currentRound}.{currentPick}</div>
                 
                 {currentPlayer ? (
                     <div className="drafted-player-card">
@@ -207,29 +196,47 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                     <div className="empty-pick-card">
                         <div className="empty-icon">👤</div>
                         <div className="empty-text">No player selected</div>
+                        <button 
+                            className="draft-from-card-btn"
+                            onClick={() => setShowPlayerSheet(true)}
+                        >
+                            Select Player
+                        </button>
                     </div>
                 )}
-
-                {/* Navigation */}
-                <div className="pick-navigation">
-                    <button 
-                        className="nav-btn"
-                        onClick={goToPreviousPick}
-                        disabled={currentRound === 1 && currentPick === 1}
-                    >
-                        ← Previous
-                    </button>
-                    <button 
-                        className="nav-btn"
-                        onClick={goToNextPick}
-                        disabled={currentRound === rounds && currentPick === teams}
-                    >
-                        Next →
-                    </button>
-                </div>
             </div>
 
-            {/* Draft Button */}
+            {/* Navigation Dots */}
+            <div className="navigation-dots">
+                <button 
+                    className="nav-arrow"
+                    onClick={goToPreviousPick}
+                    disabled={currentRound === 1 && currentPick === 1}
+                >
+                    ‹
+                </button>
+                <div className="dots-container">
+                    {Array.from({ length: Math.min(totalPicks, 10) }).map((_, index) => {
+                        const pickNum = currentPickNumber - 5 + index;
+                        if (pickNum < 1 || pickNum > totalPicks) return null;
+                        return (
+                            <div
+                                key={pickNum}
+                                className={`dot ${pickNum === currentPickNumber ? 'active' : ''} ${players[Math.floor((pickNum - 1) / teams)]?.[((pickNum - 1) % teams)] ? 'filled' : ''}`}
+                            />
+                        );
+                    })}
+                </div>
+                <button 
+                    className="nav-arrow"
+                    onClick={goToNextPick}
+                    disabled={currentRound === rounds && currentPick === teams}
+                >
+                    ›
+                </button>
+            </div>
+
+            {/* Draft Button - only show if current pick is empty */}
             {!currentPlayer && (
                 <button 
                     className="draft-player-btn"
