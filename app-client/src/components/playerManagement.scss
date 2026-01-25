@@ -232,6 +232,29 @@
                 grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
                 gap: 1.5rem;
             }
+
+            .show-more-container {
+                margin-top: 1.5rem;
+                text-align: center;
+
+                .show-more-btn {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    border: 2px solid rgba(255, 255, 255, 0.2);
+                    padding: 0.75rem 2rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    transition: all 0.2s;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.15);
+                        border-color: rgba(255, 255, 255, 0.3);
+                        transform: translateY(-2px);
+                    }
+                }
+            }
         }
 
         .player-card {
@@ -364,26 +387,6 @@
                 .player-year {
                     color: rgba(255, 255, 255, 0.5);
                     font-size: 0.8rem;
-                    margin-bottom: 0.75rem;
-                }
-
-                .card-status {
-                    display: inline-block;
-                    padding: 0.25rem 0.75rem;
-                    border-radius: 12px;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    margin-top: 0.5rem;
-
-                    &.verified {
-                        background: rgba(76, 175, 80, 0.2);
-                        color: #4CAF50;
-                    }
-
-                    &.pending {
-                        background: rgba(255, 152, 0, 0.2);
-                        color: #FF9800;
-                    }
                 }
             }
         }

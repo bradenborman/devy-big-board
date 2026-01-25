@@ -14,6 +14,8 @@ interface PlayerWithId extends Player {
 
 type ViewMode = 'table' | 'cards';
 
+const INITIAL_CARDS_SHOWN = 8;
+
 const PlayerManagementPage: React.FC = () => {
     const navigate = useNavigate();
     const [players, setPlayers] = useState<PlayerWithId[]>([]);
@@ -26,6 +28,7 @@ const PlayerManagementPage: React.FC = () => {
     const [filter, setFilter] = useState<'all' | 'verified' | 'pending'>('all');
     const [viewMode, setViewMode] = useState<ViewMode>('cards');
     const [activeMenu, setActiveMenu] = useState<number | null>(null);
+    const [expandedPositions, setExpandedPositions] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         fetchPlayers();
@@ -145,6 +148,10 @@ const PlayerManagementPage: React.FC = () => {
     };
 
     const filteredPlayers = players.filter(p => {
+        // In card view, only show verified players
+        if (viewMode === 'cards' && !p.verified) return false;
+        
+        // Apply status filter
         if (filter === 'verified') return p.verified;
         if (filter === 'pending') return !p.verified;
         return true;
@@ -152,6 +159,21 @@ const PlayerManagementPage: React.FC = () => {
 
     const getPlayersByPosition = (position: string) => {
         return filteredPlayers.filter(p => p.position === position);
+    };
+
+    const getVisiblePlayers = (position: string) => {
+        const positionPlayers = getPlayersByPosition(position);
+        if (expandedPositions[position]) {
+            return positionPlayers;
+        }
+        return positionPlayers.slice(0, INITIAL_CARDS_SHOWN);
+    };
+
+    const togglePositionExpanded = (position: string) => {
+        setExpandedPositions(prev => ({
+            ...prev,
+            [position]: !prev[position]
+        }));
     };
 
     const getPlayerInitials = (name: string) => {
@@ -284,6 +306,10 @@ const PlayerManagementPage: React.FC = () => {
                     <div className="cards-view">
                         {['QB', 'RB', 'WR', 'TE'].map(position => {
                             const positionPlayers = getPlayersByPosition(position);
+                            const visiblePlayers = getVisiblePlayers(position);
+                            const hasMore = positionPlayers.length > INITIAL_CARDS_SHOWN;
+                            const isExpanded = expandedPositions[position];
+                            
                             if (positionPlayers.length === 0) return null;
                             
                             return (
@@ -292,7 +318,7 @@ const PlayerManagementPage: React.FC = () => {
                                         {position}s <span className="count">({positionPlayers.length})</span>
                                     </h2>
                                     <div className="player-cards-grid">
-                                        {positionPlayers.map(player => (
+                                        {visiblePlayers.map(player => (
                                             <div key={player.id} className="player-card">
                                                 <div className="card-menu">
                                                     <button 
@@ -333,13 +359,23 @@ const PlayerManagementPage: React.FC = () => {
                                                     {player.draftyear && (
                                                         <div className="player-year">Class of {player.draftyear}</div>
                                                     )}
-                                                    <div className={`card-status ${player.verified ? 'verified' : 'pending'}`}>
-                                                        {player.verified ? '✓ Verified' : '⏳ Pending'}
-                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
+                                    {hasMore && (
+                                        <div className="show-more-container">
+                                            <button 
+                                                className="show-more-btn"
+                                                onClick={() => togglePositionExpanded(position)}
+                                            >
+                                                {isExpanded 
+                                                    ? '↑ Show Less' 
+                                                    : `↓ Show ${positionPlayers.length - INITIAL_CARDS_SHOWN} More`
+                                                }
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
