@@ -6,6 +6,7 @@ export interface Player {
     name: string;
     position: string;
     team: string;
+    college?: string;
     draftyear: number;
     adp: number;
 }

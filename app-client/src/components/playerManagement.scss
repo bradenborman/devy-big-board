@@ -1,0 +1,187 @@
+.player-management-page {
+    .management-content {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+
+        h1 {
+            margin: 0;
+            color: white;
+        }
+
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #45a049;
+            }
+        }
+    }
+
+    .filter-section {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid transparent;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            &.active {
+                background: rgba(76, 175, 80, 0.2);
+                border-color: #4CAF50;
+                color: #4CAF50;
+            }
+        }
+    }
+
+    .loading {
+        text-align: center;
+        color: white;
+        font-size: 1.2rem;
+        padding: 3rem;
+    }
+
+    .players-table {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+
+            thead {
+                background: rgba(0, 0, 0, 0.3);
+
+                th {
+                    padding: 1rem;
+                    text-align: left;
+                    color: white;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    transition: background 0.2s;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.05);
+                    }
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+                }
+
+                td {
+                    padding: 1rem;
+                    color: white;
+
+                    &.actions {
+                        display: flex;
+                        gap: 0.5rem;
+                    }
+                }
+            }
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+
+            &.verified {
+                background: rgba(76, 175, 80, 0.2);
+                color: #4CAF50;
+            }
+
+            &.pending {
+                background: rgba(255, 152, 0, 0.2);
+                color: #FF9800;
+            }
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+
+            &:hover {
+                background: rgba(33, 150, 243, 0.3);
+            }
+        }
+
+        .delete-btn {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+
+            &:hover {
+                background: rgba(244, 67, 54, 0.3);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+        }
+    }
+
+    .edit-modal, .delete-modal {
+        min-width: 350px;
+
+        p {
+            margin: 1rem 0;
+            color: #333;
+        }
+
+        input[type="number"] {
+            margin: 5px 0;
+            padding: 8px;
+            font-size: 14px;
+        }
+    }
+}

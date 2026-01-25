@@ -23,6 +23,10 @@ public class PlayerDTO {
     @Size(max = 255, message = "College must not exceed 255 characters")
     private String college;
     
+    private Integer draftyear;
+    
+    private String verificationCode;
+    
     // Constructors
     public PlayerDTO() {
     }
@@ -65,5 +69,21 @@ public class PlayerDTO {
     
     public void setCollege(String college) {
         this.college = college;
+    }
+    
+    public Integer getDraftyear() {
+        return draftyear;
+    }
+    
+    public void setDraftyear(Integer draftyear) {
+        this.draftyear = draftyear;
+    }
+    
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+    
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 }

@@ -35,4 +35,14 @@ public class VerificationService {
         }
         return playerService.verifyPlayer(playerId);
     }
+    
+    /**
+     * Check if a provided code is valid.
+     * 
+     * @param providedSecret the secret code to check
+     * @return true if the code is valid, false otherwise
+     */
+    public boolean isValidCode(String providedSecret) {
+        return verificationSecret.equals(providedSecret);
+    }
 }

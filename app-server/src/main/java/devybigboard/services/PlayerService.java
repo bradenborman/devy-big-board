@@ -39,9 +39,56 @@ public class PlayerService {
         player.setPosition(playerDTO.getPosition());
         player.setTeam(playerDTO.getTeam());
         player.setCollege(playerDTO.getCollege());
+        player.setDraftyear(playerDTO.getDraftyear());
         player.setVerified(false);
         
         return playerRepository.save(player);
+    }
+    
+    /**
+     * Update an existing player.
+     * 
+     * @param playerId the ID of the player to update
+     * @param playerDTO the updated player data
+     * @return the updated player entity
+     * @throws PlayerNotFoundException if player does not exist
+     */
+    @Transactional
+    public Player updatePlayer(Long playerId, PlayerDTO playerDTO) {
+        validatePlayerData(playerDTO);
+        
+        Player player = playerRepository.findById(playerId)
+            .orElseThrow(() -> new PlayerNotFoundException(playerId));
+        
+        player.setName(playerDTO.getName());
+        player.setPosition(playerDTO.getPosition());
+        player.setTeam(playerDTO.getTeam());
+        player.setCollege(playerDTO.getCollege());
+        player.setDraftyear(playerDTO.getDraftyear());
+        
+        return playerRepository.save(player);
+    }
+    
+    /**
+     * Delete a player by ID.
+     * 
+     * @param playerId the ID of the player to delete
+     * @throws PlayerNotFoundException if player does not exist
+     */
+    @Transactional
+    public void deletePlayer(Long playerId) {
+        Player player = playerRepository.findById(playerId)
+            .orElseThrow(() -> new PlayerNotFoundException(playerId));
+        playerRepository.delete(player);
+    }
+    
+    /**
+     * Get all players (verified and pending).
+     * 
+     * @return list of all players
+     */
+    public List<Player> getAllPlayers() {
+        return playerRepository.findAll();
     }
     
     /**

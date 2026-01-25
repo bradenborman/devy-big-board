@@ -3,10 +3,11 @@ import './toast.scss';
 
 interface ToastProps {
     message: string;
+    type?: 'success' | 'error';
     duration?: number;
 }
 
-const Toast: React.FC<ToastProps> = ({ message, duration = 5000 }) => {
+const Toast: React.FC<ToastProps> = ({ message, type = 'success', duration = 5000 }) => {
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
@@ -20,7 +21,7 @@ const Toast: React.FC<ToastProps> = ({ message, duration = 5000 }) => {
     const fadeOutDelay = `${(duration - 500) / 1000}s`;
 
     return visible ? (
-        <div className="toast" style={{ '--fade-out-delay': fadeOutDelay } as React.CSSProperties}>
+        <div className={`toast toast-${type}`} style={{ '--fade-out-delay': fadeOutDelay } as React.CSSProperties}>
             {message}
         </div>
     ) : null;
