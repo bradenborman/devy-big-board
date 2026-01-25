@@ -110,113 +110,163 @@
         }
     }
 
-    .draft-history-carousel {
-        padding: 1rem 0 0.5rem;
-        background: rgba(0, 0, 0, 0.2);
+    .draft-carousel-container {
         flex-shrink: 0;
-        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 0.75rem 0;
 
         .carousel-label {
             text-align: center;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.4);
             margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 600;
+
+            .swipe-hint {
+                font-size: 0.7rem;
+                color: rgba(255, 255, 255, 0.4);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 600;
+            }
         }
 
-        .carousel-track {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0 1.25rem 1rem;
+        .draft-carousel {
             overflow-x: auto;
-            scroll-snap-type: x mandatory;
+            overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
 
             &::-webkit-scrollbar {
                 display: none;
             }
 
-            .carousel-card {
-                flex-shrink: 0;
-                width: 100px;
-                background: rgba(76, 175, 80, 0.15);
-                border: 1px solid rgba(76, 175, 80, 0.3);
-                border-radius: 12px;
-                padding: 0.75rem 0.5rem;
+            .carousel-track {
                 display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 0.5rem;
-                scroll-snap-align: start;
+                gap: 0.75rem;
+                padding: 0 1.25rem 0.75rem;
 
-                .carousel-pick-label {
-                    font-size: 0.7rem;
-                    color: rgba(255, 255, 255, 0.5);
-                    font-weight: 600;
-                }
-
-                .carousel-avatar {
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 50%;
-                    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    overflow: hidden;
+                .carousel-card {
                     flex-shrink: 0;
+                    width: 110px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 2px solid rgba(255, 255, 255, 0.15);
+                    border-radius: 14px;
+                    padding: 0.875rem 0.625rem;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.5rem;
+                    scroll-snap-align: center;
+                    transition: all 0.2s;
 
-                    .avatar-icon-small {
-                        font-size: 28px;
+                    &.current {
+                        border-color: #4facfe;
+                        box-shadow: 0 0 12px rgba(79, 172, 254, 0.4);
+                        background: rgba(79, 172, 254, 0.1);
                     }
 
-                    .avatar-image {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
+                    &.filled {
+                        background: rgba(76, 175, 80, 0.12);
+                        border-color: rgba(76, 175, 80, 0.3);
                     }
-                }
 
-                .carousel-player-name {
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    color: white;
-                    text-align: center;
-                    line-height: 1.2;
-                    max-height: 2.4em;
-                    overflow: hidden;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                }
+                    &.empty {
+                        border-style: dashed;
+                    }
 
-                .carousel-position-badge {
-                    font-weight: 700;
-                    padding: 2px 8px;
-                    border-radius: 6px;
-                    text-transform: uppercase;
-                    font-size: 0.65rem;
+                    .carousel-pick-label {
+                        font-size: 0.7rem;
+                        color: rgba(255, 255, 255, 0.6);
+                        font-weight: 700;
+                    }
 
-                    &.QB { background: #dbeafe; color: #1e40af; }
-                    &.RB { background: #f3e8ff; color: #7c3aed; }
-                    &.WR { background: #d1fae5; color: #065f46; }
-                    &.TE { background: #fef3c7; color: #92400e; }
+                    .carousel-avatar {
+                        width: 64px;
+                        height: 64px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        overflow: hidden;
+                        flex-shrink: 0;
+
+                        .avatar-icon-small {
+                            font-size: 32px;
+                        }
+
+                        .avatar-image {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                    }
+
+                    .carousel-empty {
+                        width: 64px;
+                        height: 64px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        .empty-avatar {
+                            font-size: 2rem;
+                            color: rgba(255, 255, 255, 0.2);
+                            font-weight: 300;
+                        }
+                    }
+
+                    .carousel-player-name {
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        color: white;
+                        text-align: center;
+                        line-height: 1.2;
+                        max-height: 2.4em;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                    }
+
+                    .carousel-position-badge {
+                        font-weight: 700;
+                        padding: 3px 10px;
+                        border-radius: 6px;
+                        text-transform: uppercase;
+                        font-size: 0.7rem;
+
+                        &.QB { background: #dbeafe; color: #1e40af; }
+                        &.RB { background: #f3e8ff; color: #7c3aed; }
+                        &.WR { background: #d1fae5; color: #065f46; }
+                        &.TE { background: #fef3c7; color: #92400e; }
+                    }
                 }
             }
         }
     }
 
-    .current-pick-container {
+    .current-pick-info {
+        text-align: center;
+        padding: 0.75rem 1.25rem 0.5rem;
+        flex-shrink: 0;
+
+        .pick-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+    }
+
+    .select-player-section {
         flex: 1;
         display: flex;
         flex-direction: column;
-        padding: 1rem 1.25rem;
+        padding: 0 1.25rem 1rem;
         overflow: hidden;
         justify-content: center;
 
-        .current-pick-label {
+        .selected-player-display {
             text-align: center;
             font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.5);
@@ -226,17 +276,16 @@
             font-weight: 600;
         }
 
-        .drafted-player-card {
+        .selected-player-display {
             background: white;
             border-radius: 20px;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.25rem;
+            gap: 1rem;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             position: relative;
-            margin-bottom: 1.5rem;
 
             .player-avatar-large {
                 width: 140px;
@@ -333,24 +382,24 @@
             background: rgba(255, 255, 255, 0.08);
             border: 2px dashed rgba(255, 255, 255, 0.25);
             border-radius: 20px;
-            padding: 3rem 2rem;
+            padding: 2.5rem 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.25rem;
+            gap: 1rem;
 
             .empty-icon {
-                font-size: 5rem;
-                opacity: 0.4;
+                font-size: 4rem;
+                opacity: 0.3;
             }
 
             .empty-text {
-                font-size: 1.1rem;
+                font-size: 1rem;
                 color: rgba(255, 255, 255, 0.5);
                 font-weight: 500;
             }
 
-            .draft-from-card-btn {
+            .select-player-btn {
                 margin-top: 0.5rem;
                 background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
                 color: white;
@@ -365,47 +414,6 @@
 
                 &:active {
                     transform: scale(0.98);
-                }
-            }
-        }
-    }
-
-    .upcoming-picks {
-        padding: 0.5rem 0 1rem;
-        background: rgba(0, 0, 0, 0.15);
-        flex-shrink: 0;
-
-        .upcoming-label {
-            text-align: center;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 600;
-        }
-
-        .upcoming-track {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0 1.25rem;
-            justify-content: center;
-
-            .upcoming-card {
-                flex-shrink: 0;
-                width: 80px;
-                height: 80px;
-                background: rgba(255, 255, 255, 0.05);
-                border: 2px dashed rgba(255, 255, 255, 0.2);
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                .upcoming-pick-number {
-                    font-size: 1.1rem;
-                    font-weight: 700;
-                    color: rgba(255, 255, 255, 0.4);
                 }
             }
         }
