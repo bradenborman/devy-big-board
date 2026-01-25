@@ -29,7 +29,7 @@ const PlayerManagementPage: React.FC = () => {
 
     const fetchPlayers = async () => {
         try {
-            const response = await fetch('/api/players');
+            const response = await fetch('/api/players/manage');
             if (response.ok) {
                 const data = await response.json();
                 setPlayers(data);
@@ -48,7 +48,7 @@ const PlayerManagementPage: React.FC = () => {
 
     const handleAddPlayer = async (player: Player, code?: string) => {
         try {
-            const response = await fetch('/api/players', {
+            const response = await fetch('/api/players/manage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -85,7 +85,7 @@ const PlayerManagementPage: React.FC = () => {
         }
 
         try {
-            const response = await fetch(`/api/players/${editingPlayer.id}`, {
+            const response = await fetch(`/api/players/manage/${editingPlayer.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -121,7 +121,7 @@ const PlayerManagementPage: React.FC = () => {
         }
 
         try {
-            const response = await fetch(`/api/players/${playerId}?code=${encodeURIComponent(verificationCode)}`, {
+            const response = await fetch(`/api/players/manage/${playerId}?code=${encodeURIComponent(verificationCode)}`, {
                 method: 'DELETE'
             });
 

@@ -22,7 +22,7 @@ Players can be in one of two states:
 ### Operations
 
 #### 1. Add Player
-- **Endpoint**: `POST /api/players`
+- **Endpoint**: `POST /api/players/manage`
 - **Code Required**: Optional
 - **Behavior**:
   - If verification code is provided and correct → Player is created as **verified**
@@ -30,22 +30,30 @@ Players can be in one of two states:
 - **Use Case**: Anyone can submit players, but only admins can verify them immediately
 
 #### 2. Edit Player
-- **Endpoint**: `PUT /api/players/{id}`
+- **Endpoint**: `PUT /api/players/manage/{id}`
 - **Code Required**: Yes (in request body as `verificationCode`)
 - **Behavior**: Only users with the correct verification code can edit players
 - **Use Case**: Prevents unauthorized modifications to player data
 
 #### 3. Delete Player
-- **Endpoint**: `DELETE /api/players/{id}?code={code}`
+- **Endpoint**: `DELETE /api/players/manage/{id}?code={code}`
 - **Code Required**: Yes (as query parameter)
 - **Behavior**: Only users with the correct verification code can delete players
 - **Use Case**: Prevents unauthorized deletion of player data
 
 #### 4. Verify Pending Player
-- **Endpoint**: `POST /api/players/{id}/verify?code={code}`
+- **Endpoint**: `POST /api/players/manage/{id}/verify?code={code}`
 - **Code Required**: Yes (as query parameter)
 - **Behavior**: Changes a pending player to verified status
 - **Use Case**: Admins can verify community-submitted players
+
+#### 5. Get All Players (Management)
+- **Endpoint**: `GET /api/players/manage`
+- **Code Required**: No
+- **Behavior**: Returns all players (verified and pending) with full details
+- **Use Case**: Player management interface
+
+**Note**: The original `GET /api/players` endpoint still exists and returns only verified players with ADP data for draft purposes.
 
 ## Frontend Implementation
 
@@ -122,7 +130,7 @@ VERIFICATION_SECRET=your-secure-random-string-here
 
 ### Add Verified Player (with code)
 ```bash
-curl -X POST http://localhost:8080/api/players \
+curl -X POST http://localhost:8080/api/players/manage \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -136,7 +144,7 @@ curl -X POST http://localhost:8080/api/players \
 
 ### Add Pending Player (no code)
 ```bash
-curl -X POST http://localhost:8080/api/players \
+curl -X POST http://localhost:8080/api/players/manage \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Jane Smith",
@@ -149,7 +157,7 @@ curl -X POST http://localhost:8080/api/players \
 
 ### Edit Player
 ```bash
-curl -X PUT http://localhost:8080/api/players/1 \
+curl -X PUT http://localhost:8080/api/players/manage/1 \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe Updated",
@@ -163,12 +171,17 @@ curl -X PUT http://localhost:8080/api/players/1 \
 
 ### Delete Player
 ```bash
-curl -X DELETE "http://localhost:8080/api/players/1?code=your-secret-code"
+curl -X DELETE "http://localhost:8080/api/players/manage/1?code=your-secret-code"
 ```
 
 ### Verify Pending Player
 ```bash
-curl -X POST "http://localhost:8080/api/players/1/verify?code=your-secret-code"
+curl -X POST "http://localhost:8080/api/players/manage/1/verify?code=your-secret-code"
+```
+
+### Get All Players (Management)
+```bash
+curl http://localhost:8080/api/players/manage
 ```
 
 ## Testing

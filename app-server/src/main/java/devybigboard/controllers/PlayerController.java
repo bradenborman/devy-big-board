@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 
 /**
  * REST controller for player management operations.
- * Provides endpoints for creating players, retrieving verified players, and verifying players.
+ * Provides endpoints for creating players, retrieving all players (including pending), and managing players.
  */
 @RestController
-@RequestMapping("/api/players")
+@RequestMapping("/api/players/manage")
 public class PlayerController {
     
     private final PlayerService playerService;
