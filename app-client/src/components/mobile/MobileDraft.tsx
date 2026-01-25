@@ -28,7 +28,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const [currentRound, setCurrentRound] = useState(1);
     const [currentPick, setCurrentPick] = useState(1);
     const [showPlayerSheet, setShowPlayerSheet] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
     const [positionFilter, setPositionFilter] = useState<string>('ALL');
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
     const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -105,9 +104,8 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     };
 
     const filteredPlayers = playerPool.filter(player => {
-        const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
-        return matchesSearch && matchesPosition;
+        return matchesPosition;
     });
 
     const currentPlayer = getCurrentPickPlayer();
@@ -247,8 +245,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                     </div>
                 ) : (
                     <div className="empty-pick-card">
-                        <div className="empty-icon">👤</div>
-                        <div className="empty-text">No player selected</div>
                         <button 
                             className="select-player-btn"
                             onClick={() => setShowPlayerSheet(true)}
@@ -259,16 +255,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                 )}
             </div>
 
-            {/* Quick Select Button - Always at bottom */}
-            {!currentPlayer && (
-                <button 
-                    className="draft-player-btn"
-                    onClick={() => setShowPlayerSheet(true)}
-                >
-                    Select Player for Pick {currentRound}.{currentPick}
-                </button>
-            )}
-
             {/* Player Selection Sheet */}
             {showPlayerSheet && (
                 <div className="player-sheet-overlay" onClick={() => setShowPlayerSheet(false)}>
@@ -278,17 +264,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                             <button className="close-btn" onClick={() => setShowPlayerSheet(false)}>
                                 ✕
                             </button>
-                        </div>
-
-                        {/* Search */}
-                        <div className="sheet-search">
-                            <input 
-                                type="text"
-                                placeholder="Search players..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                autoFocus
-                            />
                         </div>
 
                         {/* Position Filter */}
