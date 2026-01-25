@@ -41,7 +41,7 @@ const BoardParameters: React.FC<BoardParamsProps> = ({ teams, rounds, handleTeam
                         value={rounds}
                         onChange={handleRoundsChange}
                         min="1"
-                        max="15"
+                        max="7"
                         step="1"
                     />
                 </div>
