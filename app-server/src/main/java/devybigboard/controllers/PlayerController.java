@@ -12,6 +12,8 @@ import devybigboard.services.AssetService;
 import devybigboard.services.PlayerService;
 import devybigboard.services.VerificationService;
 import jakarta.validation.Valid;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,6 +86,7 @@ public class PlayerController {
      * @throws PlayerNotFoundException if the player does not exist (returns 404)
      */
     @PostMapping("/{id}/headshot")
+    @CacheEvict(value = "playerHeadshots", key = "#id")
     public ResponseEntity<PlayerResponse> uploadHeadshot(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
@@ -162,10 +165,14 @@ public class PlayerController {
      * Get player headshot image by player ID.
      * GET /api/players/manage/{id}/headshot
      * 
+     * Cached to reduce S3 egress costs. Cache is evicted when a new headshot is uploaded.
+     * Only caches non-null results (when headshot exists).
+     * 
      * @param id the player ID
      * @return The image file or 404 if not found
      */
     @GetMapping("/{id}/headshot")
+    @Cacheable(value = "playerHeadshots", key = "#id", unless = "#result == null || #result.body == null")
     public ResponseEntity<byte[]> getPlayerHeadshot(@PathVariable Long id) {
         try {
             Optional<PlayerAsset> asset = playerAssetRepository.findByPlayerId(id);
@@ -245,6 +252,8 @@ public class PlayerController {
      * Delete a player (requires verification code).
      * DELETE /api/players/{id}
      * 
+     * Also evicts the headshot cache for this player.
+     * 
      * @param id the player ID
      * @param code the verification secret code
      * @return 204 No Content
@@ -252,6 +261,7 @@ public class PlayerController {
      * @throws PlayerNotFoundException if the player does not exist (returns 404)
      */
     @DeleteMapping("/{id}")
+    @CacheEvict(value = "playerHeadshots", key = "#id")
     public ResponseEntity<Void> deletePlayer(
             @PathVariable Long id,
             @RequestParam String code) {
