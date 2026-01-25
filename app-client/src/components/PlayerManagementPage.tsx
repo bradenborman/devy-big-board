@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddPlayerModal from './AddPlayerModal';
+import EditPlayerModal from './EditPlayerModal';
 import { Player } from './bigBoard';
 import Toast from './Toast';
 import './stub-page.scss';
@@ -10,6 +11,7 @@ interface PlayerWithId extends Player {
     id?: number;
     verified?: boolean;
     createdAt?: string;
+    imageUrl?: string;
 }
 
 type ViewMode = 'table' | 'cards';
@@ -85,23 +87,18 @@ const PlayerManagementPage: React.FC = () => {
         }
     };
 
-    const handleUpdatePlayer = async () => {
-        if (!editingPlayer || !verificationCode) {
-            showToast('Verification code is required', 'error');
-            return;
-        }
-
+    const handleUpdatePlayer = async (player: PlayerWithId, code: string) => {
         try {
-            const response = await fetch(`/api/players/manage/${editingPlayer.id}`, {
+            const response = await fetch(`/api/players/manage/${player.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: editingPlayer.name,
-                    position: editingPlayer.position,
-                    team: editingPlayer.team,
-                    college: editingPlayer.college,
-                    draftyear: editingPlayer.draftyear,
-                    verificationCode
+                    name: player.name,
+                    position: player.position,
+                    team: player.team,
+                    college: player.college,
+                    draftyear: player.draftyear,
+                    verificationCode: code
                 })
             });
 
@@ -109,7 +106,6 @@ const PlayerManagementPage: React.FC = () => {
                 const updated = await response.json();
                 setPlayers(players.map(p => p.id === updated.id ? updated : p));
                 setEditingPlayer(null);
-                setVerificationCode('');
                 showToast('Player updated successfully', 'success');
             } else if (response.status === 403) {
                 showToast('Invalid verification code', 'error');
@@ -372,7 +368,20 @@ const PlayerManagementPage: React.FC = () => {
                                                     )}
                                                 </div>
                                                 <div className="player-avatar">
-                                                    {getPlayerInitials(player.name)}
+                                                    {player.imageUrl ? (
+                                                        <img 
+                                                            src={player.imageUrl} 
+                                                            alt={player.name}
+                                                            style={{ 
+                                                                width: '100%', 
+                                                                height: '100%', 
+                                                                objectFit: 'cover',
+                                                                borderRadius: '50%'
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        getPlayerInitials(player.name)
+                                                    )}
                                                 </div>
                                                 <div className="player-info">
                                                     <h3 className="player-name">{player.name}</h3>
@@ -421,57 +430,12 @@ const PlayerManagementPage: React.FC = () => {
                 onSubmit={handleAddPlayer}
             />
 
-            {editingPlayer && (
-                <div className="modal-overlay" onClick={() => setEditingPlayer(null)}>
-                    <div className="modal-content edit-modal" onClick={(e) => e.stopPropagation()}>
-                        <h2>Edit Player</h2>
-                        <input 
-                            placeholder="Name *" 
-                            value={editingPlayer.name} 
-                            onChange={(e) => setEditingPlayer({...editingPlayer, name: e.target.value})} 
-                        />
-                        <select 
-                            value={editingPlayer.position} 
-                            onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})}
-                        >
-                            <option value="QB">QB</option>
-                            <option value="RB">RB</option>
-                            <option value="WR">WR</option>
-                            <option value="TE">TE</option>
-                        </select>
-                        <input 
-                            placeholder="Team" 
-                            value={editingPlayer.team || ''} 
-                            onChange={(e) => setEditingPlayer({...editingPlayer, team: e.target.value})} 
-                        />
-                        <input 
-                            placeholder="College" 
-                            value={editingPlayer.college || ''} 
-                            onChange={(e) => setEditingPlayer({...editingPlayer, college: e.target.value})} 
-                        />
-                        <input 
-                            type="number"
-                            placeholder="Draft Year" 
-                            value={editingPlayer.draftyear || ''} 
-                            onChange={(e) => setEditingPlayer({...editingPlayer, draftyear: parseInt(e.target.value)})} 
-                        />
-                        <div className="verification-section">
-                            <input 
-                                type="password"
-                                placeholder="Verification Code *" 
-                                value={verificationCode} 
-                                onChange={(e) => setVerificationCode(e.target.value)} 
-                            />
-                            <small className="help-text">Required to edit players</small>
-                        </div>
-                        <button onClick={handleUpdatePlayer}>Update</button>
-                        <button className="cancel" onClick={() => {
-                            setEditingPlayer(null);
-                            setVerificationCode('');
-                        }}>Cancel</button>
-                    </div>
-                </div>
-            )}
+            <EditPlayerModal
+                visible={!!editingPlayer}
+                player={editingPlayer}
+                onClose={() => setEditingPlayer(null)}
+                onSubmit={handleUpdatePlayer}
+            />
 
             {deleteConfirm && (
                 <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
