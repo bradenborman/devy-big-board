@@ -253,6 +253,12 @@ const MainComponent: React.FC = () => {
     };
 
     const isBoardPopulated = players.some((row) => row.some((cell) => cell !== null));
+    const isDraftComplete = players.length > 0 && players.every(row => row.every(cell => cell !== null));
+
+    const handleExportDraft = () => {
+        // Placeholder for future export functionality
+        console.log('Export draft clicked');
+    };
 
     return (
         <div className={`main-component ${!isGridCreated ? 'center-content' : ''}`}>
@@ -348,6 +354,13 @@ const MainComponent: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
+                            {isDraftComplete && (
+                                <div className="export-section">
+                                    <button className="export-btn" onClick={handleExportDraft}>
+                                        📋 Export Draft
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                     
