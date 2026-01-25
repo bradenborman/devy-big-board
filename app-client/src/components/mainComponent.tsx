@@ -31,6 +31,8 @@ const MainComponent: React.FC = () => {
     const [isGridCreated, setIsGridCreated] = useState<boolean>(hasValidParams);
 
     const [playerListOpen, setPlayerListOpen] = useState<boolean>(true);
+    const [activePositionFilters, setActivePositionFilters] = useState<string[]>([]);
+    const [activeYearFilters, setActiveYearFilters] = useState<number[]>([]);
 
     const [playerPool, setPlayerPool] = useState<Player[]>([]);
     const [tierBreaks, setTierBreaks] = useState<{ row: number; col: number }[]>([]);
@@ -38,6 +40,25 @@ const MainComponent: React.FC = () => {
     const [menuVisible, setMenuVisible] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+
+    const currentYear = new Date().getFullYear();
+    const yearRange = Array.from({ length: 4 }, (_, i) => currentYear + i);
+
+    const togglePositionFilter = (position: string) => {
+        if (position === 'ALL') {
+            setActivePositionFilters([]);
+        } else {
+            setActivePositionFilters((prev) =>
+                prev.includes(position) ? prev.filter((p) => p !== position) : [...prev, position]
+            );
+        }
+    };
+
+    const toggleYearFilter = (year: number) => {
+        setActiveYearFilters((prev) =>
+            prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
+        );
+    };
 
     useEffect(() => {
         if (hasValidParams) {
@@ -290,13 +311,55 @@ const MainComponent: React.FC = () => {
                         onClose={() => setShowAddPlayerModal(false)}
                         onSubmit={addNewPlayer}
                     />
-                    <PlayerList
-                        playerPool={playerPool}
-                        addPlayerToNextOpenSpot={addPlayerToNextOpenSpot}
-                        playerListOpen={playerListOpen}
-                    />
-
+                    
+                    {playerListOpen && (
+                        <div className="filter-toolbar">
+                            <div className="filter-section">
+                                <span className="filter-label">Position:</span>
+                                <div className="filter-buttons">
+                                    <button
+                                        className={`filter-btn ${activePositionFilters.length === 0 ? 'active' : ''}`}
+                                        onClick={() => togglePositionFilter('ALL')}
+                                    >
+                                        All
+                                    </button>
+                                    {['QB', 'RB', 'WR', 'TE'].map((position) => (
+                                        <button
+                                            key={position}
+                                            className={`filter-btn ${activePositionFilters.includes(position) ? 'active' : ''}`}
+                                            onClick={() => togglePositionFilter(position)}
+                                        >
+                                            {position}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="filter-section">
+                                <span className="filter-label">Draft Class:</span>
+                                <div className="filter-buttons">
+                                    {yearRange.map((year) => (
+                                        <button
+                                            key={year}
+                                            className={`filter-btn ${activeYearFilters.includes(year) ? 'active' : ''}`}
+                                            onClick={() => toggleYearFilter(year)}
+                                        >
+                                            {year}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
                     <div className="board-content-wrapper">
+                        <PlayerList
+                            playerPool={playerPool}
+                            addPlayerToNextOpenSpot={addPlayerToNextOpenSpot}
+                            playerListOpen={playerListOpen}
+                            activePositionFilters={activePositionFilters}
+                            activeYearFilters={activeYearFilters}
+                        />
+                        
                         <BigBoard
                             rounds={rounds}
                             teams={teams}
