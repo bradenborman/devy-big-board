@@ -40,6 +40,7 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
     const imgRef = useRef<HTMLImageElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null);
+    const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(null);
 
     useEffect(() => {
         if (player) {
@@ -134,12 +135,22 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
         setSelectedImage(null);
         setCroppedImageBlob(null);
         setCompletedCrop(null);
+        if (croppedPreviewUrl) {
+            URL.revokeObjectURL(croppedPreviewUrl);
+            setCroppedPreviewUrl(null);
+        }
     };
 
     const handleCropComplete = async (crop: PixelCrop) => {
         setCompletedCrop(crop);
         const blob = await getCroppedImg();
         setCroppedImageBlob(blob);
+        
+        // Create preview URL
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            setCroppedPreviewUrl(url);
+        }
     };
 
     const handleClose = () => {
@@ -174,9 +185,37 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
                         {!selectedImage ? (
                             <div 
                                 className="image-upload-placeholder"
-                                onClick={() => fileInputRef.current?.click()}
+                                onClick={() => !croppedPreviewUrl && fileInputRef.current?.click()}
                             >
-                                {currentImageUrl ? (
+                                {croppedPreviewUrl ? (
+                                    <div className="cropped-preview">
+                                        <img 
+                                            src={croppedPreviewUrl} 
+                                            alt="Cropped preview"
+                                            style={{ 
+                                                width: '150px', 
+                                                height: '150px', 
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '3px solid #4CAF50'
+                                            }}
+                                        />
+                                        <div style={{ marginTop: '1rem', color: '#4CAF50', fontWeight: 600 }}>
+                                            ✓ New image ready to upload
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            className="btn-change-image"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                fileInputRef.current?.click();
+                                            }}
+                                            style={{ marginTop: '0.5rem' }}
+                                        >
+                                            Change Image
+                                        </button>
+                                    </div>
+                                ) : currentImageUrl ? (
                                     <>
                                         <img 
                                             src={currentImageUrl} 
@@ -189,22 +228,12 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ visible, player, onCl
                                             }}
                                         />
                                         <p>Click to change headshot</p>
-                                        {croppedImageBlob && (
-                                            <div style={{ marginTop: '0.5rem', color: '#4CAF50' }}>
-                                                ✓ New image ready to upload
-                                            </div>
-                                        )}
                                     </>
                                 ) : (
                                     <>
                                         <div className="upload-icon">📷</div>
                                         <p>Click to upload headshot</p>
                                         <small>Recommended: Square image, min 200x200px</small>
-                                        {croppedImageBlob && (
-                                            <div style={{ marginTop: '1rem', color: '#4CAF50' }}>
-                                                ✓ Image ready to upload
-                                            </div>
-                                        )}
                                     </>
                                 )}
                             </div>

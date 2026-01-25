@@ -115,7 +115,7 @@ const MainComponent: React.FC = () => {
                     }
                     const response = await res.json();
                     console.log('Draft saved successfully:', response);
-                    alert(`Draft saved! UUID: ${response.uuid}`);
+                    // Draft saved silently - no alert needed
                 })
                 .catch(err => {
                     console.error("Error saving draft:", err);
