@@ -28,16 +28,20 @@ public class PlayerDao {
                      AND d.type = 'offline'
                ), 999) AS adp
         FROM players p
+        WHERE p.verified = true
         ORDER BY adp
     """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new PlayerWithAdp(
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Integer draftyear = rs.getObject("draftyear", Integer.class);
+            return new PlayerWithAdp(
                 rs.getString("name"),
                 rs.getString("position"),
                 rs.getString("team"),
-                rs.getInt("draftyear"),
+                draftyear != null ? draftyear : 0,
                 rs.getDouble("adp")
-        ));
+            );
+        });
     }
 
     public List<PlayerWithAdp> getPlayersExcludingFilter(long filterId) {
@@ -51,7 +55,8 @@ public class PlayerDao {
                      AND d.type = 'offline'
                ), 999) AS adp
         FROM players p
-        WHERE NOT EXISTS (
+        WHERE p.verified = true
+          AND NOT EXISTS (
             SELECT 1
             FROM filter_players fp
             WHERE fp.filter_id = :filterId
@@ -66,13 +71,16 @@ public class PlayerDao {
                 .addValue("filterId", filterId);
 
         return new NamedParameterJdbcTemplate(jdbcTemplate)
-                .query(sql, params, (rs, rowNum) -> new PlayerWithAdp(
+                .query(sql, params, (rs, rowNum) -> {
+                    Integer draftyear = rs.getObject("draftyear", Integer.class);
+                    return new PlayerWithAdp(
                         rs.getString("name"),
                         rs.getString("position"),
                         rs.getString("team"),
-                        rs.getInt("draftyear"),
+                        draftyear != null ? draftyear : 0,
                         rs.getDouble("adp")
-                ));
+                    );
+                });
     }
 
 
