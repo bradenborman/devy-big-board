@@ -1,31 +1,26 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
+import HomePage from './HomePage';
 import MainComponent from './mainComponent';
+import LiveDraftPage from './LiveDraftPage';
+import PlayerManagementPage from './PlayerManagementPage';
 import ConsentBanner from './ConsentBanner';
 import CompletedDraft from './CompletedDraft';
-import LeagueFiltersPage from './LeagueFiltersPage';
 
 const AppWrapper: React.FC = () => {
-    // useEffect(() => {
-    //     if (
-    //         window.location.protocol === 'http:' &&
-    //         window.location.hostname !== 'localhost'
-    //     ) {
-    //         window.location.href = window.location.href.replace('http:', 'https:');
-    //     }
-    // }, []);
-
     return (
         <BrowserRouter>
             <ConsentBanner />
             <Routes>
-                <Route path="/" element={
+                <Route path="/" element={<HomePage />} />
+                <Route path="/offline-draft" element={
                     <div className="app-wrapper">
                         <MainComponent />
                     </div>
                 } />
+                <Route path="/live-draft" element={<LiveDraftPage />} />
+                <Route path="/player-management" element={<PlayerManagementPage />} />
                 <Route path="/draft/:uuid" element={<DraftRoute />} />
-                <Route path="/league-filters" element={<LeagueFiltersPage />} />
             </Routes>
         </BrowserRouter>
     );

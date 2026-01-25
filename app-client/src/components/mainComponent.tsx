@@ -18,11 +18,8 @@ const MainComponent: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const teamsFromURL = Number(params.get('teams'));
     const roundsFromURL = Number(params.get('rounds'));
-    const filterIdFromURL = params.get('filterId');
-
 
     const hasValidParams = (teamsFromURL > 0 && teamsFromURL <= 16) && (roundsFromURL > 0 && roundsFromURL <= 15);
-
 
     const [teams, setTeams] = useState<number>(teamsFromURL || 12);
     const [rounds, setRounds] = useState<number>(roundsFromURL || 3);
@@ -48,7 +45,6 @@ const MainComponent: React.FC = () => {
         }
     }, [hasValidParams, roundsFromURL, teamsFromURL]);
 
-
     /*
     Logic that makes a call to update ADP when its filled out 
     */
@@ -57,9 +53,8 @@ const MainComponent: React.FC = () => {
 
         if (allFilled) {
             const flatPlayers = players.flat().filter((p): p is Player => p !== null);
-            const draftType = filterIdFromURL ? "filtered" : "offline";
 
-            fetch(`/api/draft/complete?draftType=${draftType}`, {
+            fetch(`/api/draft/complete?draftType=offline`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(flatPlayers),
@@ -74,7 +69,6 @@ const MainComponent: React.FC = () => {
         }
     }, [players]);
 
-
     const resetDraft = () => {
         setTeams(12);
         setRounds(3);
@@ -84,7 +78,6 @@ const MainComponent: React.FC = () => {
         setMenuVisible(false);
         setShowAddPlayerModal(false);
     };
-
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -111,13 +104,11 @@ const MainComponent: React.FC = () => {
         setTierBreaks((prev) => prev.slice(0, -1));
     };
 
-    // const clearTierBreaks = () => setTierBreaks([]);
-
     const addNewPlayer = (player: Player) => {
         setPlayerPool((prev) => [player, ...prev]);
     };
 
-    const setDefaultPlayerPool = () => {
+    const loadPlayerPool = () => {
         fetch("/api/players")
             .then((res) => res.json())
             .then((data: Player[]) => setPlayerPool(data))
@@ -125,16 +116,8 @@ const MainComponent: React.FC = () => {
     };
 
     useEffect(() => {
-        if (filterIdFromURL) {
-            fetch(`/api/players/filter/${filterIdFromURL}`)
-                .then((res) => res.json())
-                .then((data: Player[]) => setPlayerPool(data))
-                .catch((err) => console.error("Failed to fetch players with filter:", err));
-        } else {
-            setDefaultPlayerPool();
-        }
-    }, [filterIdFromURL]);
-
+        loadPlayerPool();
+    }, []);
 
     const createGrid = () => {
         const searchParams = new URLSearchParams(location.search);
@@ -147,8 +130,6 @@ const MainComponent: React.FC = () => {
         setPlayers(Array.from({ length: rounds }, () => Array(teams).fill(null)));
         setIsGridCreated(true);
     };
-
-
 
     const addPlayerToNextOpenSpot = (player: Player) => {
         setPlayers((prevPlayers) => {
@@ -203,7 +184,7 @@ const MainComponent: React.FC = () => {
     };
 
     const clearBoard = () => {
-        setDefaultPlayerPool();
+        loadPlayerPool();
         setPlayers(Array.from({ length: rounds }, () => Array(teams).fill(null)));
     };
 
@@ -303,7 +284,6 @@ const MainComponent: React.FC = () => {
                         playerListOpen={playerListOpen}
                         setPlayerListOpen={setPlayerListOpen}
                     />
-
 
                     <AddPlayerModal
                         visible={showAddPlayerModal}
