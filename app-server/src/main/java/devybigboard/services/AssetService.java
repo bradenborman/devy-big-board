@@ -16,10 +16,14 @@ public class AssetService {
 
     private final S3Client s3Client;
     private final String bucketName;
+    private final String endpoint;
 
-    public AssetService(S3Client s3Client, @Value("${app.s3.bucket-name}") String bucketName) {
+    public AssetService(S3Client s3Client, 
+                       @Value("${app.s3.bucket-name}") String bucketName,
+                       @Value("${app.s3.endpoint}") String endpoint) {
         this.s3Client = s3Client;
         this.bucketName = bucketName;
+        this.endpoint = endpoint;
     }
 
     /**
@@ -135,12 +139,12 @@ public class AssetService {
 
     private String getPublicUrl(String fileKey) {
         // Railway storage uses the endpoint URL + bucket + key
-        return String.format("%s/%s/%s", s3Client.serviceClientConfiguration().endpointOverride().get(), bucketName, fileKey);
+        return String.format("%s/%s/%s", endpoint, bucketName, fileKey);
     }
 
     private String extractKeyFromUrl(String publicUrl) {
         // Extract the key from the public URL
-        String prefix = String.format("%s/%s/", s3Client.serviceClientConfiguration().endpointOverride().get(), bucketName);
+        String prefix = String.format("%s/%s/", endpoint, bucketName);
         return publicUrl.replace(prefix, "");
     }
 }
