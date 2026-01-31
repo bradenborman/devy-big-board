@@ -1,9 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './stub-page.scss';
 
+interface LobbyDraft {
+    uuid: string;
+    draftName: string;
+    createdBy: string;
+    participantCount: number;
+    totalRounds: number;
+    lobbyUrl: string;
+    createdAt: string;
+}
+
 const LiveDraftPage: React.FC = () => {
     const navigate = useNavigate();
+    const [lobbyDrafts, setLobbyDrafts] = useState<LobbyDraft[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchLobbyDrafts();
+    }, []);
+
+    const fetchLobbyDrafts = async () => {
+        try {
+            const response = await fetch('/api/live-drafts/lobbies');
+            if (response.ok) {
+                const data = await response.json();
+                setLobbyDrafts(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch lobby drafts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleJoinLobby = (uuid: string) => {
+        navigate(`/draft/${uuid}/lobby`);
+    };
 
     return (
         <div className="stub-page">
@@ -29,6 +63,48 @@ const LiveDraftPage: React.FC = () => {
                         Start a Draft
                     </button>
                 </div>
+
+                {loading ? (
+                    <div className="lobbies-loading">
+                        <div className="spinner"></div>
+                        <p>Loading available lobbies...</p>
+                    </div>
+                ) : lobbyDrafts.length > 0 ? (
+                    <div className="lobbies-section">
+                        <h2>Available Lobbies</h2>
+                        <p className="lobbies-subtitle">Join an existing draft lobby</p>
+                        <div className="lobbies-list">
+                            {lobbyDrafts.map((draft) => (
+                                <div key={draft.uuid} className="lobby-card">
+                                    <div className="lobby-header">
+                                        <h3>{draft.draftName}</h3>
+                                        <span className="lobby-badge">Lobby</span>
+                                    </div>
+                                    <div className="lobby-details">
+                                        <div className="detail-item">
+                                            <span className="detail-label">Created by:</span>
+                                            <span className="detail-value">{draft.createdBy}</span>
+                                        </div>
+                                        <div className="detail-item">
+                                            <span className="detail-label">Teams:</span>
+                                            <span className="detail-value">{draft.participantCount}</span>
+                                        </div>
+                                        <div className="detail-item">
+                                            <span className="detail-label">Rounds:</span>
+                                            <span className="detail-value">{draft.totalRounds}</span>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        className="join-btn"
+                                        onClick={() => handleJoinLobby(draft.uuid)}
+                                    >
+                                        Join Lobby
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

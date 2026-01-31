@@ -54,6 +54,16 @@ public class DraftService {
     }
     
     /**
+     * Get all drafts currently in LOBBY status.
+     * 
+     * @return list of drafts in lobby status, ordered by creation date (most recent first)
+     */
+    @Transactional(readOnly = true)
+    public List<Draft> getAllLobbyDrafts() {
+        return draftRepository.findByStatusOrderByCreatedAtDesc("LOBBY");
+    }
+    
+    /**
      * Get the complete lobby state including draft and all participants.
      * 
      * @param uuid the unique identifier of the draft

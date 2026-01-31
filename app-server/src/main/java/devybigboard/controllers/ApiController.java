@@ -277,5 +277,27 @@ public class ApiController {
             draft.getCreatedBy()
         );
     }
+    
+    /**
+     * Get all drafts currently in LOBBY status.
+     * GET /api/live-drafts/lobbies
+     * 
+     * @param servletRequest the HTTP servlet request to extract base URL
+     * @return 200 OK with list of lobby drafts including join URLs
+     */
+    @GetMapping("/live-drafts/lobbies")
+    public java.util.List<devybigboard.models.LiveDraftResponse> getAllLobbyDrafts(
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        
+        java.util.List<devybigboard.models.Draft> lobbyDrafts = draftService.getAllLobbyDrafts();
+        String baseUrl = getBaseUrl(servletRequest);
+        
+        return lobbyDrafts.stream()
+            .map(draft -> {
+                String lobbyUrl = baseUrl + "/draft/" + draft.getUuid() + "/lobby";
+                return new devybigboard.models.LiveDraftResponse(draft, lobbyUrl);
+            })
+            .collect(java.util.stream.Collectors.toList());
+    }
 
 }

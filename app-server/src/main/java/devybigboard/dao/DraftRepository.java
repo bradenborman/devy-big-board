@@ -28,4 +28,20 @@ public interface DraftRepository extends JpaRepository<Draft, Long> {
      */
     @Query("SELECT d FROM Draft d ORDER BY d.createdAt DESC LIMIT :limit")
     List<Draft> findTopNByOrderByCreatedAtDesc(@Param("limit") int limit);
+    
+    /**
+     * Find all drafts with a specific status.
+     * 
+     * @param status The status to filter by (e.g., "LOBBY", "IN_PROGRESS", "COMPLETED")
+     * @return List of drafts with the specified status
+     */
+    List<Draft> findByStatus(String status);
+    
+    /**
+     * Find all drafts with a specific status ordered by creation date descending.
+     * 
+     * @param status The status to filter by
+     * @return List of drafts with the specified status, most recent first
+     */
+    List<Draft> findByStatusOrderByCreatedAtDesc(String status);
 }
