@@ -27,6 +27,7 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
   onDropPlayer,
   onUndoLastPick,
 }) => {
+  const [failedImages, setFailedImages] = React.useState<Set<number>>(new Set());
   // Generate all positions based on participantCount
   const allPositions = Array.from({ length: participantCount }, (_, i) => {
     const position = String.fromCharCode(65 + i); // A, B, C, D, etc.
@@ -61,6 +62,15 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
       picks.find((pick) => pick.roundNumber === round && pick.pickedByPosition === position) ||
       null
     );
+  };
+
+  // Check if this is the last pick
+  const isLastPick = (pick: PickMessage | null): boolean => {
+    if (!pick || picks.length === 0) return false;
+    const lastPick = picks[picks.length - 1];
+    return pick.playerId === lastPick.playerId && 
+           pick.roundNumber === lastPick.roundNumber && 
+           pick.pickedByPosition === lastPick.pickedByPosition;
   };
 
   // Check if this is the current pick slot
@@ -104,18 +114,6 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
         ))}
       </div>
 
-      {picks.length > 0 && (
-        <div className="undo-button-container">
-          <button 
-            className="undo-last-pick-btn"
-            onClick={onUndoLastPick}
-            title="Undo last pick"
-          >
-            ↶ Undo Last Pick
-          </button>
-        </div>
-      )}
-
       <div className="grid-body">
         {Array.from({ length: totalRounds }, (_, roundIndex) => {
           const round = roundIndex + 1;
@@ -140,14 +138,20 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
                   >
                     {pick ? (
                       <div className="pick-content">
-                        <img 
-                          src={`/api/players/manage/${pick.playerId}/headshot`}
-                          alt={pick.playerName}
-                          className="player-image"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
+                        {failedImages.has(pick.playerId) ? (
+                          <div className="player-image-fallback">
+                            {pick.position}
+                          </div>
+                        ) : (
+                          <img 
+                            src={`/api/players/manage/${pick.playerId}/headshot`}
+                            alt={pick.playerName}
+                            className="player-image"
+                            onError={() => {
+                              setFailedImages(prev => new Set(prev).add(pick.playerId));
+                            }}
+                          />
+                        )}
                         <div className="pick-header">
                           <span className="pick-position">{pick.position}</span>
                           <span className="pick-name">{pick.playerName}</span>
@@ -161,6 +165,15 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
                           <div className="forced-by">
                             Forced by {pick.forcedByPosition}
                           </div>
+                        )}
+                        {isLastPick(pick) && (
+                          <button 
+                            className="undo-last-pick-btn"
+                            onClick={onUndoLastPick}
+                            title="Undo last pick"
+                          >
+                            ↶
+                          </button>
                         )}
                       </div>
                     ) : isCurrent ? (

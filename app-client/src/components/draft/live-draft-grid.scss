@@ -11,28 +11,33 @@
     margin-bottom: 0.5rem;
 
     .undo-last-pick-btn {
-      background: rgba(239, 68, 68, 0.15);
-      border: 2px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-      padding: 0.625rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 600;
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(239, 68, 68, 0.9);
+      border: none;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 1.125rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      justify-content: center;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
       &:hover {
-        background: rgba(239, 68, 68, 0.25);
-        border-color: rgba(239, 68, 68, 0.5);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 1);
+        transform: scale(1.1);
+        box-shadow: 0 3px 6px rgba(239, 68, 68, 0.4);
       }
 
       &:active {
-        transform: translateY(0);
+        transform: scale(0.95);
       }
     }
   }
@@ -165,12 +170,27 @@
           gap: 0.375rem;
 
           .player-image {
-            width: 56px;
-            height: 56px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #667eea;
             margin-bottom: 0.25rem;
+          }
+
+          .player-image-fallback {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid #667eea;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
           }
 
           .pick-header {
@@ -213,10 +233,16 @@
           }
 
           .forced-by {
-            margin-top: 0.25rem;
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
             font-size: 0.625rem;
             color: #e74c3c;
             font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
           }
         }
 
