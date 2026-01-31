@@ -483,6 +483,8 @@ public class LiveDraftController {
             draftState.getCurrentPick(),
             draftState.getCurrentTurnPosition(),
             draftState.getParticipantCount(),
+            draftState.getTotalRounds(),
+            draftState.getIsSnakeDraft(),
             participantInfos,
             pickMessages,
             availablePlayers

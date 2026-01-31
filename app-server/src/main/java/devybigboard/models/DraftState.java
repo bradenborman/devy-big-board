@@ -17,6 +17,7 @@ public class DraftState {
     private Integer currentPick;
     private Integer totalRounds;
     private Integer participantCount;
+    private Boolean isSnakeDraft;
     private String currentTurnPosition;
     private List<DraftParticipant> participants;
     private List<DraftPick> picks;
@@ -27,7 +28,7 @@ public class DraftState {
     // Constructor
     public DraftState(String uuid, String draftName, String status, 
                      Integer currentRound, Integer currentPick, Integer totalRounds,
-                     Integer participantCount, String currentTurnPosition,
+                     Integer participantCount, Boolean isSnakeDraft, String currentTurnPosition,
                      List<DraftParticipant> participants, List<DraftPick> picks,
                      List<Player> availablePlayers, LocalDateTime startedAt,
                      LocalDateTime completedAt) {
@@ -38,6 +39,7 @@ public class DraftState {
         this.currentPick = currentPick;
         this.totalRounds = totalRounds;
         this.participantCount = participantCount;
+        this.isSnakeDraft = isSnakeDraft;
         this.currentTurnPosition = currentTurnPosition;
         this.participants = participants;
         this.picks = picks;
@@ -101,6 +103,14 @@ public class DraftState {
     
     public void setParticipantCount(Integer participantCount) {
         this.participantCount = participantCount;
+    }
+    
+    public Boolean getIsSnakeDraft() {
+        return isSnakeDraft;
+    }
+    
+    public void setIsSnakeDraft(Boolean isSnakeDraft) {
+        this.isSnakeDraft = isSnakeDraft;
     }
     
     public String getCurrentTurnPosition() {

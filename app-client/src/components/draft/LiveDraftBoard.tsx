@@ -337,8 +337,10 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
               <div className="draft-right">
                 <LiveDraftGrid
                   participants={draftState.participants}
+                  participantCount={draftState.participantCount}
                   picks={draftState.picks}
-                  totalRounds={draftState.picks.length > 0 ? Math.max(...draftState.picks.map(p => p.roundNumber)) : 10}
+                  totalRounds={draftState.totalRounds}
+                  isSnakeDraft={draftState.isSnakeDraft}
                   currentRound={draftState.currentRound}
                   currentTurnPosition={draftState.currentTurnPosition}
                   userPosition={userPosition || ''}

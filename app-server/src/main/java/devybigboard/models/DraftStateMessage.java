@@ -14,6 +14,8 @@ public class DraftStateMessage {
     private Integer currentPick;
     private String currentTurnPosition;
     private Integer participantCount;
+    private Integer totalRounds;
+    private Boolean isSnakeDraft;
     private List<ParticipantInfo> participants;
     private List<PickMessage> picks;
     private List<PlayerResponse> availablePlayers;
@@ -24,7 +26,8 @@ public class DraftStateMessage {
     
     public DraftStateMessage(String draftUuid, String status, Integer currentRound, 
                             Integer currentPick, String currentTurnPosition,
-                            Integer participantCount, List<ParticipantInfo> participants,
+                            Integer participantCount, Integer totalRounds, Boolean isSnakeDraft,
+                            List<ParticipantInfo> participants,
                             List<PickMessage> picks, List<PlayerResponse> availablePlayers) {
         this.draftUuid = draftUuid;
         this.status = status;
@@ -32,6 +35,8 @@ public class DraftStateMessage {
         this.currentPick = currentPick;
         this.currentTurnPosition = currentTurnPosition;
         this.participantCount = participantCount;
+        this.totalRounds = totalRounds;
+        this.isSnakeDraft = isSnakeDraft;
         this.participants = participants;
         this.picks = picks;
         this.availablePlayers = availablePlayers;
@@ -84,6 +89,22 @@ public class DraftStateMessage {
     
     public void setParticipantCount(Integer participantCount) {
         this.participantCount = participantCount;
+    }
+    
+    public Integer getTotalRounds() {
+        return totalRounds;
+    }
+    
+    public void setTotalRounds(Integer totalRounds) {
+        this.totalRounds = totalRounds;
+    }
+    
+    public Boolean getIsSnakeDraft() {
+        return isSnakeDraft;
+    }
+    
+    public void setIsSnakeDraft(Boolean isSnakeDraft) {
+        this.isSnakeDraft = isSnakeDraft;
     }
     
     public List<ParticipantInfo> getParticipants() {

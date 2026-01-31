@@ -372,6 +372,7 @@ public class DraftService {
             draft.getCurrentPick(),
             draft.getTotalRounds(),
             draft.getParticipantCount(),
+            draft.getIsSnakeDraft(),
             currentTurnPosition,
             draft.getParticipants(),
             draft.getPicks(),

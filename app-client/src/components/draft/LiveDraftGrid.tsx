@@ -4,8 +4,10 @@ import './live-draft-grid.scss';
 
 interface LiveDraftGridProps {
   participants: ParticipantInfo[];
+  participantCount: number;
   picks: PickMessage[];
   totalRounds: number;
+  isSnakeDraft: boolean;
   currentRound: number;
   currentTurnPosition: string;
   userPosition: string;
@@ -14,28 +16,41 @@ interface LiveDraftGridProps {
 
 const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
   participants,
+  participantCount,
   picks,
   totalRounds,
+  isSnakeDraft,
   currentRound,
   currentTurnPosition,
   userPosition,
   onDropPlayer,
 }) => {
-  const participantCount = participants.length;
+  // Generate all positions based on participantCount
+  const allPositions = Array.from({ length: participantCount }, (_, i) => {
+    const position = String.fromCharCode(65 + i); // A, B, C, D, etc.
+    const participant = participants.find(p => p.position === position);
+    return {
+      position,
+      nickname: participant?.nickname || position, // Show position letter if no one joined
+      isJoined: !!participant,
+    };
+  });
 
-  // Sort participants by position (A, B, C, ...)
-  const sortedParticipants = [...participants].sort((a, b) =>
-    a.position.localeCompare(b.position)
-  );
-
-  // Calculate which position picks in each round/pick slot (snake draft)
+  // Calculate which position picks in each round/pick slot
   const getPositionForPick = (round: number, pickInRound: number): string => {
-    // Round 1: A, B, C, D (forward)
-    // Round 2: D, C, B, A (reverse)
-    // Round 3: A, B, C, D (forward)
-    const isReverse = round % 2 === 0;
-    const index = isReverse ? participantCount - pickInRound : pickInRound - 1;
-    return sortedParticipants[index]?.position || '';
+    if (isSnakeDraft) {
+      // Snake draft: odd rounds forward, even rounds reverse
+      // Round 1: A, B, C, D (forward)
+      // Round 2: D, C, B, A (reverse)
+      // Round 3: A, B, C, D (forward)
+      const isReverse = round % 2 === 0;
+      const index = isReverse ? participantCount - pickInRound : pickInRound - 1;
+      return allPositions[index]?.position || '';
+    } else {
+      // Linear draft: all rounds go A, B, C, D (forward)
+      const index = pickInRound - 1;
+      return allPositions[index]?.position || '';
+    }
   };
 
   // Get pick for a specific round and position
@@ -69,17 +84,17 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
   return (
     <div className="live-draft-grid">
       <div className="grid-header">
-        {sortedParticipants.map((participant) => (
+        {allPositions.map((positionInfo) => (
           <div
-            key={participant.position}
-            className={`header-cell ${participant.position === userPosition ? 'my-team' : ''}`}
+            key={positionInfo.position}
+            className={`header-cell ${positionInfo.position === userPosition ? 'my-team' : ''} ${!positionInfo.isJoined ? 'empty-slot' : ''}`}
           >
-            <div className="position-label">Position {participant.position}</div>
+            <div className="position-label">Position {positionInfo.position}</div>
             <div className="nickname-label">
-              {participant.position === userPosition ? (
-                <span className="my-team-label">My Team ({participant.nickname})</span>
+              {positionInfo.position === userPosition ? (
+                <span className="my-team-label">My Team ({positionInfo.nickname})</span>
               ) : (
-                participant.nickname
+                positionInfo.nickname
               )}
             </div>
           </div>

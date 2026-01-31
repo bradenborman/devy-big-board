@@ -39,6 +39,8 @@ export interface DraftStateMessage {
   currentPick: number;
   currentTurnPosition: string;
   participantCount: number;
+  totalRounds: number;
+  isSnakeDraft: boolean;
   participants: ParticipantInfo[];
   picks: PickMessage[];
   availablePlayers: PlayerResponse[];

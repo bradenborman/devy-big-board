@@ -24,6 +24,12 @@
         color: white;
       }
 
+      &.empty-slot {
+        background: #f0f0f0;
+        border: 2px dashed #ccc;
+        opacity: 0.7;
+      }
+
       .position-label {
         font-size: 0.875rem;
         font-weight: 600;
