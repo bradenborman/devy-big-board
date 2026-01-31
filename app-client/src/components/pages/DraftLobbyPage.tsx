@@ -27,13 +27,14 @@ const DraftLobbyPage: React.FC = () => {
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState('');
 
-  // Get position and nickname from URL params
+  // Get position, nickname, and PIN from URL params
   const currentUserPosition = searchParams.get('position');
   const currentUserNickname = searchParams.get('nickname');
+  const urlPin = searchParams.get('pin'); // PIN from share link
 
   // Get creator nickname and PIN from navigation state
   const creatorNickname = (location.state as any)?.creatorNickname;
-  const draftPin = (location.state as any)?.pin;
+  const draftPin = (location.state as any)?.pin || urlPin; // Use state PIN or URL PIN
 
   // Set a timeout for lobby state loading
   useEffect(() => {
@@ -176,8 +177,19 @@ const DraftLobbyPage: React.FC = () => {
         setSearchParams({ position, nickname });
         setShowPositionSelector(false);
         
-        // If not the creator, show PIN modal to verify
-        if (nickname !== creatorNickname) {
+        // If PIN is in URL (from share link), auto-verify
+        if (urlPin) {
+          console.log('Auto-verifying with PIN from URL');
+          setTimeout(() => {
+            sendMessage(`/app/draft/${uuid}/ready`, {
+              draftUuid: uuid,
+              position,
+              isReady: true,
+              pin: urlPin,
+            });
+          }, 500); // Small delay to ensure join completes first
+        } else if (nickname !== creatorNickname) {
+          // No PIN in URL and not creator - show PIN modal
           setShowPinModal(true);
         }
       } catch (err) {
@@ -185,7 +197,7 @@ const DraftLobbyPage: React.FC = () => {
         throw new Error('Failed to join lobby. Please try again.');
       }
     },
-    [uuid, sendMessage, setSearchParams, creatorNickname]
+    [uuid, sendMessage, setSearchParams, creatorNickname, urlPin]
   );
 
   const handlePositionSelect = useCallback(
@@ -250,14 +262,14 @@ const DraftLobbyPage: React.FC = () => {
   };
 
   const handleCopyLink = useCallback(() => {
-    const lobbyUrl = `${window.location.origin}/draft/${uuid}/lobby`;
+    const lobbyUrl = `${window.location.origin}/draft/${uuid}/lobby${draftPin ? `?pin=${draftPin}` : ''}`;
     navigator.clipboard.writeText(lobbyUrl).then(() => {
       setShowCopiedToast(true);
       setTimeout(() => setShowCopiedToast(false), 3000);
     }).catch(err => {
       console.error('Failed to copy link:', err);
     });
-  }, [uuid]);
+  }, [uuid, draftPin]);
 
   const handlePinSubmit = useCallback(() => {
     if (!uuid || !currentUserPosition) return;
@@ -447,6 +459,12 @@ const DraftLobbyPage: React.FC = () => {
                 <div className="user-info">
                   <h3>You are {currentUserNickname}</h3>
                   <p>Position {currentUserPosition}</p>
+                  {draftPin && (lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
+                    <div className="pin-display">
+                      <span className="pin-label">Draft PIN:</span>
+                      <span className="pin-value">{draftPin}</span>
+                    </div>
+                  )}
                 </div>
                 <StartDraftButton
                   isCreator={isCreator()}

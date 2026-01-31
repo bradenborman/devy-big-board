@@ -87,14 +87,18 @@ public class ParticipantService {
             throw new ValidationException("Nickname must be between 2 and 50 characters");
         }
         
-        // Create and save participant (auto-ready when joining)
+        // Create and save participant
         DraftParticipant participant = new DraftParticipant(draft, position, nickname.trim());
         participant.setJoinedAt(LocalDateTime.now());
-        participant.setIsReady(true);
         
-        // Auto-verify if participant is the creator
+        // Auto-verify and ready if participant is the creator
         if (nickname.trim().equals(draft.getCreatedBy())) {
             participant.setIsVerified(true);
+            participant.setIsReady(true);
+        } else {
+            // Non-creators start as not ready and not verified
+            participant.setIsReady(false);
+            participant.setIsVerified(false);
         }
         
         return participantRepository.save(participant);

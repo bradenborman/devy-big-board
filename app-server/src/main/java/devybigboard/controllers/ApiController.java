@@ -284,10 +284,10 @@ public class ApiController {
      * GET /api/live-drafts/lobbies
      * 
      * @param servletRequest the HTTP servlet request to extract base URL
-     * @return 200 OK with list of lobby drafts including join URLs
+     * @return 200 OK with list of lobby drafts including join URLs (PIN excluded for security)
      */
     @GetMapping("/live-drafts/lobbies")
-    public java.util.List<devybigboard.models.LiveDraftResponse> getAllLobbyDrafts(
+    public java.util.List<devybigboard.models.LobbyListResponse> getAllLobbyDrafts(
             jakarta.servlet.http.HttpServletRequest servletRequest) {
         
         java.util.List<devybigboard.models.Draft> lobbyDrafts = draftService.getAllLobbyDrafts();
@@ -296,7 +296,7 @@ public class ApiController {
         return lobbyDrafts.stream()
             .map(draft -> {
                 String lobbyUrl = baseUrl + "/draft/" + draft.getUuid() + "/lobby";
-                return new devybigboard.models.LiveDraftResponse(draft, lobbyUrl);
+                return new devybigboard.models.LobbyListResponse(draft, lobbyUrl);
             })
             .collect(java.util.stream.Collectors.toList());
     }
