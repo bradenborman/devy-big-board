@@ -89,7 +89,22 @@ Create a mobile-responsive version of the live draft feature that provides the s
 - Shows confirmation that pick was forced
 - Same force pick logic as desktop (no modal needed)
 
-### US-7: Mobile Real-time Updates
+### US-7: Mobile Undo Last Pick
+**As a** user on mobile  
+**I want** to undo the last pick made in the draft  
+**So that** I can correct mistakes or change decisions
+
+**Acceptance Criteria:**
+- "Undo Last Pick" button visible when picks exist
+- Button positioned prominently (header or below carousel)
+- Tapping button undoes the most recent pick
+- Can be used multiple times back-to-back
+- Works for any participant (not restricted to who made pick)
+- Visual feedback when undo completes
+- Button styled with warning/red theme
+- Confirmation dialog optional (can be immediate)
+
+### US-8: Mobile Real-time Updates
 **As a** user on mobile  
 **I want** to see picks update in real-time  
 **So that** I stay synchronized with other participants
@@ -103,7 +118,7 @@ Create a mobile-responsive version of the live draft feature that provides the s
 - Visual feedback for connection status
 - No page refresh needed
 
-### US-8: Mobile Navigation and Exit
+### US-9: Mobile Navigation and Exit
 **As a** user on mobile  
 **I want** easy navigation and the ability to leave the draft  
 **So that** I can manage my participation
@@ -116,7 +131,7 @@ Create a mobile-responsive version of the live draft feature that provides the s
 - Breadcrumb navigation works on mobile
 - Back button behavior is intuitive
 
-### US-9: Mobile Touch Interactions
+### US-10: Mobile Touch Interactions
 **As a** mobile user  
 **I want** all interactions optimized for touch  
 **So that** the app feels native and responsive
@@ -131,7 +146,7 @@ Create a mobile-responsive version of the live draft feature that provides the s
 - Prevent zoom on input focus
 - Smooth animations (60fps)
 
-### US-10: Mobile Performance
+### US-11: Mobile Performance
 **As a** mobile user  
 **I want** the app to perform well on my device  
 **So that** I have a smooth drafting experience

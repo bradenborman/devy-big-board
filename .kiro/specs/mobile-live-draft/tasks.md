@@ -50,6 +50,7 @@
 - [ ] Create mobile header with round/pick info and exit button
 - [ ] Implement progress bar showing draft completion
 - [ ] Add connection status indicator
+- [ ] Add "Undo Last Pick" button to header (shows when picks exist)
 - [ ] Style header with backdrop blur effect
 - [ ] Test header on different screen sizes
 
@@ -147,6 +148,16 @@
 - [ ] Handle pick errors from backend
 - [ ] Show error messages to user
 - [ ] Test error scenarios
+
+### 6.4 Implement undo last pick
+- [ ] Add "Undo Last Pick" button to mobile UI (visible when picks exist)
+- [ ] Position button prominently (e.g., below carousel or in header)
+- [ ] Send undo message via WebSocket
+- [ ] Update UI after undo completes
+- [ ] Add confirmation dialog or haptic feedback
+- [ ] Style button with red/warning theme
+- [ ] Test undo functionality on mobile
+- [ ] Ensure button works with touch interactions
 
 ## Phase 7: Touch Interactions & Animations
 
