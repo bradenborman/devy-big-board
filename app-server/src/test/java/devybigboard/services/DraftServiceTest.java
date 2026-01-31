@@ -142,13 +142,13 @@ class DraftServiceTest {
     }
 
     @Test
-    void canStartDraft_ReturnsFalseWhenNotAllParticipantsReady() {
-        // Create draft with one participant not ready
+    void canStartDraft_ReturnsTrueWhenParticipantsJoined() {
+        // Create draft with participants (auto-ready when joining)
         Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
-        participant2.setIsReady(false); // Not ready
+        participant2.setIsReady(true);
         DraftParticipant participant3 = new DraftParticipant(draft, "C", "Charlie");
         participant3.setIsReady(true);
         draft.addParticipant(participant1);
@@ -159,8 +159,8 @@ class DraftServiceTest {
         // Check if draft can start
         boolean canStart = draftService.canStartDraft(draft.getUuid());
 
-        // Verify draft cannot start
-        assertFalse(canStart);
+        // Verify draft can start (ready status no longer checked)
+        assertTrue(canStart);
     }
 
     @Test
@@ -230,21 +230,23 @@ class DraftServiceTest {
     }
 
     @Test
-    void startDraft_ThrowsExceptionWhenNotAllParticipantsReady() {
-        // Create draft with one participant not ready
+    void startDraft_SucceedsWhenParticipantsJoined() {
+        // Create draft with participants (auto-ready when joining)
         Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
-        participant2.setIsReady(false);
+        participant2.setIsReady(true);
         draft.addParticipant(participant1);
         draft.addParticipant(participant2);
         draftRepository.save(draft);
 
-        // Attempt to start draft
-        assertThrows(IllegalStateException.class, () -> {
-            draftService.startDraft(draft.getUuid());
-        });
+        // Start draft (should succeed since ready status no longer checked)
+        Draft startedDraft = draftService.startDraft(draft.getUuid());
+
+        // Verify draft started successfully
+        assertEquals("IN_PROGRESS", startedDraft.getStatus());
+        assertNotNull(startedDraft.getStartedAt());
     }
 
     // ========== getCurrentTurn Tests ==========

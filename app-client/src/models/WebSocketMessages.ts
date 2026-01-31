@@ -29,6 +29,7 @@ export interface PlayerResponse {
   position: string;
   team: string;
   college: string;
+  draftyear?: number;
   adp?: number;
 }
 

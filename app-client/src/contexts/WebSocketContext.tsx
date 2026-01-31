@@ -87,10 +87,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
    */
   const subscribeToDraft = useCallback((draftUuid: string, callback: (message: DraftStateMessage) => void) => {
     const topic = `/topic/draft/${draftUuid}`;
+    const userQueue = `/user/queue/draft-state`;
 
-    // Subscribe to topic
+    // Subscribe to both the broadcast topic and the user-specific queue
     if (webSocketService.isConnected()) {
       webSocketService.subscribe(topic, callback);
+      webSocketService.subscribe(userQueue, callback);
     }
   }, []);
 

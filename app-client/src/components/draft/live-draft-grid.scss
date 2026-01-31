@@ -6,11 +6,15 @@
 
   .grid-header {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-template-columns: 60px repeat(auto-fit, minmax(80px, 1fr));
     gap: 0.75rem;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+
+    .round-header-spacer {
+      // Empty spacer to align with round labels in grid body
+    }
 
     .header-cell {
       text-align: center;
@@ -79,10 +83,10 @@
       }
 
       .grid-cell {
-        min-height: 80px;
+        min-height: 100px;
         background: white;
         border-radius: 8px;
-        padding: 0.75rem 0.5rem;
+        padding: 0.5rem;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -92,8 +96,8 @@
         position: relative;
 
         &.my-column {
-          background: rgba(102, 126, 234, 0.1);
-          border-color: rgba(102, 126, 234, 0.3);
+          background: #e8eaf6;
+          border-color: #667eea;
         }
 
         &.current-pick {
@@ -122,9 +126,22 @@
         .pick-content {
           width: 100%;
           text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.375rem;
+
+          .player-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #667eea;
+            margin-bottom: 0.25rem;
+          }
 
           .pick-header {
-            margin-bottom: 0.25rem;
+            width: 100%;
 
             .pick-position {
               display: inline-block;
@@ -140,20 +157,22 @@
             .pick-name {
               display: block;
               font-weight: 700;
-              font-size: 0.75rem;
-              color: #333;
+              font-size: 0.8rem;
+              color: #1a1a1a;
               line-height: 1.2;
+              margin-top: 0.25rem;
             }
           }
 
           .pick-details {
-            font-size: 0.625rem;
-            color: #666;
+            font-size: 0.65rem;
+            color: #555;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.25rem;
             flex-wrap: wrap;
+            font-weight: 500;
 
             .separator {
               opacity: 0.5;

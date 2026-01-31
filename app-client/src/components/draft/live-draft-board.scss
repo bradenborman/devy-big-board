@@ -161,16 +161,22 @@
   }
 
   .draft-content {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 73px);
+    overflow: hidden;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
 
     .reconnecting-banner {
+      grid-column: 1 / -1;
       background: #f39c12;
       color: white;
       padding: 1rem 2rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
+      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -188,55 +194,39 @@
       }
     }
 
-    .turn-indicator {
-      margin-bottom: 1.5rem;
-      text-align: center;
+    .draft-layout {
+      display: contents;
 
-      .your-turn {
-        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        font-size: 1.25rem;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
-        animation: pulse 2s ease-in-out infinite;
+      .player-pool-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        overflow-y: auto;
+        height: 100%;
 
-        .icon {
-          font-size: 1.5rem;
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 4px;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.3);
+          }
         }
       }
 
-      .waiting-turn {
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.9);
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        font-size: 1.125rem;
-        font-weight: 600;
-        display: inline-block;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-    }
-
-    .draft-layout {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 1.5rem;
-
-      @media (max-width: 1200px) {
-        grid-template-columns: 1fr;
-      }
-
-      .draft-left {
-        // LivePlayerPool styles
-      }
-
-      .draft-right {
-        // LiveDraftGrid styles
+      .draft-board-section {
+        background: transparent;
+        padding: 1.5rem;
+        overflow: auto;
+        height: 100%;
       }
     }
   }

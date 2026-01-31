@@ -15,23 +15,24 @@ const LivePlayerPool: React.FC<LivePlayerPoolProps> = ({
   onMakePick,
   onForcePick,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [positionFilter, setPositionFilter] = useState<string>('');
+  const [yearFilter, setYearFilter] = useState<string>('');
 
   // Get unique positions for filter
   const positions = Array.from(new Set(availablePlayers.map((p) => p.position))).sort();
 
-  // Filter players based on search and position
+  // Get unique years for filter
+  const years = Array.from(
+    new Set(availablePlayers.map((p) => p.draftyear).filter((year): year is number => year !== undefined && year !== null))
+  ).sort();
+
+  // Filter players based on position and year
   const filteredPlayers = availablePlayers.filter((player) => {
-    const matchesSearch =
-      !searchTerm ||
-      player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      player.team.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      player.college.toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesPosition = !positionFilter || player.position === positionFilter;
+    
+    const matchesYear = !yearFilter || (player.draftyear && player.draftyear.toString() === yearFilter);
 
-    return matchesSearch && matchesPosition;
+    return matchesPosition && matchesYear;
   });
 
   const handleDragStart = (e: React.DragEvent, player: PlayerResponse) => {
@@ -45,33 +46,33 @@ const LivePlayerPool: React.FC<LivePlayerPoolProps> = ({
 
   return (
     <div className="live-player-pool">
-      <div className="pool-header">
-        <h3>Available Players ({filteredPlayers.length})</h3>
-        {!isMyTurn && (
-          <div className="not-your-turn-badge">Not your turn</div>
-        )}
-      </div>
-
       <div className="pool-filters">
-        <input
-          type="text"
-          placeholder="Search players..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <select
-          value={positionFilter}
-          onChange={(e) => setPositionFilter(e.target.value)}
-          className="position-filter"
-        >
-          <option value="">All Positions</option>
-          {positions.map((pos) => (
-            <option key={pos} value={pos}>
-              {pos}
-            </option>
-          ))}
-        </select>
+        <div className="filter-row">
+          <select
+            value={positionFilter}
+            onChange={(e) => setPositionFilter(e.target.value)}
+            className="position-filter"
+          >
+            <option value="">All Positions</option>
+            {positions.map((pos) => (
+              <option key={pos} value={pos}>
+                {pos}
+              </option>
+            ))}
+          </select>
+          <select
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="year-filter"
+          >
+            <option value="">All Years</option>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="player-list">
@@ -87,6 +88,14 @@ const LivePlayerPool: React.FC<LivePlayerPoolProps> = ({
               draggable={isMyTurn}
               onDragStart={(e) => handleDragStart(e, player)}
             >
+              <img 
+                src={`/api/players/manage/${player.id}/headshot`}
+                alt={player.name}
+                className="player-image"
+                onError={(e) => {
+                  e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23667eea"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="40" font-weight="bold">' + player.position + '</text></svg>';
+                }}
+              />
               <div className="player-info">
                 <div className="player-header">
                   <span className="player-position">{player.position}</span>

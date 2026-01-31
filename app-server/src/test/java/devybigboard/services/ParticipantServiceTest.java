@@ -59,7 +59,7 @@ class ParticipantServiceTest {
         assertEquals(testDraft.getId(), participant.getDraft().getId());
         assertEquals("Alice", participant.getNickname());
         assertEquals("A", participant.getPosition());
-        assertFalse(participant.getIsReady());
+        assertTrue(participant.getIsReady()); // Participants are auto-ready when joining
         assertNotNull(participant.getJoinedAt());
     }
 

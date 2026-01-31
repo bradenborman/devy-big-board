@@ -20,7 +20,7 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { connect, disconnect, subscribeToDraft, sendMessage, isConnected } = useWebSocket();
+  const { connect, subscribeToDraft, sendMessage, isConnected } = useWebSocket();
 
   const [draftState, setDraftState] = useState<DraftStateMessage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,29 +60,36 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
 
     if (positionIndex >= totalSlots) {
       setError(`Position ${userPosition} is invalid for a ${totalSlots}-team draft.`);
+      return;
     }
 
     // Check if user is actually a participant
     const isParticipant = draftState.participants.some((p) => p.position === userPosition);
     if (!isParticipant) {
-      setError(`You are not a participant in this draft. Please join the lobby first.`);
+      // Check if draft has started
+      if (draftState.status === 'IN_PROGRESS' || draftState.status === 'COMPLETED') {
+        setError(`This draft has already started. Position ${userPosition} was not assigned when the draft began.`);
+      } else {
+        setError(`You are not a participant in this draft. Please join the lobby first.`);
+      }
     }
   }, [draftState, userPosition]);
 
   // Connect to WebSocket
   useEffect(() => {
     if (!uuid || !userPosition) {
-      setError('Invalid draft UUID or position');
-      setLoading(false);
-      return;
+      console.log('Missing uuid or userPosition:', { uuid, userPosition });
+      return; // Don't set error yet, wait for params to load
     }
 
     const connectToDraft = async () => {
       try {
+        console.log('Connecting to draft:', uuid, 'as position:', userPosition);
         setReconnecting(true);
         await connect(uuid);
         setReconnecting(false);
         setLoading(false);
+        console.log('Successfully connected to draft');
       } catch (err) {
         console.error('Failed to connect to draft:', err);
         setError('Failed to connect to draft. Please try again.');
@@ -91,12 +98,16 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
       }
     };
 
-    connectToDraft();
+    // Only connect if not already connected
+    if (!isConnected) {
+      connectToDraft();
+    } else {
+      console.log('Already connected, skipping connection');
+      setLoading(false);
+    }
 
-    return () => {
-      disconnect();
-    };
-  }, [uuid, userPosition, connect, disconnect]);
+    // Don't disconnect on unmount - keep connection alive
+  }, [uuid, userPosition, connect, isConnected]);
 
   // Handle connection state changes and reconnection
   useEffect(() => {
@@ -128,31 +139,6 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
     };
   }, [uuid, userPosition, isConnected, connect, sendMessage]);
 
-  // Subscribe to draft updates
-  useEffect(() => {
-    if (!uuid || !isConnected) return;
-
-    subscribeToDraft(uuid, (message: DraftStateMessage) => {
-      console.log('Received draft state:', message);
-      
-      // Check for new picks and show toast notifications
-      if (previousPicksRef.current.length > 0 && message.picks.length > previousPicksRef.current.length) {
-        const newPicks = message.picks.slice(previousPicksRef.current.length);
-        newPicks.forEach((pick) => {
-          const participant = message.participants.find((p) => p.position === pick.pickedByPosition);
-          const nickname = participant?.nickname || pick.pickedByPosition;
-          showToast(`${nickname} picked ${pick.playerName}`, 'success');
-        });
-      }
-      
-      previousPicksRef.current = message.picks;
-      setDraftState(message);
-    });
-
-    // Request initial draft state
-    sendMessage(`/app/draft/${uuid}/state`, { draftUuid: uuid });
-  }, [uuid, isConnected, subscribeToDraft, sendMessage]);
-
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     const id = toastIdCounter.current++;
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -163,14 +149,35 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
     }, 5000);
   }, []);
 
-  const getParticipantNickname = useCallback(
-    (position: string): string => {
-      if (!draftState) return position;
-      const participant = draftState.participants.find((p) => p.position === position);
-      return participant?.nickname || position;
-    },
-    [draftState]
-  );
+  // Subscribe to draft updates
+  useEffect(() => {
+    if (!uuid || !isConnected) {
+      console.log('Cannot subscribe to draft - uuid:', uuid, 'isConnected:', isConnected);
+      return;
+    }
+
+    console.log('Subscribing to draft updates for:', uuid);
+
+    subscribeToDraft(uuid, (message: DraftStateMessage) => {
+      console.log('Received draft state:', message);
+      
+      // Update previous picks reference without showing toasts
+      previousPicksRef.current = message.picks;
+      setDraftState(message);
+      setLoading(false); // Ensure loading is false when we get state
+      setError(null); // Clear any errors when we successfully get state
+    });
+
+    // Request initial draft state
+    console.log('Requesting initial draft state');
+    try {
+      sendMessage(`/app/draft/${uuid}/state`, { draftUuid: uuid });
+    } catch (err) {
+      console.error('Error requesting draft state:', err);
+      setError('Failed to load draft state. Please refresh the page.');
+      setLoading(false);
+    }
+  }, [uuid, isConnected, subscribeToDraft, sendMessage, showToast]);
 
   const isMyTurn = useCallback((): boolean => {
     if (!draftState || !userPosition) return false;
@@ -311,21 +318,8 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
         
         {draftState && (
           <>
-            <div className="turn-indicator">
-              {isMyTurn() ? (
-                <div className="your-turn">
-                  <span className="icon">👉</span>
-                  <span>Your turn!</span>
-                </div>
-              ) : (
-                <div className="waiting-turn">
-                  Waiting for {getParticipantNickname(draftState.currentTurnPosition)}...
-                </div>
-              )}
-            </div>
-
             <div className="draft-layout">
-              <div className="draft-left">
+              <div className="player-pool-section">
                 <LivePlayerPool
                   availablePlayers={draftState.availablePlayers}
                   isMyTurn={isMyTurn()}
@@ -334,7 +328,7 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
                 />
               </div>
 
-              <div className="draft-right">
+              <div className="draft-board-section">
                 <LiveDraftGrid
                   participants={draftState.participants}
                   participantCount={draftState.participantCount}

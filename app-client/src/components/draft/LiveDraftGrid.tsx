@@ -84,6 +84,7 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
   return (
     <div className="live-draft-grid">
       <div className="grid-header">
+        <div className="round-header-spacer"></div>
         {allPositions.map((positionInfo) => (
           <div
             key={positionInfo.position}
@@ -92,7 +93,7 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
             <div className="position-label">Position {positionInfo.position}</div>
             <div className="nickname-label">
               {positionInfo.position === userPosition ? (
-                <span className="my-team-label">My Team ({positionInfo.nickname})</span>
+                <span className="my-team-label">Me</span>
               ) : (
                 positionInfo.nickname
               )}
@@ -106,7 +107,7 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
           const round = roundIndex + 1;
           return (
             <div key={round} className="grid-row">
-              <div className="round-label">Round {round}</div>
+              <div className="round-label">{round}</div>
               {Array.from({ length: participantCount }, (_, pickIndex) => {
                 const pickInRound = pickIndex + 1;
                 const position = getPositionForPick(round, pickInRound);
@@ -125,6 +126,14 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
                   >
                     {pick ? (
                       <div className="pick-content">
+                        <img 
+                          src={`/api/players/manage/${pick.playerId}/headshot`}
+                          alt={pick.playerName}
+                          className="player-image"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
                         <div className="pick-header">
                           <span className="pick-position">{pick.position}</span>
                           <span className="pick-name">{pick.playerName}</span>

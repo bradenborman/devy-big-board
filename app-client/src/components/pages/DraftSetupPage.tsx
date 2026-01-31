@@ -24,7 +24,7 @@ const DraftSetupPage: React.FC = () => {
     draftName: '',
     creatorNickname: '',
     participantCount: 8,
-    totalRounds: 10,
+    totalRounds: 3,
     isSnakeDraft: false,
   });
   const [loading, setLoading] = useState(false);
@@ -187,7 +187,7 @@ const DraftSetupPage: React.FC = () => {
                 onChange={(e) => handleInputChange('totalRounds', parseInt(e.target.value))}
                 disabled={loading}
               >
-                {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+                {Array.from({ length: 7 }, (_, i) => i + 1).map((num) => (
                   <option key={num} value={num}>
                     {num} {num === 1 ? 'Round' : 'Rounds'}
                   </option>
@@ -212,17 +212,17 @@ const DraftSetupPage: React.FC = () => {
                   <span className="radio-description">All rounds: A→B→C→D</span>
                 </span>
               </label>
-              <label className="radio-option">
+              <label className="radio-option disabled">
                 <input
                   type="radio"
                   name="draftType"
                   checked={formData.isSnakeDraft}
                   onChange={() => handleInputChange('isSnakeDraft', true)}
-                  disabled={loading}
+                  disabled={true}
                 />
                 <span className="radio-label">
                   <strong>Snake</strong>
-                  <span className="radio-description">Odd rounds: A→B→C→D, Even rounds: D→C→B→A</span>
+                  <span className="radio-description">Coming soon</span>
                 </span>
               </label>
             </div>
