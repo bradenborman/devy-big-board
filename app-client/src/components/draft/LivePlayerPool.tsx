@@ -88,14 +88,6 @@ const LivePlayerPool: React.FC<LivePlayerPoolProps> = ({
               draggable={isMyTurn}
               onDragStart={(e) => handleDragStart(e, player)}
             >
-              <img 
-                src={`/api/players/manage/${player.id}/headshot`}
-                alt={player.name}
-                className="player-image"
-                onError={(e) => {
-                  e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23667eea"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="40" font-weight="bold">' + player.position + '</text></svg>';
-                }}
-              />
               <div className="player-info">
                 <div className="player-header">
                   <span className="player-position">{player.position}</span>

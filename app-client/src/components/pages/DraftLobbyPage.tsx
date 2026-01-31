@@ -340,8 +340,16 @@ const DraftLobbyPage: React.FC = () => {
                         placeholder="Enter your nickname"
                         maxLength={20}
                         className={nicknameError ? 'error' : ''}
+                        autoFocus
                       />
                       {nicknameError && <span className="error-message">{nicknameError}</span>}
+                    </div>
+                  )}
+
+                  {creatorNickname && (
+                    <div className="nickname-display">
+                      <label>Your Nickname</label>
+                      <div className="nickname-value">{creatorNickname}</div>
                     </div>
                   )}
 
@@ -371,13 +379,14 @@ const DraftLobbyPage: React.FC = () => {
                         const position = String.fromCharCode(65 + i);
                         const isTaken = lobbyState.participants.some(p => p.position === position);
                         const participant = lobbyState.participants.find(p => p.position === position);
+                        const hasNickname = nicknameInput.trim().length >= 2 || !!creatorNickname;
                         
                         return (
                           <button
                             key={position}
-                            className={`position-spot ${isTaken ? 'taken' : 'available'}`}
-                            onClick={() => !isTaken && handlePositionSelect(position)}
-                            disabled={isTaken}
+                            className={`position-spot ${isTaken ? 'taken' : 'available'} ${!hasNickname ? 'disabled' : ''}`}
+                            onClick={() => !isTaken && hasNickname && handlePositionSelect(position)}
+                            disabled={isTaken || !hasNickname}
                           >
                             <span className="position-number">1.{i + 1}</span>
                             <span className="position-letter">{position}</span>

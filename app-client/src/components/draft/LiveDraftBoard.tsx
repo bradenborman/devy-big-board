@@ -4,7 +4,6 @@ import { useWebSocket } from '../../contexts/WebSocketContext';
 import { DraftStateMessage, PickMessage } from '../../models/WebSocketMessages';
 import LivePlayerPool from './LivePlayerPool';
 import LiveDraftGrid from './LiveDraftGrid';
-import ForcePickModal from './ForcePickModal';
 import Toast from '../shared/Toast';
 import './live-draft-board.scss';
 
@@ -27,15 +26,6 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
-  const [forcePickModal, setForcePickModal] = useState<{
-    isOpen: boolean;
-    playerId: number | null;
-    playerName: string;
-  }>({
-    isOpen: false,
-    playerId: null,
-    playerName: '',
-  });
 
   const previousPicksRef = useRef<PickMessage[]>([]);
   const toastIdCounter = useRef(0);
@@ -203,40 +193,23 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
   );
 
   const handleOpenForcePick = useCallback((playerId: number) => {
-    if (!draftState) return;
-    const player = draftState.availablePlayers.find((p) => p.id === playerId);
-    if (player) {
-      setForcePickModal({
-        isOpen: true,
+    if (!draftState || !uuid || !userPosition) return;
+    
+    // Force pick directly to the current on-clock position
+    const targetPosition = draftState.currentTurnPosition;
+    
+    try {
+      sendMessage(`/app/draft/${uuid}/force-pick`, {
+        draftUuid: uuid,
         playerId,
-        playerName: player.name,
+        targetPosition,
+        forcingPosition: userPosition,
       });
+    } catch (err) {
+      console.error('Failed to force pick:', err);
+      setError('Failed to force pick. Please try again.');
     }
-  }, [draftState]);
-
-  const handleConfirmForcePick = useCallback(
-    async (targetPosition: string) => {
-      if (!uuid || !userPosition || !forcePickModal.playerId) return;
-
-      try {
-        sendMessage(`/app/draft/${uuid}/force-pick`, {
-          draftUuid: uuid,
-          playerId: forcePickModal.playerId,
-          targetPosition,
-          forcingPosition: userPosition,
-        });
-        setForcePickModal({ isOpen: false, playerId: null, playerName: '' });
-      } catch (err) {
-        console.error('Failed to force pick:', err);
-        setError('Failed to force pick. Please try again.');
-      }
-    },
-    [uuid, userPosition, forcePickModal.playerId, sendMessage]
-  );
-
-  const handleCancelForcePick = useCallback(() => {
-    setForcePickModal({ isOpen: false, playerId: null, playerName: '' });
-  }, []);
+  }, [draftState, uuid, userPosition, sendMessage]);
 
   const handleDropPlayer = useCallback(
     (position: string, round: number) => {
@@ -342,17 +315,6 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
                 />
               </div>
             </div>
-
-            <ForcePickModal
-              isOpen={forcePickModal.isOpen}
-              playerName={forcePickModal.playerName}
-              participants={draftState.participants}
-              participantCount={draftState.participantCount}
-              currentUserPosition={userPosition || ''}
-              currentTurnPosition={draftState.currentTurnPosition}
-              onConfirm={handleConfirmForcePick}
-              onCancel={handleCancelForcePick}
-            />
           </>
         )}
       </div>
