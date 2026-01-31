@@ -1,0 +1,209 @@
+.live-draft-grid {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+
+  .grid-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+
+    .header-cell {
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: #f8f9fa;
+
+      &.my-team {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .position-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        opacity: 0.8;
+      }
+
+      .nickname-label {
+        font-size: 1rem;
+        font-weight: 700;
+
+        .my-team-label {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+        }
+      }
+    }
+  }
+
+  .grid-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .grid-row {
+      display: grid;
+      grid-template-columns: 80px repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.5rem;
+      align-items: stretch;
+
+      .round-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #666;
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .grid-cell {
+        min-height: 100px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.my-column {
+          background: #f0f4ff;
+          border-color: #c5d3ff;
+        }
+
+        &.current-pick {
+          border-color: #27ae60;
+          border-width: 3px;
+          background: #f0fff4;
+          animation: pulse-border 2s ease-in-out infinite;
+        }
+
+        &.filled {
+          background: white;
+          border-color: #667eea;
+
+          &.my-column {
+            background: #f0f4ff;
+          }
+        }
+
+        &.empty {
+          background: #fafafa;
+
+          &:hover {
+            border-color: #c0c0c0;
+          }
+        }
+
+        .pick-content {
+          width: 100%;
+          text-align: center;
+
+          .pick-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+
+            .pick-position {
+              background: #667eea;
+              color: white;
+              padding: 0.125rem 0.5rem;
+              border-radius: 4px;
+              font-size: 0.75rem;
+              font-weight: 700;
+            }
+
+            .pick-name {
+              font-weight: 700;
+              color: #333;
+              font-size: 0.875rem;
+            }
+          }
+
+          .pick-details {
+            font-size: 0.75rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+
+            .separator {
+              opacity: 0.5;
+            }
+          }
+
+          .forced-by {
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            color: #e74c3c;
+            font-style: italic;
+            font-weight: 600;
+          }
+        }
+
+        .empty-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.25rem;
+          color: #999;
+
+          &.current {
+            color: #27ae60;
+            font-weight: 700;
+
+            .pick-indicator {
+              font-size: 1.5rem;
+              animation: bounce 1s ease-in-out infinite;
+            }
+          }
+
+          .pick-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            opacity: 0.3;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    border-color: #27ae60;
+    box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4);
+  }
+  50% {
+    border-color: #229954;
+    box-shadow: 0 0 0 8px rgba(39, 174, 96, 0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}

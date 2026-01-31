@@ -25,6 +25,15 @@ public class DraftPick {
     @Column(name = "pick_number", nullable = false)
     private Integer pickNumber;
     
+    @Column(name = "position", length = 1)
+    private String position;
+    
+    @Column(name = "forced_by", length = 1)
+    private String forcedBy;
+    
+    @Column(name = "round_number")
+    private Integer roundNumber;
+    
     @Column(name = "picked_at")
     private LocalDateTime pickedAt;
     
@@ -36,6 +45,25 @@ public class DraftPick {
         this.draft = draft;
         this.player = player;
         this.pickNumber = pickNumber;
+        this.pickedAt = LocalDateTime.now();
+    }
+    
+    public DraftPick(Draft draft, Player player, Integer pickNumber, String position, Integer roundNumber) {
+        this.draft = draft;
+        this.player = player;
+        this.pickNumber = pickNumber;
+        this.position = position;
+        this.roundNumber = roundNumber;
+        this.pickedAt = LocalDateTime.now();
+    }
+    
+    public DraftPick(Draft draft, Player player, Integer pickNumber, String position, Integer roundNumber, String forcedBy) {
+        this.draft = draft;
+        this.player = player;
+        this.pickNumber = pickNumber;
+        this.position = position;
+        this.roundNumber = roundNumber;
+        this.forcedBy = forcedBy;
         this.pickedAt = LocalDateTime.now();
     }
     
@@ -78,5 +106,29 @@ public class DraftPick {
     
     public void setPickedAt(LocalDateTime pickedAt) {
         this.pickedAt = pickedAt;
+    }
+    
+    public String getPosition() {
+        return position;
+    }
+    
+    public void setPosition(String position) {
+        this.position = position;
+    }
+    
+    public String getForcedBy() {
+        return forcedBy;
+    }
+    
+    public void setForcedBy(String forcedBy) {
+        this.forcedBy = forcedBy;
+    }
+    
+    public Integer getRoundNumber() {
+        return roundNumber;
+    }
+    
+    public void setRoundNumber(Integer roundNumber) {
+        this.roundNumber = roundNumber;
     }
 }

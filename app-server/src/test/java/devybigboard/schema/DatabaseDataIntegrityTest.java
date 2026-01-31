@@ -292,4 +292,83 @@ class DatabaseDataIntegrityTest {
 
         return draft;
     }
+    
+    @Test
+    void draftPick_LiveDraftFields_CanBeSetAndRetrieved() {
+        // Create and save a player
+        Player player = new Player();
+        player.setName("Live Draft Test Player");
+        player.setPosition("WR");
+        player.setVerified(true);
+        player = playerRepository.save(player);
+        
+        // Create a draft
+        Draft draft = new Draft();
+        draft.setUuid(UUID.randomUUID().toString());
+        draft.setDraftName("Live Draft Test");
+        draft.setStatus("IN_PROGRESS");
+        draft.setParticipantCount(4);
+        draft.setTotalRounds(10);
+        draft.setCurrentRound(2);
+        draft.setCurrentPick(5);
+        
+        // Create a draft pick with live draft fields
+        DraftPick pick = new DraftPick();
+        pick.setDraft(draft);
+        pick.setPlayer(player);
+        pick.setPickNumber(5);
+        pick.setPosition("B");
+        pick.setRoundNumber(2);
+        pick.setForcedBy("A");
+        pick.setPickedAt(LocalDateTime.now());
+        
+        List<DraftPick> picks = new ArrayList<>();
+        picks.add(pick);
+        draft.setPicks(picks);
+        
+        // Save the draft (cascades to picks)
+        Draft savedDraft = draftRepository.save(draft);
+        
+        // Verify the pick was saved with live draft fields
+        assertNotNull(savedDraft.getId());
+        assertEquals(1, savedDraft.getPicks().size());
+        
+        DraftPick savedPick = savedDraft.getPicks().get(0);
+        assertNotNull(savedPick.getId(), "Pick ID should be generated");
+        assertEquals(5, savedPick.getPickNumber());
+        assertEquals("B", savedPick.getPosition(), "Position should be B");
+        assertEquals(2, savedPick.getRoundNumber(), "Round number should be 2");
+        assertEquals("A", savedPick.getForcedBy(), "Forced by should be A");
+        assertNotNull(savedPick.getPickedAt());
+    }
+    
+    @Test
+    void draftPick_LiveDraftConstructors_WorkCorrectly() {
+        // Create and save a player and draft
+        Player player = new Player();
+        player.setName("Constructor Test Player");
+        player.setPosition("RB");
+        player.setVerified(true);
+        player = playerRepository.save(player);
+        
+        Draft draft = new Draft();
+        draft.setUuid(UUID.randomUUID().toString());
+        draft.setDraftName("Constructor Test");
+        draft.setStatus("IN_PROGRESS");
+        draft.setParticipantCount(4);
+        
+        // Test constructor with position and round number
+        DraftPick pick1 = new DraftPick(draft, player, 1, "A", 1);
+        assertEquals("A", pick1.getPosition());
+        assertEquals(1, pick1.getRoundNumber());
+        assertNull(pick1.getForcedBy());
+        assertNotNull(pick1.getPickedAt());
+        
+        // Test constructor with forced pick
+        DraftPick pick2 = new DraftPick(draft, player, 2, "B", 1, "C");
+        assertEquals("B", pick2.getPosition());
+        assertEquals(1, pick2.getRoundNumber());
+        assertEquals("C", pick2.getForcedBy());
+        assertNotNull(pick2.getPickedAt());
+    }
 }

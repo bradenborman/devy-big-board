@@ -32,8 +32,29 @@ public class Draft {
     @Column(name = "participant_count")
     private Integer participantCount = 1;
     
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+    
+    @Column(name = "started_at")
+    private LocalDateTime startedAt;
+    
+    @Column(name = "current_round")
+    private Integer currentRound = 1;
+    
+    @Column(name = "current_pick")
+    private Integer currentPick = 1;
+    
+    @Column(name = "total_rounds")
+    private Integer totalRounds = 10;
+    
+    @Column(name = "is_snake_draft")
+    private Boolean isSnakeDraft = false;
+    
     @OneToMany(mappedBy = "draft", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DraftPick> picks = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "draft", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DraftParticipant> participants = new ArrayList<>();
     
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -126,5 +147,71 @@ public class Draft {
     
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+    
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+    
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+    
+    public void setStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+    
+    public Integer getCurrentRound() {
+        return currentRound;
+    }
+    
+    public void setCurrentRound(Integer currentRound) {
+        this.currentRound = currentRound;
+    }
+    
+    public Integer getCurrentPick() {
+        return currentPick;
+    }
+    
+    public void setCurrentPick(Integer currentPick) {
+        this.currentPick = currentPick;
+    }
+    
+    public Integer getTotalRounds() {
+        return totalRounds;
+    }
+    
+    public void setTotalRounds(Integer totalRounds) {
+        this.totalRounds = totalRounds;
+    }
+    
+    public List<DraftParticipant> getParticipants() {
+        return participants;
+    }
+    
+    public void setParticipants(List<DraftParticipant> participants) {
+        this.participants = participants;
+    }
+    
+    public void addParticipant(DraftParticipant participant) {
+        participants.add(participant);
+        participant.setDraft(this);
+    }
+    
+    public void removeParticipant(DraftParticipant participant) {
+        participants.remove(participant);
+        participant.setDraft(null);
+    }
+    
+    public Boolean getIsSnakeDraft() {
+        return isSnakeDraft;
+    }
+    
+    public void setIsSnakeDraft(Boolean isSnakeDraft) {
+        this.isSnakeDraft = isSnakeDraft;
     }
 }

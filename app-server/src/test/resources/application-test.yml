@@ -25,3 +25,9 @@ spring:
 app:
   verification:
     secret: test-secret
+  s3:
+    endpoint: http://localhost:9000
+    region: us-east-1
+    access-key-id: test-access-key
+    secret-access-key: test-secret-key
+    bucket-name: test-bucket

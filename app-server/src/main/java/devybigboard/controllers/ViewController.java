@@ -11,8 +11,8 @@ public class ViewController {
         "/offline-draft", 
         "/live-draft", 
         "/player-management",
-        "/draft/*", 
-        "/drafts/*",
+        "/draft/**", 
+        "/drafts/**",
         "/league-filters"
     })
     public String view() {

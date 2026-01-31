@@ -25,6 +25,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter'
 
+	// WebSocket dependencies for live draft (includes STOMP protocol support)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	//SQL
 	implementation 'mysql:mysql-connector-java:8.0.33'
 

@@ -44,10 +44,10 @@ const HomePage: React.FC = () => {
                             Start Offline Draft
                         </button>
                         <button 
-                            onClick={() => navigate('/live-draft')} 
+                            onClick={() => navigate('/live-draft/setup')} 
                             className="btn btn-secondary"
                         >
-                            Join Live Draft
+                            Create Live Draft
                         </button>
                     </div>
                 </div>

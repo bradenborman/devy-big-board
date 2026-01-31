@@ -201,5 +201,81 @@ public class ApiController {
             .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
             .body(pdf);
     }
+    
+    // ========== Live Draft REST Endpoints ==========
+    
+    /**
+     * Create a new live draft.
+     * POST /api/live-drafts
+     * 
+     * @param request the live draft creation request
+     * @param servletRequest the HTTP servlet request to extract base URL
+     * @return 201 Created with the draft details and lobby URL
+     */
+    @PostMapping("/live-drafts")
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    public devybigboard.models.LiveDraftResponse createLiveDraft(
+            @jakarta.validation.Valid @RequestBody devybigboard.models.CreateLiveDraftRequest request,
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        
+        // Create the live draft
+        devybigboard.models.Draft draft = draftService.createLiveDraft(
+            request.getDraftName(),
+            request.getCreatorNickname(),
+            request.getParticipantCount(),
+            request.getTotalRounds(),
+            request.getIsSnakeDraft()
+        );
+        
+        // Construct lobby URL
+        String baseUrl = getBaseUrl(servletRequest);
+        String lobbyUrl = baseUrl + "/draft/" + draft.getUuid() + "/lobby";
+        
+        // Return response with lobby URL
+        return new devybigboard.models.LiveDraftResponse(draft, lobbyUrl);
+    }
+    
+    /**
+     * Get lobby state for a draft.
+     * GET /api/drafts/{uuid}/lobby
+     * 
+     * This is a REST fallback for retrieving lobby state.
+     * Real-time updates should use WebSocket subscriptions.
+     * 
+     * @param uuid the draft UUID
+     * @return 200 OK with lobby state including participants and ready status
+     * @throws devybigboard.exceptions.DraftNotFoundException if draft does not exist (returns 404)
+     */
+    @GetMapping("/drafts/{uuid}/lobby")
+    public devybigboard.models.LobbyStateMessage getLobbyState(@PathVariable String uuid) {
+        // Get draft with participants
+        devybigboard.models.Draft draft = draftService.getLobbyState(uuid);
+        
+        // Convert participants to ParticipantInfo list
+        java.util.List<devybigboard.models.ParticipantInfo> participantInfos = 
+            draft.getParticipants().stream()
+                .map(devybigboard.models.ParticipantInfo::fromEntity)
+                .collect(java.util.stream.Collectors.toList());
+        
+        // Check if all participants are ready
+        boolean allReady = !draft.getParticipants().isEmpty() && 
+            draft.getParticipants().stream().allMatch(devybigboard.models.DraftParticipant::getIsReady);
+        
+        // Check if draft can start
+        boolean canStart = draftService.canStartDraft(uuid);
+        
+        // Build and return lobby state message
+        return new devybigboard.models.LobbyStateMessage(
+            draft.getUuid(),
+            draft.getDraftName(),
+            draft.getStatus(),
+            draft.getParticipantCount(),
+            draft.getTotalRounds(),
+            participantInfos,
+            allReady,
+            canStart,
+            draft.getCreatedBy()
+        );
+    }
 
 }

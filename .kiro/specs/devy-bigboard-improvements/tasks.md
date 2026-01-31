@@ -250,19 +250,19 @@ This implementation plan breaks down the Devy BigBoard enhancements into discret
 - [ ] 10. Checkpoint - Ensure backend functionality complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Global error handling
-  - [ ] 11.1 Create custom exception classes
+- [x] 11. Global error handling
+  - [x] 11.1 Create custom exception classes
     - Create PlayerNotFoundException
     - Create DraftNotFoundException
     - Create UnauthorizedException
     - Create ValidationException
     - _Requirements: 9.4, 9.5_
   
-  - [ ] 11.2 Create ErrorResponse model
+  - [x] 11.2 Create ErrorResponse model
     - Add fields: timestamp, status, error, message, path, fieldErrors
     - _Requirements: 9.5_
   
-  - [ ] 11.3 Implement GlobalExceptionHandler
+  - [x] 11.3 Implement GlobalExceptionHandler
     - Handle PlayerNotFoundException → 404
     - Handle DraftNotFoundException → 404
     - Handle UnauthorizedException → 403

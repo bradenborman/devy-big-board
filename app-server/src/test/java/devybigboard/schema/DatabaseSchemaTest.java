@@ -134,6 +134,9 @@ class DatabaseSchemaTest {
         assertTrue(hasColumn(columns, "PLAYER_ID"), "Should have PLAYER_ID column");
         assertTrue(hasColumn(columns, "PICK_NUMBER"), "Should have PICK_NUMBER column");
         assertTrue(hasColumn(columns, "PICKED_AT"), "Should have PICKED_AT column");
+        assertTrue(hasColumn(columns, "POSITION"), "Should have POSITION column");
+        assertTrue(hasColumn(columns, "FORCED_BY"), "Should have FORCED_BY column");
+        assertTrue(hasColumn(columns, "ROUND_NUMBER"), "Should have ROUND_NUMBER column");
     }
 
     @Test
