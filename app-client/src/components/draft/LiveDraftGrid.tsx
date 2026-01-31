@@ -12,6 +12,7 @@ interface LiveDraftGridProps {
   currentTurnPosition: string;
   userPosition: string;
   onDropPlayer: (position: string, round: number) => void;
+  onUndoLastPick: () => void;
 }
 
 const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
@@ -24,6 +25,7 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
   currentTurnPosition,
   userPosition,
   onDropPlayer,
+  onUndoLastPick,
 }) => {
   // Generate all positions based on participantCount
   const allPositions = Array.from({ length: participantCount }, (_, i) => {
@@ -101,6 +103,18 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
           </div>
         ))}
       </div>
+
+      {picks.length > 0 && (
+        <div className="undo-button-container">
+          <button 
+            className="undo-last-pick-btn"
+            onClick={onUndoLastPick}
+            title="Undo last pick"
+          >
+            ↶ Undo Last Pick
+          </button>
+        </div>
+      )}
 
       <div className="grid-body">
         {Array.from({ length: totalRounds }, (_, roundIndex) => {

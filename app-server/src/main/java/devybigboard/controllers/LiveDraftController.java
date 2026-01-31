@@ -329,6 +329,35 @@ public class LiveDraftController {
     }
     
     /**
+     * Handle undoing the last pick in the draft.
+     * Removes the most recent pick, reverts draft state,
+     * and broadcasts updated draft state to all participants.
+     * 
+     * @param request simple request containing draftUuid and position
+     */
+    @MessageMapping("/draft/{draftUuid}/undo")
+    public void undoLastPick(@Valid @Payload StateRequest request) {
+        try {
+            logger.info("Undo pick request for draft {}", request.getDraftUuid());
+            
+            // Undo the last pick
+            draftService.undoLastPick(request.getDraftUuid(), "SYSTEM");
+            
+            // Broadcast updated draft state
+            broadcastDraftState(request.getDraftUuid());
+            
+            logger.info("Last pick undone successfully in draft {}", request.getDraftUuid());
+            
+        } catch (DraftNotFoundException | IllegalStateException e) {
+            logger.error("Error undoing pick: {}", e.getMessage());
+            sendErrorToUser(e.getMessage(), "UNDO_ERROR");
+        } catch (Exception e) {
+            logger.error("Unexpected error undoing pick", e);
+            sendErrorToUser("An unexpected error occurred while undoing the pick", "INTERNAL_ERROR");
+        }
+    }
+    
+    /**
      * Handle request for current draft state.
      * Returns complete draft state to the requesting user.
      * Used for reconnection and state synchronization.

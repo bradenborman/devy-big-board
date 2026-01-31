@@ -4,6 +4,39 @@
   padding: 0;
   overflow-x: auto;
 
+  .undo-button-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+    margin-bottom: 0.5rem;
+
+    .undo-last-pick-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
   .grid-header {
     display: grid;
     grid-template-columns: 60px repeat(auto-fit, minmax(80px, 1fr));

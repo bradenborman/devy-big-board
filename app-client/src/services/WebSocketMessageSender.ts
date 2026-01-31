@@ -60,6 +60,14 @@ export class WebSocketMessageSender {
   }
 
   /**
+   * Undo the last pick in the draft
+   */
+  static undoLastPick(draftUuid: string): void {
+    const destination = `/app/draft/${draftUuid}/undo`;
+    webSocketService.send(destination, { draftUuid });
+  }
+
+  /**
    * Request current draft state (for reconnection)
    */
   static requestDraftState(draftUuid: string): void {

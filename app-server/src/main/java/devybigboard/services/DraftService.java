@@ -340,6 +340,59 @@ public class DraftService {
     }
     
     /**
+     * Undo the last pick in a live draft.
+     * Removes the most recent pick, decrements the pick counter and round,
+     * and reverts completion status if the draft was completed.
+     * 
+     * @param uuid the unique identifier of the draft
+     * @param position the position letter (A-Z) requesting the undo
+     * @return the updated draft entity
+     * @throws DraftNotFoundException if draft does not exist
+     * @throws IllegalStateException if draft is not in progress or completed, or if there are no picks to undo
+     */
+    @Transactional
+    public Draft undoLastPick(String uuid, String position) {
+        // Get the draft
+        Draft draft = getDraftByUuid(uuid);
+        
+        // Validate draft status is IN_PROGRESS or COMPLETED
+        if (!"IN_PROGRESS".equals(draft.getStatus()) && !"COMPLETED".equals(draft.getStatus())) {
+            throw new IllegalStateException("Draft must be in progress or completed to undo picks");
+        }
+        
+        // Check if there are any picks to undo
+        if (draft.getPicks().isEmpty()) {
+            throw new IllegalStateException("No picks to undo");
+        }
+        
+        // Find the last pick (highest pick number)
+        DraftPick lastPick = draft.getPicks().stream()
+            .max((p1, p2) -> Integer.compare(p1.getPickNumber(), p2.getPickNumber()))
+            .orElseThrow(() -> new IllegalStateException("No picks to undo"));
+        
+        // Remove the last pick
+        draft.getPicks().remove(lastPick);
+        
+        // Decrement currentPick counter
+        int newPickNumber = draft.getCurrentPick() - 1;
+        draft.setCurrentPick(newPickNumber);
+        
+        // Update currentRound based on the NEW pick number
+        int picksPerRound = draft.getParticipantCount();
+        int newRound = ((newPickNumber - 1) / picksPerRound) + 1;
+        draft.setCurrentRound(newRound);
+        
+        // If draft was completed, revert to IN_PROGRESS
+        if ("COMPLETED".equals(draft.getStatus())) {
+            draft.setStatus("IN_PROGRESS");
+            draft.setCompletedAt(null);
+        }
+        
+        // Save and return updated draft state
+        return draftRepository.save(draft);
+    }
+    
+    /**
      * Get the complete draft state for WebSocket synchronization.
      * Returns all picks, current turn, available players, participants with nicknames and positions,
      * and pick history with forced pick attributions.

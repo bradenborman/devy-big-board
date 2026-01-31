@@ -220,6 +220,17 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
     []
   );
 
+  const handleUndoLastPick = useCallback(() => {
+    if (!uuid) return;
+
+    try {
+      sendMessage(`/app/draft/${uuid}/undo`, { draftUuid: uuid });
+    } catch (err) {
+      console.error('Failed to undo pick:', err);
+      setError('Failed to undo pick. Please try again.');
+    }
+  }, [uuid, sendMessage]);
+
   if (loading) {
     return (
       <div className="live-draft-board">
@@ -312,6 +323,7 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
                   currentTurnPosition={draftState.currentTurnPosition}
                   userPosition={userPosition || ''}
                   onDropPlayer={handleDropPlayer}
+                  onUndoLastPick={handleUndoLastPick}
                 />
               </div>
             </div>
