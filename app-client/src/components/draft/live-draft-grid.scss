@@ -12,8 +12,9 @@
 
     .undo-last-pick-btn {
       position: absolute;
-      top: 4px;
-      left: 4px;
+      top: 50%;
+      left: -14px;
+      transform: translateY(-50%);
       background: rgba(239, 68, 68, 0.9);
       border: none;
       color: white;
@@ -32,12 +33,12 @@
 
       &:hover {
         background: rgba(239, 68, 68, 1);
-        transform: scale(1.1);
+        transform: translateY(-50%) scale(1.1);
         box-shadow: 0 3px 6px rgba(239, 68, 68, 0.4);
       }
 
       &:active {
-        transform: scale(0.95);
+        transform: translateY(-50%) scale(0.95);
       }
     }
   }
