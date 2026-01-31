@@ -27,6 +27,10 @@ public class CreateLiveDraftRequest {
     @Max(value = 20, message = "Total rounds cannot exceed 20")
     private Integer totalRounds;
     
+    @NotBlank(message = "PIN is required")
+    @Pattern(regexp = "^\\d{4}$", message = "PIN must be exactly 4 digits")
+    private String pin;
+    
     private Boolean isSnakeDraft = false;
     
     // Constructors
@@ -38,14 +42,16 @@ public class CreateLiveDraftRequest {
         this.creatorNickname = creatorNickname;
         this.participantCount = participantCount;
         this.totalRounds = totalRounds;
+        this.pin = null;
         this.isSnakeDraft = false;
     }
     
-    public CreateLiveDraftRequest(String draftName, String creatorNickname, Integer participantCount, Integer totalRounds, Boolean isSnakeDraft) {
+    public CreateLiveDraftRequest(String draftName, String creatorNickname, Integer participantCount, Integer totalRounds, String pin, Boolean isSnakeDraft) {
         this.draftName = draftName;
         this.creatorNickname = creatorNickname;
         this.participantCount = participantCount;
         this.totalRounds = totalRounds;
+        this.pin = pin;
         this.isSnakeDraft = isSnakeDraft;
     }
     
@@ -80,6 +86,14 @@ public class CreateLiveDraftRequest {
     
     public void setTotalRounds(Integer totalRounds) {
         this.totalRounds = totalRounds;
+    }
+    
+    public String getPin() {
+        return pin;
+    }
+    
+    public void setPin(String pin) {
+        this.pin = pin;
     }
     
     public Boolean getIsSnakeDraft() {

@@ -30,11 +30,13 @@ CREATE TABLE IF NOT EXISTS drafts (
     current_pick INT DEFAULT 1,
     total_rounds INT DEFAULT 10,
     is_snake_draft BOOLEAN DEFAULT FALSE,
+    pin VARCHAR(4) DEFAULT NULL COMMENT '4-digit PIN for draft authentication',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
     INDEX idx_uuid (uuid),
     INDEX idx_created_at (created_at),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_drafts_pin (pin)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Draft picks table
@@ -72,6 +74,7 @@ CREATE TABLE IF NOT EXISTS draft_participants (
     position VARCHAR(1) NOT NULL,
     nickname VARCHAR(50) NOT NULL,
     is_ready BOOLEAN NOT NULL DEFAULT FALSE,
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Whether participant has been verified with PIN (creators are auto-verified)',
     joined_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_draft_position (draft_id, position),
     UNIQUE KEY unique_draft_nickname (draft_id, nickname),

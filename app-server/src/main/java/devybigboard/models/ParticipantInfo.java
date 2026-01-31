@@ -11,16 +11,18 @@ public class ParticipantInfo {
     private String position;
     private String nickname;
     private Boolean isReady;
+    private Boolean isVerified;
     private LocalDateTime joinedAt;
     
     // Constructors
     public ParticipantInfo() {
     }
     
-    public ParticipantInfo(String position, String nickname, Boolean isReady, LocalDateTime joinedAt) {
+    public ParticipantInfo(String position, String nickname, Boolean isReady, Boolean isVerified, LocalDateTime joinedAt) {
         this.position = position;
         this.nickname = nickname;
         this.isReady = isReady;
+        this.isVerified = isVerified;
         this.joinedAt = joinedAt;
     }
     
@@ -30,6 +32,7 @@ public class ParticipantInfo {
             participant.getPosition(),
             participant.getNickname(),
             participant.getIsReady(),
+            participant.getIsVerified(),
             participant.getJoinedAt()
         );
     }
@@ -57,6 +60,14 @@ public class ParticipantInfo {
     
     public void setIsReady(Boolean isReady) {
         this.isReady = isReady;
+    }
+    
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+    
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
     }
     
     public LocalDateTime getJoinedAt() {

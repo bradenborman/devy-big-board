@@ -113,7 +113,8 @@ public class LiveDraftController {
             participantService.setReady(
                 draft.getId(), 
                 request.getPosition(), 
-                request.getIsReady()
+                request.getIsReady(),
+                request.getPin()
             );
             
             // Broadcast updated lobby state

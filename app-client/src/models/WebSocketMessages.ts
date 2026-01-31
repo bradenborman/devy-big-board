@@ -7,6 +7,7 @@ export interface ParticipantInfo {
   position: string;
   nickname: string;
   isReady: boolean;
+  isVerified: boolean;
   joinedAt: string;
 }
 
@@ -96,6 +97,7 @@ export interface ReadyRequest {
   draftUuid: string;
   position: string;
   isReady: boolean;
+  pin?: string; // Optional - only required for non-creators when setting ready to true
 }
 
 export interface MakePickRequest {

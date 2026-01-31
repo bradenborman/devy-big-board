@@ -12,6 +12,7 @@ public class LiveDraftResponse {
     private Integer participantCount;
     private Integer totalRounds;
     private String createdBy;
+    private String pin;
     private String lobbyUrl;
     
     // Constructors
@@ -25,6 +26,7 @@ public class LiveDraftResponse {
         this.participantCount = draft.getParticipantCount();
         this.totalRounds = draft.getTotalRounds();
         this.createdBy = draft.getCreatedBy();
+        this.pin = draft.getPin();
         this.lobbyUrl = lobbyUrl;
     }
     
@@ -75,6 +77,14 @@ public class LiveDraftResponse {
     
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+    
+    public String getPin() {
+        return pin;
+    }
+    
+    public void setPin(String pin) {
+        this.pin = pin;
     }
     
     public String getLobbyUrl() {

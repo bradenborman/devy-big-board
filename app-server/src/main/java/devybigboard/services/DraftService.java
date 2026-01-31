@@ -34,11 +34,12 @@ public class DraftService {
      * @param creatorNickname the nickname of the creator
      * @param participantCount the number of participants (2-26)
      * @param totalRounds the total number of rounds
+     * @param pin the 4-digit PIN for draft authentication
      * @param isSnakeDraft true for snake draft, false for linear draft
      * @return the created draft entity
      */
     @Transactional
-    public Draft createLiveDraft(String draftName, String creatorNickname, Integer participantCount, Integer totalRounds, Boolean isSnakeDraft) {
+    public Draft createLiveDraft(String draftName, String creatorNickname, Integer participantCount, Integer totalRounds, String pin, Boolean isSnakeDraft) {
         Draft draft = new Draft();
         draft.setUuid(UUID.randomUUID().toString());
         draft.setDraftName(draftName);
@@ -48,6 +49,7 @@ public class DraftService {
         draft.setTotalRounds(totalRounds);
         draft.setCurrentRound(1);
         draft.setCurrentPick(1);
+        draft.setPin(pin);
         draft.setIsSnakeDraft(isSnakeDraft != null ? isSnakeDraft : false);
         
         return draftRepository.save(draft);

@@ -92,22 +92,52 @@ public class ParticipantService {
         participant.setJoinedAt(LocalDateTime.now());
         participant.setIsReady(true);
         
+        // Auto-verify if participant is the creator
+        if (nickname.trim().equals(draft.getCreatedBy())) {
+            participant.setIsVerified(true);
+        }
+        
         return participantRepository.save(participant);
     }
 
     /**
      * Toggle the ready status of a participant.
+     * For non-creators, requires PIN verification before setting ready to true.
      * 
      * @param draftId the ID of the draft
      * @param position the participant's position (A-Z letter)
      * @param isReady the new ready status
+     * @param pin the PIN for verification (required for non-creators when setting ready to true)
      * @return the updated participant entity
-     * @throws ValidationException if participant not found
+     * @throws ValidationException if participant not found or PIN is invalid
      */
     @Transactional
-    public DraftParticipant setReady(Long draftId, String position, boolean isReady) {
+    public DraftParticipant setReady(Long draftId, String position, boolean isReady, String pin) {
         DraftParticipant participant = participantRepository.findByDraftIdAndPosition(draftId, position)
             .orElseThrow(() -> new ValidationException("Participant not found at position " + position));
+        
+        Draft draft = draftRepository.findById(draftId)
+            .orElseThrow(() -> new DraftNotFoundException("Draft not found with ID: " + draftId));
+        
+        // If setting ready to true and participant is not verified
+        if (isReady && !participant.getIsVerified()) {
+            // Check if participant is the creator (auto-verified)
+            if (participant.getNickname().equals(draft.getCreatedBy())) {
+                participant.setIsVerified(true);
+            } else {
+                // Non-creator must provide valid PIN
+                if (pin == null || pin.trim().isEmpty()) {
+                    throw new ValidationException("PIN is required to ready up");
+                }
+                
+                if (!pin.equals(draft.getPin())) {
+                    throw new ValidationException("Invalid PIN");
+                }
+                
+                // Mark as verified
+                participant.setIsVerified(true);
+            }
+        }
         
         participant.setIsReady(isReady);
         return participantRepository.save(participant);

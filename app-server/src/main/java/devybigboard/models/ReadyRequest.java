@@ -19,6 +19,8 @@ public class ReadyRequest {
     @NotNull(message = "Ready status is required")
     private Boolean isReady;
     
+    private String pin; // Optional - only required for non-creators when setting ready to true
+    
     // Constructors
     public ReadyRequest() {
     }
@@ -27,6 +29,14 @@ public class ReadyRequest {
         this.draftUuid = draftUuid;
         this.position = position;
         this.isReady = isReady;
+        this.pin = null;
+    }
+    
+    public ReadyRequest(String draftUuid, String position, Boolean isReady, String pin) {
+        this.draftUuid = draftUuid;
+        this.position = position;
+        this.isReady = isReady;
+        this.pin = pin;
     }
     
     // Getters and Setters
@@ -52,5 +62,13 @@ public class ReadyRequest {
     
     public void setIsReady(Boolean isReady) {
         this.isReady = isReady;
+    }
+    
+    public String getPin() {
+        return pin;
+    }
+    
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

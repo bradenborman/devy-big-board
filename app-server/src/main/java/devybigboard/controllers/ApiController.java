@@ -224,6 +224,7 @@ public class ApiController {
             request.getCreatorNickname(),
             request.getParticipantCount(),
             request.getTotalRounds(),
+            request.getPin(),
             request.getIsSnakeDraft()
         );
         

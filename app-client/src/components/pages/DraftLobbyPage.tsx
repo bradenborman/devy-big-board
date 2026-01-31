@@ -23,13 +23,17 @@ const DraftLobbyPage: React.FC = () => {
   const [nicknameError, setNicknameError] = useState('');
   const [lobbyStateTimeout, setLobbyStateTimeout] = useState(false);
   const [showCopiedToast, setShowCopiedToast] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState('');
 
   // Get position and nickname from URL params
   const currentUserPosition = searchParams.get('position');
   const currentUserNickname = searchParams.get('nickname');
 
-  // Get creator nickname from navigation state
+  // Get creator nickname and PIN from navigation state
   const creatorNickname = (location.state as any)?.creatorNickname;
+  const draftPin = (location.state as any)?.pin;
 
   // Set a timeout for lobby state loading
   useEffect(() => {
@@ -171,12 +175,17 @@ const DraftLobbyPage: React.FC = () => {
         // Update URL with position and nickname params
         setSearchParams({ position, nickname });
         setShowPositionSelector(false);
+        
+        // If not the creator, show PIN modal to verify
+        if (nickname !== creatorNickname) {
+          setShowPinModal(true);
+        }
       } catch (err) {
         console.error('Failed to join lobby:', err);
         throw new Error('Failed to join lobby. Please try again.');
       }
     },
-    [uuid, sendMessage, setSearchParams]
+    [uuid, sendMessage, setSearchParams, creatorNickname]
   );
 
   const handlePositionSelect = useCallback(
@@ -249,6 +258,31 @@ const DraftLobbyPage: React.FC = () => {
       console.error('Failed to copy link:', err);
     });
   }, [uuid]);
+
+  const handlePinSubmit = useCallback(() => {
+    if (!uuid || !currentUserPosition) return;
+    
+    if (!pinInput || pinInput.length !== 4) {
+      setPinError('PIN must be 4 digits');
+      return;
+    }
+    
+    try {
+      sendMessage(`/app/draft/${uuid}/ready`, {
+        draftUuid: uuid,
+        position: currentUserPosition,
+        isReady: true,
+        pin: pinInput,
+      });
+      
+      setShowPinModal(false);
+      setPinInput('');
+      setPinError('');
+    } catch (err) {
+      console.error('Failed to verify PIN:', err);
+      setPinError('Failed to verify PIN. Please try again.');
+    }
+  }, [uuid, currentUserPosition, pinInput, sendMessage]);
 
   if (loading) {
     return (
@@ -435,6 +469,41 @@ const DraftLobbyPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {showPinModal && (
+        <div className="pin-modal-overlay" onClick={() => setShowPinModal(false)}>
+          <div className="pin-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Enter Draft PIN</h2>
+            <p>Please enter the 4-digit PIN to verify your participation</p>
+            {draftPin && (
+              <div className="pin-hint">
+                <strong>Your PIN:</strong> {draftPin}
+              </div>
+            )}
+            <input
+              type="text"
+              value={pinInput}
+              onChange={(e) => {
+                setPinInput(e.target.value.replace(/\D/g, '').slice(0, 4));
+                setPinError('');
+              }}
+              placeholder="Enter 4-digit PIN"
+              maxLength={4}
+              className={pinError ? 'error' : ''}
+              autoFocus
+            />
+            {pinError && <span className="error-message">{pinError}</span>}
+            <div className="pin-modal-actions">
+              <button onClick={() => setShowPinModal(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button onClick={handlePinSubmit} className="btn btn-primary">
+                Verify
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

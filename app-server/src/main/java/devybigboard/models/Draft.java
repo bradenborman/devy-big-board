@@ -50,6 +50,9 @@ public class Draft {
     @Column(name = "is_snake_draft")
     private Boolean isSnakeDraft = false;
     
+    @Column(name = "pin", length = 4)
+    private String pin;
+    
     @OneToMany(mappedBy = "draft", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DraftPick> picks = new ArrayList<>();
     
@@ -213,5 +216,13 @@ public class Draft {
     
     public void setIsSnakeDraft(Boolean isSnakeDraft) {
         this.isSnakeDraft = isSnakeDraft;
+    }
+    
+    public String getPin() {
+        return pin;
+    }
+    
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

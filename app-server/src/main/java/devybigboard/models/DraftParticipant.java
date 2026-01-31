@@ -36,6 +36,9 @@ public class DraftParticipant {
     @Column(name = "is_ready", nullable = false)
     private Boolean isReady = false;
     
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
+    
     @Column(name = "joined_at", nullable = false)
     private LocalDateTime joinedAt;
     
@@ -48,6 +51,7 @@ public class DraftParticipant {
         this.position = position;
         this.nickname = nickname;
         this.isReady = false;
+        this.isVerified = false;
         this.joinedAt = LocalDateTime.now();
     }
     
@@ -90,6 +94,14 @@ public class DraftParticipant {
     
     public void setIsReady(Boolean isReady) {
         this.isReady = isReady;
+    }
+    
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+    
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
     }
     
     public LocalDateTime getJoinedAt() {

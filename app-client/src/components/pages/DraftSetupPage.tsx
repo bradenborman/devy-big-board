@@ -7,6 +7,7 @@ interface CreateDraftRequest {
   creatorNickname: string;
   participantCount: number;
   totalRounds: number;
+  pin: string;
   isSnakeDraft: boolean;
 }
 
@@ -16,7 +17,13 @@ interface CreateDraftResponse {
   status: string;
   participantCount: number;
   totalRounds: number;
+  pin: string;
 }
+
+// Generate random 4-digit PIN
+const generateRandomPin = (): string => {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+};
 
 const DraftSetupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,6 +32,7 @@ const DraftSetupPage: React.FC = () => {
     creatorNickname: '',
     participantCount: 8,
     totalRounds: 3,
+    pin: generateRandomPin(),
     isSnakeDraft: false,
   });
   const [loading, setLoading] = useState(false);
@@ -45,6 +53,10 @@ const DraftSetupPage: React.FC = () => {
       newErrors.creatorNickname = 'Nickname must be at least 2 characters';
     } else if (formData.creatorNickname.length > 20) {
       newErrors.creatorNickname = 'Nickname must be 20 characters or less';
+    }
+
+    if (!formData.pin || !/^\d{4}$/.test(formData.pin)) {
+      newErrors.pin = 'PIN must be exactly 4 digits';
     }
 
     setErrors(newErrors);
@@ -77,9 +89,12 @@ const DraftSetupPage: React.FC = () => {
 
       const data: CreateDraftResponse = await response.json();
       
-      // Redirect to lobby with the draft UUID and pass creator nickname in state
+      // Redirect to lobby with the draft UUID, creator nickname, and PIN in state
       navigate(`/draft/${data.uuid}/lobby`, {
-        state: { creatorNickname: formData.creatorNickname }
+        state: { 
+          creatorNickname: formData.creatorNickname,
+          pin: data.pin
+        }
       });
     } catch (error) {
       console.error('Error creating draft:', error);
@@ -160,6 +175,24 @@ const DraftSetupPage: React.FC = () => {
             />
             {errors.creatorNickname && <span className="error-message">{errors.creatorNickname}</span>}
             <span className="field-hint">This will be your display name in the draft</span>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="pin">
+              Draft PIN <span className="required">*</span>
+            </label>
+            <input
+              id="pin"
+              type="text"
+              value={formData.pin}
+              onChange={(e) => handleInputChange('pin', e.target.value.replace(/\D/g, '').slice(0, 4))}
+              placeholder="4-digit PIN"
+              className={errors.pin ? 'error' : ''}
+              disabled={loading}
+              maxLength={4}
+            />
+            {errors.pin && <span className="error-message">{errors.pin}</span>}
+            <span className="field-hint">Participants will need this PIN to join the draft</span>
           </div>
 
           <div className="form-row">
