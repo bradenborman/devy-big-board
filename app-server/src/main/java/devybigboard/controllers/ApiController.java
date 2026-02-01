@@ -265,7 +265,7 @@ public class ApiController {
         // Check if draft can start
         boolean canStart = draftService.canStartDraft(uuid);
         
-        // Build and return lobby state message
+        // Build and return lobby state message (without PIN for public list)
         return new devybigboard.models.LobbyStateMessage(
             draft.getUuid(),
             draft.getDraftName(),
@@ -275,7 +275,8 @@ public class ApiController {
             participantInfos,
             allReady,
             canStart,
-            draft.getCreatedBy()
+            draft.getCreatedBy(),
+            null // Don't include PIN in public lobby list
         );
     }
     

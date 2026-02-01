@@ -17,6 +17,7 @@ public class LobbyStateMessage {
     private Boolean allReady;
     private Boolean canStart;
     private String createdBy;
+    private String pin;
     
     // Constructors
     public LobbyStateMessage() {
@@ -25,7 +26,7 @@ public class LobbyStateMessage {
     public LobbyStateMessage(String draftUuid, String draftName, String status, 
                             Integer participantCount, Integer totalRounds,
                             List<ParticipantInfo> participants, Boolean allReady, Boolean canStart,
-                            String createdBy) {
+                            String createdBy, String pin) {
         this.draftUuid = draftUuid;
         this.draftName = draftName;
         this.status = status;
@@ -35,6 +36,7 @@ public class LobbyStateMessage {
         this.allReady = allReady;
         this.canStart = canStart;
         this.createdBy = createdBy;
+        this.pin = pin;
     }
     
     // Getters and Setters
@@ -108,5 +110,13 @@ public class LobbyStateMessage {
     
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+    
+    public String getPin() {
+        return pin;
+    }
+    
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

@@ -480,7 +480,8 @@ public class LiveDraftController {
             participantInfos,
             allReady,
             canStart,
-            draft.getCreatedBy()
+            draft.getCreatedBy(),
+            draft.getPin()
         );
     }
     

@@ -58,6 +58,7 @@ export interface LobbyStateMessage {
   allReady: boolean;
   canStart: boolean;
   createdBy?: string;
+  pin?: string; // Draft PIN for verified users
 }
 
 export interface ErrorMessage {

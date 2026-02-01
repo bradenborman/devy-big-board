@@ -32,9 +32,11 @@ const DraftLobbyPage: React.FC = () => {
   const currentUserNickname = searchParams.get('nickname');
   const urlPin = searchParams.get('pin'); // PIN from share link
 
-  // Get creator nickname and PIN from navigation state
+  // Get creator nickname from navigation state
   const creatorNickname = (location.state as any)?.creatorNickname;
-  const draftPin = (location.state as any)?.pin || urlPin; // Use state PIN or URL PIN
+  
+  // Get PIN from lobbyState (backend) or fallback to URL/state
+  const draftPin = lobbyState?.pin || (location.state as any)?.pin || urlPin;
 
   // Set a timeout for lobby state loading
   useEffect(() => {
