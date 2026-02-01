@@ -39,14 +39,14 @@ const DraftLobbyPage: React.FC = () => {
   // Set a timeout for lobby state loading
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!lobbyState && isConnected) {
-        console.error('Lobby state not received after 5 seconds');
+      if (!lobbyState && isConnected && showPositionSelector) {
+        console.error('Lobby state not received after 10 seconds');
         setLobbyStateTimeout(true);
       }
-    }, 5000);
+    }, 10000); // Increased to 10 seconds
 
     return () => clearTimeout(timer);
-  }, [lobbyState, isConnected]);
+  }, [lobbyState, isConnected, showPositionSelector]);
 
   // Check if user needs to select position
   useEffect(() => {
@@ -155,8 +155,11 @@ const DraftLobbyPage: React.FC = () => {
     // Request initial lobby state
     console.log('Requesting initial lobby state for draft:', uuid);
     try {
-      sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
-      console.log('Lobby state request sent successfully');
+      // Add a small delay to ensure WebSocket is fully connected
+      setTimeout(() => {
+        sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
+        console.log('Lobby state request sent successfully');
+      }, 100);
     } catch (err) {
       console.error('Error sending lobby state request:', err);
     }

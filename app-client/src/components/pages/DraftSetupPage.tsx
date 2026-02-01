@@ -155,6 +155,7 @@ const DraftSetupPage: React.FC = () => {
               className={errors.draftName ? 'error' : ''}
               disabled={loading}
               maxLength={100}
+              autoComplete="off"
             />
             {errors.draftName && <span className="error-message">{errors.draftName}</span>}
           </div>
