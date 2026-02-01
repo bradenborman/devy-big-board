@@ -320,7 +320,7 @@ const DraftLobbyPage: React.FC = () => {
     }
     
     // Subscribe to error response for this specific request
-    const errorSubscription = webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
+    webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
       console.error('Received error message:', errorMessage);
       
       if (errorMessage.code === 'READY_ERROR') {
