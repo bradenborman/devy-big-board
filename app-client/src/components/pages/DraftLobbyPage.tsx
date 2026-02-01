@@ -529,15 +529,15 @@ const DraftLobbyPage: React.FC = () => {
               )
             ) : (
               <div className="user-controls">
+                {draftPin && (lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
+                  <div className="pin-display-large">
+                    <span className="pin-label">PIN</span>
+                    <span className="pin-value">{draftPin}</span>
+                  </div>
+                )}
                 <div className="user-info">
                   <h3>You are {currentUserNickname}</h3>
                   <p>Position {currentUserPosition}</p>
-                  {draftPin && (lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
-                    <div className="pin-display">
-                      <span className="pin-label">Draft PIN:</span>
-                      <span className="pin-value">{draftPin}</span>
-                    </div>
-                  )}
                 </div>
                 <div className="action-buttons">
                   <StartDraftButton

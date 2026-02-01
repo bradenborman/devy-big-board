@@ -222,6 +222,33 @@
           flex-direction: column;
           gap: 1.5rem;
 
+          .pin-display-large {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+            .pin-label {
+              display: block;
+              color: rgba(255, 255, 255, 0.9);
+              font-size: 0.875rem;
+              font-weight: 600;
+              margin-bottom: 0.5rem;
+              text-transform: uppercase;
+              letter-spacing: 0.1rem;
+            }
+
+            .pin-value {
+              display: block;
+              color: white;
+              font-size: 3rem;
+              font-weight: 700;
+              letter-spacing: 1rem;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+          }
+
           .user-info {
             text-align: center;
 
