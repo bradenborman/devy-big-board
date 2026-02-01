@@ -68,9 +68,8 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
   const isLastPick = (pick: PickMessage | null): boolean => {
     if (!pick || picks.length === 0) return false;
     const lastPick = picks[picks.length - 1];
-    return pick.playerId === lastPick.playerId && 
-           pick.roundNumber === lastPick.roundNumber && 
-           pick.pickedByPosition === lastPick.pickedByPosition;
+    // Compare by pick number which should be unique
+    return pick.pickNumber === lastPick.pickNumber;
   };
 
   // Check if this is the current pick slot
