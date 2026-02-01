@@ -66,6 +66,18 @@ public class DraftService {
     }
     
     /**
+     * Delete a draft by UUID.
+     * 
+     * @param uuid the unique identifier of the draft
+     * @throws DraftNotFoundException if draft does not exist
+     */
+    @Transactional
+    public void deleteDraft(String uuid) {
+        Draft draft = getDraftByUuid(uuid);
+        draftRepository.delete(draft);
+    }
+    
+    /**
      * Get the complete lobby state including draft and all participants.
      * 
      * @param uuid the unique identifier of the draft

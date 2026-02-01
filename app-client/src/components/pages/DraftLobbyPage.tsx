@@ -255,6 +255,29 @@ const DraftLobbyPage: React.FC = () => {
     }
   }, [uuid, currentUserPosition, sendMessage]);
 
+  const handleDeleteDraft = useCallback(async () => {
+    if (!uuid) return;
+    
+    const confirmed = window.confirm('Are you sure you want to delete this draft? This cannot be undone.');
+    if (!confirmed) return;
+    
+    try {
+      const response = await fetch(`/api/live-drafts/${uuid}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete draft');
+      }
+      
+      // Redirect to live draft page
+      navigate('/live-draft');
+    } catch (err) {
+      console.error('Failed to delete draft:', err);
+      setError('Failed to delete draft. Please try again.');
+    }
+  }, [uuid, navigate]);
+
   const isCreator = (): boolean => {
     if (!lobbyState || !currentUserNickname) return false;
     // The creator is identified by matching nickname with createdBy field
@@ -425,14 +448,6 @@ const DraftLobbyPage: React.FC = () => {
               <strong>{lobbyState?.totalRounds}</strong> Rounds
             </span>
           </div>
-          {currentUserPosition && (lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
-            <button onClick={handleCopyLink} className="share-link-btn">
-              📋 Copy Lobby Link
-            </button>
-          )}
-          {showCopiedToast && (
-            <div className="copied-toast">Link copied to clipboard!</div>
-          )}
         </div>
 
         <div className="lobby-main">
@@ -537,12 +552,30 @@ const DraftLobbyPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <StartDraftButton
-                  isCreator={isCreator()}
-                  allReady={lobbyState?.allReady || false}
-                  onStart={handleStartDraft}
-                  loading={startingDraft}
-                />
+                <div className="action-buttons">
+                  <StartDraftButton
+                    isCreator={isCreator()}
+                    allReady={lobbyState?.allReady || false}
+                    onStart={handleStartDraft}
+                    loading={startingDraft}
+                  />
+                  {(lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
+                    <button 
+                      className="share-link-btn"
+                      onClick={handleCopyLink}
+                    >
+                      📋 Copy Lobby Link
+                    </button>
+                  )}
+                  {isCreator() && (
+                    <button 
+                      className="delete-draft-btn"
+                      onClick={handleDeleteDraft}
+                    >
+                      🗑️ Delete Draft
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -557,6 +590,10 @@ const DraftLobbyPage: React.FC = () => {
             )}
           </div>
         </div>
+        
+        {showCopiedToast && (
+          <div className="copied-toast">Link copied to clipboard!</div>
+        )}
       </div>
 
       {showPinModal && (

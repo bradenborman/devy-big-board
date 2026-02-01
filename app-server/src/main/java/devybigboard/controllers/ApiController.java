@@ -305,6 +305,19 @@ public class ApiController {
     }
     
     /**
+     * Delete a draft.
+     * DELETE /api/live-drafts/{uuid}
+     * 
+     * @param uuid the unique identifier of the draft
+     * @return 204 No Content on success
+     */
+    @DeleteMapping("/live-drafts/{uuid}")
+    @ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
+    public void deleteDraft(@PathVariable String uuid) {
+        draftService.deleteDraft(uuid);
+    }
+    
+    /**
      * Get all drafts currently in LOBBY status.
      * GET /api/live-drafts/lobbies
      * 
