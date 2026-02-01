@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
@@ -48,10 +49,11 @@ public class LiveDraftController {
      * and broadcasts join notification and updated lobby state to all participants.
      * 
      * @param request the join request containing draftUuid, nickname, and position
+     * @param headerAccessor the message header accessor for getting session info
      * @return error message if validation fails (sent only to requesting user)
      */
     @MessageMapping("/draft/{draftUuid}/join")
-    public void joinLobby(@Valid @Payload JoinRequest request) {
+    public void joinLobby(@Valid @Payload JoinRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Join request received for draft {} - nickname: {}, position: {}", 
                 request.getDraftUuid(), request.getNickname(), request.getPosition());
@@ -87,10 +89,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | ValidationException | IllegalStateException e) {
             logger.error("Error joining lobby: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "JOIN_ERROR");
+            sendErrorToUser(e.getMessage(), "JOIN_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error joining lobby", e);
-            sendErrorToUser("An unexpected error occurred while joining the lobby", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while joining the lobby", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -99,9 +101,10 @@ public class LiveDraftController {
      * Updates participant's ready status and broadcasts updated lobby state.
      * 
      * @param request the ready request containing draftUuid, position, and isReady status
+     * @param headerAccessor the message header accessor for getting session info
      */
     @MessageMapping("/draft/{draftUuid}/ready")
-    public void toggleReady(@Valid @Payload ReadyRequest request) {
+    public void toggleReady(@Valid @Payload ReadyRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Ready toggle request for draft {} - position: {}, ready: {}", 
                 request.getDraftUuid(), request.getPosition(), request.getIsReady());
@@ -125,10 +128,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | ValidationException e) {
             logger.error("Error toggling ready status: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "READY_ERROR");
+            sendErrorToUser(e.getMessage(), "READY_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error toggling ready status", e);
-            sendErrorToUser("An unexpected error occurred while updating ready status", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while updating ready status", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -137,9 +140,10 @@ public class LiveDraftController {
      * Removes participant from lobby and broadcasts leave notification and updated lobby state.
      * 
      * @param request the join request containing draftUuid and position (reusing JoinRequest for simplicity)
+     * @param headerAccessor the message header accessor for getting session info
      */
     @MessageMapping("/draft/{draftUuid}/leave")
-    public void leaveLobby(@Payload JoinRequest request) {
+    public void leaveLobby(@Payload JoinRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Leave request for draft {} - position: {}", 
                 request.getDraftUuid(), request.getPosition());
@@ -180,10 +184,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | ValidationException e) {
             logger.error("Error leaving lobby: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "LEAVE_ERROR");
+            sendErrorToUser(e.getMessage(), "LEAVE_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error leaving lobby", e);
-            sendErrorToUser("An unexpected error occurred while leaving the lobby", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while leaving the lobby", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -193,9 +197,10 @@ public class LiveDraftController {
      * starts the draft, and broadcasts start notification and initial draft state.
      * 
      * @param request the join request containing draftUuid and position (position should be creator's)
+     * @param headerAccessor the message header accessor for getting session info
      */
     @MessageMapping("/draft/{draftUuid}/start")
-    public void startDraft(@Payload JoinRequest request) {
+    public void startDraft(@Payload JoinRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Start draft request for draft {} from position {}", 
                 request.getDraftUuid(), request.getPosition());
@@ -245,10 +250,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | ValidationException | IllegalStateException e) {
             logger.error("Error starting draft: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "START_ERROR");
+            sendErrorToUser(e.getMessage(), "START_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error starting draft", e);
-            sendErrorToUser("An unexpected error occurred while starting the draft", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while starting the draft", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -258,9 +263,10 @@ public class LiveDraftController {
      * and broadcasts updated draft state to all participants.
      * 
      * @param request the pick request containing draftUuid, playerId, and position
+     * @param headerAccessor the message header accessor for getting session info
      */
     @MessageMapping("/draft/{draftUuid}/pick")
-    public void makePick(@Valid @Payload MakePickRequest request) {
+    public void makePick(@Valid @Payload MakePickRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Pick request for draft {} - player: {}, position: {}", 
                 request.getDraftUuid(), request.getPlayerId(), request.getPosition());
@@ -285,10 +291,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | ValidationException | IllegalStateException | IllegalArgumentException e) {
             logger.error("Error making pick: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "PICK_ERROR");
+            sendErrorToUser(e.getMessage(), "PICK_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error making pick", e);
-            sendErrorToUser("An unexpected error occurred while making the pick", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while making the pick", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -298,9 +304,10 @@ public class LiveDraftController {
      * and broadcasts updated draft state to all participants.
      * 
      * @param request the force pick request containing draftUuid, playerId, targetPosition, and forcingPosition
+     * @param headerAccessor the message header accessor for getting session info
      */
     @MessageMapping("/draft/{draftUuid}/force-pick")
-    public void forcePick(@Valid @Payload ForcePickRequest request) {
+    public void forcePick(@Valid @Payload ForcePickRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Force pick request for draft {} - player: {}, target: {}, forcing: {}", 
                 request.getDraftUuid(), request.getPlayerId(), 
@@ -322,10 +329,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | IllegalStateException | IllegalArgumentException e) {
             logger.error("Error forcing pick: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "FORCE_PICK_ERROR");
+            sendErrorToUser(e.getMessage(), "FORCE_PICK_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error forcing pick", e);
-            sendErrorToUser("An unexpected error occurred while forcing the pick", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while forcing the pick", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -335,9 +342,10 @@ public class LiveDraftController {
      * and broadcasts updated draft state to all participants.
      * 
      * @param request simple request containing draftUuid and position
+     * @param headerAccessor the message header accessor for getting session info
      */
     @MessageMapping("/draft/{draftUuid}/undo")
-    public void undoLastPick(@Valid @Payload StateRequest request) {
+    public void undoLastPick(@Valid @Payload StateRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Undo pick request for draft {}", request.getDraftUuid());
             
@@ -351,10 +359,10 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException | IllegalStateException e) {
             logger.error("Error undoing pick: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "UNDO_ERROR");
+            sendErrorToUser(e.getMessage(), "UNDO_ERROR", headerAccessor);
         } catch (Exception e) {
             logger.error("Unexpected error undoing pick", e);
-            sendErrorToUser("An unexpected error occurred while undoing the pick", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while undoing the pick", "INTERNAL_ERROR", headerAccessor);
         }
     }
     
@@ -364,11 +372,12 @@ public class LiveDraftController {
      * Used for reconnection and state synchronization.
      * 
      * @param request simple request containing draftUuid
+     * @param headerAccessor the message header accessor for getting session info
      * @return the current draft state message
      */
     @MessageMapping("/draft/{draftUuid}/state")
     @SendToUser("/queue/draft-state")
-    public DraftStateMessage getDraftState(@Valid @Payload StateRequest request) {
+    public DraftStateMessage getDraftState(@Valid @Payload StateRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Draft state request for draft {}", request.getDraftUuid());
             
@@ -380,11 +389,11 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException e) {
             logger.error("Error getting draft state: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "STATE_ERROR");
+            sendErrorToUser(e.getMessage(), "STATE_ERROR", headerAccessor);
             return null;
         } catch (Exception e) {
             logger.error("Unexpected error getting draft state", e);
-            sendErrorToUser("An unexpected error occurred while retrieving draft state", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while retrieving draft state", "INTERNAL_ERROR", headerAccessor);
             return null;
         }
     }
@@ -395,11 +404,12 @@ public class LiveDraftController {
      * Used for reconnection and state synchronization.
      * 
      * @param request simple request containing draftUuid
+     * @param headerAccessor the message header accessor for getting session info
      * @return the current lobby state message
      */
     @MessageMapping("/draft/{draftUuid}/lobby/state")
     @SendToUser("/queue/lobby-state")
-    public LobbyStateMessage getLobbyState(@Valid @Payload StateRequest request) {
+    public LobbyStateMessage getLobbyState(@Valid @Payload StateRequest request, SimpMessageHeaderAccessor headerAccessor) {
         try {
             logger.info("Lobby state request for draft {}", request.getDraftUuid());
             
@@ -411,11 +421,11 @@ public class LiveDraftController {
             
         } catch (DraftNotFoundException e) {
             logger.error("Error getting lobby state: {}", e.getMessage());
-            sendErrorToUser(e.getMessage(), "STATE_ERROR");
+            sendErrorToUser(e.getMessage(), "STATE_ERROR", headerAccessor);
             return null;
         } catch (Exception e) {
             logger.error("Unexpected error getting lobby state", e);
-            sendErrorToUser("An unexpected error occurred while retrieving lobby state", "INTERNAL_ERROR");
+            sendErrorToUser("An unexpected error occurred while retrieving lobby state", "INTERNAL_ERROR", headerAccessor);
             return null;
         }
     }
@@ -524,16 +534,25 @@ public class LiveDraftController {
     
     /**
      * Send an error message to the requesting user only.
+     * Uses the session ID from the message header accessor.
      * 
      * @param message the error message
      * @param code the error code
+     * @param headerAccessor the message header accessor containing session info
      */
-    private void sendErrorToUser(String message, String code) {
+    private void sendErrorToUser(String message, String code, SimpMessageHeaderAccessor headerAccessor) {
         ErrorMessage errorMessage = new ErrorMessage(message, code);
-        messagingTemplate.convertAndSendToUser(
-            "user", 
-            "/queue/errors", 
-            errorMessage
-        );
+        String sessionId = headerAccessor.getSessionId();
+        
+        if (sessionId != null) {
+            logger.info("Sending error to session {}: {} ({})", sessionId, message, code);
+            messagingTemplate.convertAndSendToUser(
+                sessionId,
+                "/queue/errors", 
+                errorMessage
+            );
+        } else {
+            logger.error("Cannot send error - session ID is null");
+        }
     }
 }
