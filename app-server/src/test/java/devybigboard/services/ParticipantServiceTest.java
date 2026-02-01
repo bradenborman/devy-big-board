@@ -43,7 +43,7 @@ class ParticipantServiceTest {
     @BeforeEach
     void setUp() {
         // Create a test draft in LOBBY status
-        testDraft = draftService.createLiveDraft("Test Draft", "Creator", 4, 10, false);
+        testDraft = draftService.createLiveDraft("Test Draft", "Creator", 4, 10, "1234", false);
     }
 
     // ========== joinDraft Tests ==========
@@ -59,7 +59,8 @@ class ParticipantServiceTest {
         assertEquals(testDraft.getId(), participant.getDraft().getId());
         assertEquals("Alice", participant.getNickname());
         assertEquals("A", participant.getPosition());
-        assertTrue(participant.getIsReady()); // Participants are auto-ready when joining
+        assertFalse(participant.getIsReady()); // Non-creators start as not ready
+        assertFalse(participant.getIsVerified()); // Non-creators start as not verified
         assertNotNull(participant.getJoinedAt());
     }
 
@@ -251,21 +252,22 @@ class ParticipantServiceTest {
         // Join participant
         participantService.joinDraft(testDraft.getId(), "Alice", "A");
 
-        // Set ready to true
-        DraftParticipant participant = participantService.setReady(testDraft.getId(), "A", true);
+        // Set ready to true with valid PIN
+        DraftParticipant participant = participantService.setReady(testDraft.getId(), "A", true, "1234");
 
-        // Verify ready status
+        // Verify ready status and verification
         assertTrue(participant.getIsReady());
+        assertTrue(participant.getIsVerified());
     }
 
     @Test
     void setReady_TogglesReadyStatusToFalse() {
         // Join participant and set ready
         participantService.joinDraft(testDraft.getId(), "Alice", "A");
-        participantService.setReady(testDraft.getId(), "A", true);
+        participantService.setReady(testDraft.getId(), "A", true, "1234");
 
         // Set ready to false
-        DraftParticipant participant = participantService.setReady(testDraft.getId(), "A", false);
+        DraftParticipant participant = participantService.setReady(testDraft.getId(), "A", false, null);
 
         // Verify ready status
         assertFalse(participant.getIsReady());
@@ -275,7 +277,7 @@ class ParticipantServiceTest {
     void setReady_ThrowsExceptionForNonExistentParticipant() {
         // Attempt to set ready for non-existent participant
         ValidationException exception = assertThrows(ValidationException.class, () -> {
-            participantService.setReady(testDraft.getId(), "A", true);
+            participantService.setReady(testDraft.getId(), "A", true, null);
         });
 
         // Verify error message
@@ -288,9 +290,9 @@ class ParticipantServiceTest {
         participantService.joinDraft(testDraft.getId(), "Alice", "A");
         participantService.joinDraft(testDraft.getId(), "Bob", "B");
 
-        // Set both ready
-        participantService.setReady(testDraft.getId(), "A", true);
-        participantService.setReady(testDraft.getId(), "B", true);
+        // Set both ready with valid PIN
+        participantService.setReady(testDraft.getId(), "A", true, "1234");
+        participantService.setReady(testDraft.getId(), "B", true, "1234");
 
         // Verify both are ready
         List<DraftParticipant> participants = participantService.getParticipants(testDraft.getId());
@@ -382,7 +384,7 @@ class ParticipantServiceTest {
     @Test
     void getParticipants_OnlyReturnsParticipantsForSpecificDraft() {
         // Create second draft
-        Draft draft2 = draftService.createLiveDraft("Draft 2", "Creator", 4, 10, false);
+        Draft draft2 = draftService.createLiveDraft("Draft 2", "Creator", 4, 10, "1234", false);
 
         // Join participants to both drafts
         participantService.joinDraft(testDraft.getId(), "Alice", "A");
@@ -520,7 +522,7 @@ class ParticipantServiceTest {
     @Test
     void isNicknameAvailable_OnlyChecksSpecificDraft() {
         // Create second draft
-        Draft draft2 = draftService.createLiveDraft("Draft 2", "Creator", 4, 10, false);
+        Draft draft2 = draftService.createLiveDraft("Draft 2", "Creator", 4, 10, "1234", false);
 
         // Join participant to first draft
         participantService.joinDraft(testDraft.getId(), "Alice", "A");

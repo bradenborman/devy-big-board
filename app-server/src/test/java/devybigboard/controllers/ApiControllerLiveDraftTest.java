@@ -80,10 +80,12 @@ class ApiControllerLiveDraftTest {
             "Test Live Draft",
             "Alice",
             4,
-            10
+            10,
+            "1234",
+            false
         );
 
-        when(draftService.createLiveDraft("Test Live Draft", "Alice", 4, 10, false))
+        when(draftService.createLiveDraft("Test Live Draft", "Alice", 4, 10, "1234", false))
             .thenReturn(testDraft);
 
         // Act
@@ -99,7 +101,7 @@ class ApiControllerLiveDraftTest {
         assertEquals("Alice", response.getCreatedBy());
         assertEquals("http://localhost:8080/draft/test-uuid-123/lobby", response.getLobbyUrl());
 
-        verify(draftService).createLiveDraft("Test Live Draft", "Alice", 4, 10, false);
+        verify(draftService).createLiveDraft("Test Live Draft", "Alice", 4, 10, "1234", false);
     }
 
     @Test
@@ -109,14 +111,16 @@ class ApiControllerLiveDraftTest {
             "Test Live Draft",
             "Alice",
             4,
-            10
+            10,
+            "1234",
+            false
         );
 
         mockRequest.setScheme("https");
         mockRequest.setServerName("example.com");
         mockRequest.setServerPort(443);
 
-        when(draftService.createLiveDraft("Test Live Draft", "Alice", 4, 10, false))
+        when(draftService.createLiveDraft("Test Live Draft", "Alice", 4, 10, "1234", false))
             .thenReturn(testDraft);
 
         // Act

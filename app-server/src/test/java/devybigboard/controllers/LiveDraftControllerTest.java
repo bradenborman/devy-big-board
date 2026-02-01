@@ -126,7 +126,7 @@ class LiveDraftControllerTest {
         testDraft.getParticipants().add(testParticipant);
         
         when(draftService.getDraftByUuid("test-uuid-123")).thenReturn(testDraft);
-        when(participantService.setReady(1L, "A", true)).thenReturn(testParticipant);
+        when(participantService.setReady(1L, "A", true, null)).thenReturn(testParticipant);
         when(draftService.getLobbyState("test-uuid-123")).thenReturn(testDraft);
         when(draftService.canStartDraft("test-uuid-123")).thenReturn(false);
 
@@ -135,7 +135,7 @@ class LiveDraftControllerTest {
 
         // Assert
         verify(draftService).getDraftByUuid("test-uuid-123");
-        verify(participantService).setReady(1L, "A", true);
+        verify(participantService).setReady(1L, "A", true, null);
         verify(messagingTemplate).convertAndSend(anyString(), any(LobbyStateMessage.class));
     }
 

@@ -39,7 +39,7 @@ const DraftSetupPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -165,7 +165,8 @@ const DraftSetupPage: React.FC = () => {
               <div className="step-label">
                 {step === 1 && 'Basic Info'}
                 {step === 2 && 'Settings'}
-                {step === 3 && 'Security'}
+                {step === 3 && 'Draft Type'}
+                {step === 4 && 'Security'}
               </div>
             </div>
           ))}
@@ -246,9 +247,13 @@ const DraftSetupPage: React.FC = () => {
                   ))}
                 </select>
               </div>
+            </div>
+          )}
 
+          {currentStep === 3 && (
+            <div className="wizard-step">
+              <h2>Choose your draft type</h2>
               <div className="form-group">
-                <label className="radio-group-label">Draft Type</label>
                 <div className="radio-group">
                   <label className="radio-option">
                     <input
@@ -280,7 +285,7 @@ const DraftSetupPage: React.FC = () => {
             </div>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <div className="wizard-step">
               <h2>Secure your draft</h2>
               <div className="form-group">
@@ -299,30 +304,6 @@ const DraftSetupPage: React.FC = () => {
                 />
                 {errors.pin && <span className="error-message">{errors.pin}</span>}
                 <span className="field-hint">Participants will need this PIN to join the draft</span>
-              </div>
-
-              <div className="draft-summary">
-                <h3>Draft Summary</h3>
-                <div className="summary-item">
-                  <span className="summary-label">Draft Name:</span>
-                  <span className="summary-value">{formData.draftName}</span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Your Nickname:</span>
-                  <span className="summary-value">{formData.creatorNickname}</span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Participants:</span>
-                  <span className="summary-value">{formData.participantCount} Teams</span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Rounds:</span>
-                  <span className="summary-value">{formData.totalRounds}</span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Type:</span>
-                  <span className="summary-value">{formData.isSnakeDraft ? 'Snake' : 'Linear'}</span>
-                </div>
               </div>
             </div>
           )}

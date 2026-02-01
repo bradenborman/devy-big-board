@@ -40,7 +40,7 @@ class DraftServiceTest {
     @Test
     void createLiveDraft_CreatesNewDraftWithCorrectProperties() {
         // Create a live draft
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
 
         // Verify draft properties
         assertNotNull(draft);
@@ -59,8 +59,8 @@ class DraftServiceTest {
     @Test
     void createLiveDraft_GeneratesUniqueUuid() {
         // Create two drafts
-        Draft draft1 = draftService.createLiveDraft("Draft 1", "Alice", 4, 10, false);
-        Draft draft2 = draftService.createLiveDraft("Draft 2", "Bob", 4, 10, false);
+        Draft draft1 = draftService.createLiveDraft("Draft 1", "Alice", 4, 10, "1234", false);
+        Draft draft2 = draftService.createLiveDraft("Draft 2", "Bob", 4, 10, "1234", false);
 
         // Verify UUIDs are unique
         assertNotEquals(draft1.getUuid(), draft2.getUuid());
@@ -69,8 +69,8 @@ class DraftServiceTest {
     @Test
     void createLiveDraft_SupportsDifferentParticipantCounts() {
         // Create drafts with different participant counts
-        Draft draft2 = draftService.createLiveDraft("2 Player", "Alice", 2, 10, false);
-        Draft draft12 = draftService.createLiveDraft("12 Player", "Bob", 12, 10, false);
+        Draft draft2 = draftService.createLiveDraft("2 Player", "Alice", 2, 10, "1234", false);
+        Draft draft12 = draftService.createLiveDraft("12 Player", "Bob", 12, 10, "1234", false);
 
         // Verify participant counts
         assertEquals(2, draft2.getParticipantCount());
@@ -80,8 +80,8 @@ class DraftServiceTest {
     @Test
     void createLiveDraft_SupportsDifferentRoundCounts() {
         // Create drafts with different round counts
-        Draft draft5 = draftService.createLiveDraft("5 Rounds", "Alice", 4, 5, false);
-        Draft draft20 = draftService.createLiveDraft("20 Rounds", "Bob", 4, 20, false);
+        Draft draft5 = draftService.createLiveDraft("5 Rounds", "Alice", 4, 5, "1234", false);
+        Draft draft20 = draftService.createLiveDraft("20 Rounds", "Bob", 4, 20, "1234", false);
 
         // Verify round counts
         assertEquals(5, draft5.getTotalRounds());
@@ -93,7 +93,7 @@ class DraftServiceTest {
     @Test
     void getLobbyState_ReturnsCompleteDraftWithParticipants() {
         // Create draft with participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
         draft.addParticipant(participant1);
@@ -122,7 +122,7 @@ class DraftServiceTest {
     @Test
     void canStartDraft_ReturnsTrueWhenAllParticipantsReadyAndSlotsFilled() {
         // Create draft with all participants ready
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
@@ -144,7 +144,7 @@ class DraftServiceTest {
     @Test
     void canStartDraft_ReturnsTrueWhenParticipantsJoined() {
         // Create draft with participants (auto-ready when joining)
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
@@ -166,7 +166,7 @@ class DraftServiceTest {
     @Test
     void canStartDraft_ReturnsTrueWhenNotAllSlotsFilled() {
         // Create draft with only 2 of 4 participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
@@ -185,7 +185,7 @@ class DraftServiceTest {
     @Test
     void canStartDraft_ReturnsFalseWhenNoParticipants() {
         // Create draft with no participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
 
         // Check if draft can start
         boolean canStart = draftService.canStartDraft(draft.getUuid());
@@ -199,7 +199,7 @@ class DraftServiceTest {
     @Test
     void startDraft_ChangesStatusToInProgressAndSetsStartTime() {
         // Create draft ready to start
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
@@ -219,7 +219,7 @@ class DraftServiceTest {
     @Test
     void startDraft_ThrowsExceptionWhenNotInLobbyStatus() {
         // Create draft and manually set to IN_PROGRESS
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -232,7 +232,7 @@ class DraftServiceTest {
     @Test
     void startDraft_SucceedsWhenParticipantsJoined() {
         // Create draft with participants (auto-ready when joining)
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
@@ -254,7 +254,7 @@ class DraftServiceTest {
     @Test
     void getCurrentTurn_ReturnsNullWhenDraftNotInProgress() {
         // Create draft in LOBBY status
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
 
         // Get current turn
         String currentTurn = draftService.getCurrentTurn(draft.getUuid());
@@ -266,7 +266,7 @@ class DraftServiceTest {
     @Test
     void getCurrentTurn_ReturnsFirstPositionAtStartOfRound1() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draft.setCurrentPick(1);
@@ -282,7 +282,7 @@ class DraftServiceTest {
     @Test
     void getCurrentTurn_FollowsLinearOrderInAllRounds() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draftRepository.save(draft);
@@ -308,7 +308,7 @@ class DraftServiceTest {
     @Test
     void getCurrentTurn_FollowsLinearOrderInRound2() {
         // Create draft in progress at round 2
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(2);
         draftRepository.save(draft);
@@ -334,7 +334,7 @@ class DraftServiceTest {
     @Test
     void getCurrentTurn_UsesLinearOrderAcrossMultipleRounds() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -360,7 +360,7 @@ class DraftServiceTest {
     @Test
     void getCurrentTurn_WorksWithDifferentParticipantCounts() {
         // Test with 2 participants
-        Draft draft2 = draftService.createLiveDraft("2 Player", "Alice", 2, 10, false);
+        Draft draft2 = draftService.createLiveDraft("2 Player", "Alice", 2, 10, "1234", false);
         draft2.setStatus("IN_PROGRESS");
         draft2.setCurrentRound(1);
         draft2.setCurrentPick(1);
@@ -372,7 +372,7 @@ class DraftServiceTest {
         assertEquals("B", draftService.getCurrentTurn(draft2.getUuid()));
 
         // Test with 6 participants
-        Draft draft6 = draftService.createLiveDraft("6 Player", "Bob", 6, 10, false);
+        Draft draft6 = draftService.createLiveDraft("6 Player", "Bob", 6, 10, "1234", false);
         draft6.setStatus("IN_PROGRESS");
         draft6.setCurrentRound(1);
         draft6.setCurrentPick(6);
@@ -385,7 +385,7 @@ class DraftServiceTest {
     @Test
     void isValidPick_ReturnsTrueWhenPositionMatchesCurrentTurn() {
         // Create draft in progress with position A's turn
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draft.setCurrentPick(1);
@@ -401,7 +401,7 @@ class DraftServiceTest {
     @Test
     void isValidPick_ReturnsFalseWhenPositionDoesNotMatchCurrentTurn() {
         // Create draft in progress with position A's turn
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draft.setCurrentPick(1);
@@ -417,7 +417,7 @@ class DraftServiceTest {
     @Test
     void isValidPick_ReturnsFalseWhenDraftNotInProgress() {
         // Create draft in LOBBY status
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
 
         // Validate position A cannot pick
         boolean isValid = draftService.isValidPick(draft.getUuid(), "A");
@@ -429,7 +429,7 @@ class DraftServiceTest {
     @Test
     void isValidPick_WorksWithLinearDraftOrder() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -456,7 +456,7 @@ class DraftServiceTest {
     @Test
     void makePick_CreatesPickRecordWithCorrectProperties() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -486,7 +486,7 @@ class DraftServiceTest {
     @Test
     void makePick_IncrementsCurrentPickCounter() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -515,7 +515,7 @@ class DraftServiceTest {
     @Test
     void makePick_UpdatesCurrentRoundWhenRoundCompletes() {
         // Create draft with 2 participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -553,7 +553,7 @@ class DraftServiceTest {
     @Test
     void makePick_SetsStatusToCompletedWhenAllPicksMade() {
         // Create draft with 2 participants and 2 rounds (4 total picks)
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -586,7 +586,7 @@ class DraftServiceTest {
     @Test
     void makePick_ThrowsExceptionWhenDraftNotInProgress() {
         // Create draft in LOBBY status
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         
         // Create a test player
         devybigboard.models.Player player = new devybigboard.models.Player();
@@ -604,7 +604,7 @@ class DraftServiceTest {
     @Test
     void makePick_ThrowsExceptionWhenPlayerAlreadyPicked() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -627,7 +627,7 @@ class DraftServiceTest {
     @Test
     void makePick_ThrowsExceptionForInvalidPlayerId() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -655,7 +655,7 @@ class DraftServiceTest {
     @Test
     void makePick_HandlesMultiplePicksInSequence() {
         // Create draft with 3 participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 3, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 3, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -692,7 +692,7 @@ class DraftServiceTest {
     @Test
     void makePick_PreservesPickOrderInDraftEntity() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -725,7 +725,7 @@ class DraftServiceTest {
     @Test
     void forcePick_CreatesPickRecordWithForcedByField() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -755,7 +755,7 @@ class DraftServiceTest {
     @Test
     void forcePick_BypassesTurnValidation() {
         // Create draft in progress where it's position A's turn
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draft.setCurrentPick(1); // Position A's turn
@@ -779,7 +779,7 @@ class DraftServiceTest {
     @Test
     void forcePick_IncrementsCurrentPickCounter() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -808,7 +808,7 @@ class DraftServiceTest {
     @Test
     void forcePick_UpdatesCurrentRoundWhenRoundCompletes() {
         // Create draft with 2 participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -846,7 +846,7 @@ class DraftServiceTest {
     @Test
     void forcePick_SetsStatusToCompletedWhenAllPicksMade() {
         // Create draft with 2 participants and 2 rounds (4 total picks)
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -879,7 +879,7 @@ class DraftServiceTest {
     @Test
     void forcePick_ThrowsExceptionWhenDraftNotInProgress() {
         // Create draft in LOBBY status
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         
         // Create a test player
         devybigboard.models.Player player = new devybigboard.models.Player();
@@ -897,7 +897,7 @@ class DraftServiceTest {
     @Test
     void forcePick_ThrowsExceptionWhenPlayerAlreadyPicked() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -920,7 +920,7 @@ class DraftServiceTest {
     @Test
     void forcePick_ThrowsExceptionForInvalidPlayerId() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -948,7 +948,7 @@ class DraftServiceTest {
     @Test
     void forcePick_AllowsAnyPositionToForceForAnyPosition() {
         // Create draft in progress where it's position A's turn
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draft.setCurrentPick(1); // Position A's turn
@@ -983,7 +983,7 @@ class DraftServiceTest {
     @Test
     void forcePick_MixedWithRegularPicks() {
         // Create draft with 3 participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -1024,7 +1024,7 @@ class DraftServiceTest {
     @Test
     void forcePick_PreservesPickOrderInDraftEntity() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -1058,7 +1058,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_ReturnsCompleteStateForLobbyDraft() {
         // Create draft in LOBBY status with participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 5, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 5, "1234", false);
         DraftParticipant participant1 = new DraftParticipant(draft, "A", "Alice");
         participant1.setIsReady(true);
         DraftParticipant participant2 = new DraftParticipant(draft, "B", "Bob");
@@ -1094,7 +1094,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_ReturnsCompleteStateForInProgressDraft() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 5, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 5, "1234", false);
         draft.setStatus("IN_PROGRESS");
         
         // Add participants
@@ -1153,7 +1153,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_IncludesForcedPickAttributions() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 5, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 3, 5, "1234", false);
         draft.setStatus("IN_PROGRESS");
         
         // Add participants
@@ -1194,7 +1194,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_ReturnsCompleteStateForCompletedDraft() {
         // Create draft with 2 participants and 2 rounds (4 total picks)
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         
         // Add participants
@@ -1253,7 +1253,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_HandlesEmptyParticipantList() {
         // Create draft with no participants
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         
         // Get draft state
         devybigboard.models.DraftState state = draftService.getDraftState(draft.getUuid());
@@ -1266,7 +1266,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_HandlesEmptyPickList() {
         // Create draft in progress with no picks yet
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 4, 10, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         
@@ -1281,7 +1281,7 @@ class DraftServiceTest {
     @Test
     void getDraftState_FiltersAvailablePlayersCorrectly() {
         // Create draft in progress
-        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, false);
+        Draft draft = draftService.createLiveDraft("Test Draft", "Alice", 2, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
         

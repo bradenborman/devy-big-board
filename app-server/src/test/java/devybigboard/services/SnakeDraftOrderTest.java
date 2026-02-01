@@ -38,7 +38,7 @@ class SnakeDraftOrderTest {
     @Test
     void testCompleteDraftOrder_4Participants_3Rounds() {
         // Create draft with 4 participants, 3 rounds
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 3, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 3, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -76,7 +76,7 @@ class SnakeDraftOrderTest {
     @Test
     void testCompleteDraftOrder_3Participants_4Rounds() {
         // Create draft with 3 participants, 4 rounds
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 3, 4, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 3, 4, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -114,7 +114,7 @@ class SnakeDraftOrderTest {
     @Test
     void testCompleteDraftOrder_2Participants() {
         // Create draft with 2 participants, 3 rounds
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 2, 3, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 2, 3, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -150,7 +150,7 @@ class SnakeDraftOrderTest {
     @Test
     void testCompleteDraftOrder_6Participants() {
         // Create draft with 6 participants, 2 rounds
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 6, 2, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 6, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -183,7 +183,7 @@ class SnakeDraftOrderTest {
     @Test
     void testPickValidation_OnlyCurrentTurnCanPick() {
         // Create draft with 4 participants
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(1);
         draft.setCurrentPick(1);
@@ -211,7 +211,7 @@ class SnakeDraftOrderTest {
     @Test
     void testPickValidation_LinearOrderInRound2() {
         // Create draft with 4 participants in round 2
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draft.setCurrentRound(2);
         draft.setCurrentPick(5);  // First pick of round 2
@@ -239,7 +239,7 @@ class SnakeDraftOrderTest {
     @Test
     void testRoundTransition() {
         // Create draft with 3 participants
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 3, 3, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 3, 3, "1234", false);
         draft.setStatus("IN_PROGRESS");
         draftRepository.save(draft);
 
@@ -273,11 +273,11 @@ class SnakeDraftOrderTest {
     @Test
     void testGetCurrentTurn_NotInProgress() {
         // Create draft in LOBBY status
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, "1234", false);
         assertNull(draftService.getCurrentTurn(draft.getUuid()));
 
         // Create draft in COMPLETED status
-        Draft completedDraft = draftService.createLiveDraft("Completed", "Bob", 4, 2, false);
+        Draft completedDraft = draftService.createLiveDraft("Completed", "Bob", 4, 2, "1234", false);
         completedDraft.setStatus("COMPLETED");
         draftRepository.save(completedDraft);
         assertNull(draftService.getCurrentTurn(completedDraft.getUuid()));
@@ -289,7 +289,7 @@ class SnakeDraftOrderTest {
     @Test
     void testIsValidPick_NotInProgress() {
         // Create draft in LOBBY status
-        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, false);
+        Draft draft = draftService.createLiveDraft("Linear Test", "Alice", 4, 2, "1234", false);
         
         // No position should be able to pick
         assertFalse(draftService.isValidPick(draft.getUuid(), "A"));
