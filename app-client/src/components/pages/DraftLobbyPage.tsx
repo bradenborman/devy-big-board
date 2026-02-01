@@ -319,6 +319,26 @@ const DraftLobbyPage: React.FC = () => {
       return;
     }
     
+    // Subscribe to error response for this specific request
+    const errorSubscription = webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
+      console.error('Received error message:', errorMessage);
+      
+      if (errorMessage.code === 'READY_ERROR') {
+        setPinError('Invalid PIN');
+        
+        // Remove participant and navigate away after showing error
+        setTimeout(() => {
+          sendMessage(`/app/draft/${uuid}/leave`, {
+            draftUuid: uuid,
+            position: currentUserPosition,
+          });
+          
+          // Navigate back to live draft page
+          navigate('/live-draft');
+        }, 1500);
+      }
+    });
+    
     try {
       sendMessage(`/app/draft/${uuid}/ready`, {
         draftUuid: uuid,
@@ -327,14 +347,17 @@ const DraftLobbyPage: React.FC = () => {
         pin: pinInput,
       });
       
-      setShowPinModal(false);
-      setPinInput('');
-      setPinError('');
+      // If successful, close modal
+      setTimeout(() => {
+        setShowPinModal(false);
+        setPinInput('');
+        setPinError('');
+      }, 500);
     } catch (err) {
       console.error('Failed to verify PIN:', err);
       setPinError('Failed to verify PIN. Please try again.');
     }
-  }, [uuid, currentUserPosition, pinInput, sendMessage]);
+  }, [uuid, currentUserPosition, pinInput, sendMessage, navigate]);
 
   const handlePinCancel = useCallback(() => {
     if (!uuid || !currentUserPosition) return;
@@ -346,50 +369,12 @@ const DraftLobbyPage: React.FC = () => {
         position: currentUserPosition,
       });
       
-      // Clear URL params and reset state
-      setSearchParams({});
-      setShowPinModal(false);
-      setPinInput('');
-      setPinError('');
-      setShowPositionSelector(true);
+      // Navigate back to live draft page
+      navigate('/live-draft');
     } catch (err) {
       console.error('Failed to leave lobby:', err);
     }
-  }, [uuid, currentUserPosition, sendMessage, setSearchParams]);
-
-  // Listen for PIN verification errors and remove participant
-  useEffect(() => {
-    if (!isConnected || !uuid) return;
-
-    try {
-      webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
-        console.error('Received error message:', errorMessage);
-        
-        // If PIN verification failed, remove participant from lobby
-        if (errorMessage.code === 'READY_ERROR' && errorMessage.message?.includes('PIN')) {
-          setPinError(errorMessage.message);
-          
-          // After showing error, remove participant
-          setTimeout(() => {
-            if (currentUserPosition) {
-              sendMessage(`/app/draft/${uuid}/leave`, {
-                draftUuid: uuid,
-                position: currentUserPosition,
-              });
-              
-              setSearchParams({});
-              setShowPinModal(false);
-              setPinInput('');
-              setPinError('');
-              setShowPositionSelector(true);
-            }
-          }, 2000); // Give user 2 seconds to see the error
-        }
-      });
-    } catch (err) {
-      console.error('Error subscribing to error queue:', err);
-    }
-  }, [isConnected, uuid, currentUserPosition, sendMessage, setSearchParams]);
+  }, [uuid, currentUserPosition, sendMessage, navigate]);
 
   if (loading) {
     return (
