@@ -268,44 +268,6 @@
             }
           }
 
-          .user-info {
-            text-align: center;
-
-            h3 {
-              font-size: 1.5rem;
-              color: #333;
-              margin-bottom: 0.25rem;
-            }
-
-            p {
-              color: #666;
-              font-size: 1.125rem;
-            }
-
-            .pin-display {
-              margin-top: 1rem;
-              padding: 0.75rem 1rem;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              border-radius: 8px;
-              display: inline-flex;
-              align-items: center;
-              gap: 0.5rem;
-
-              .pin-label {
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 0.875rem;
-                font-weight: 600;
-              }
-
-              .pin-value {
-                color: white;
-                font-size: 1.25rem;
-                font-weight: 700;
-                letter-spacing: 0.25rem;
-              }
-            }
-          }
-
           .action-buttons {
             display: flex;
             flex-direction: column;
@@ -425,16 +387,6 @@
               .pin-value {
                 font-size: 2rem;
                 letter-spacing: 0.5rem;
-              }
-            }
-
-            .user-info {
-              h3 {
-                font-size: 1.25rem;
-              }
-
-              p {
-                font-size: 1rem;
               }
             }
           }

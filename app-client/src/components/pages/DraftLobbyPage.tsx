@@ -457,7 +457,6 @@ const DraftLobbyPage: React.FC = () => {
                         placeholder="Enter your nickname"
                         maxLength={20}
                         className={nicknameError ? 'error' : ''}
-                        autoFocus
                       />
                       {nicknameError && <span className="error-message">{nicknameError}</span>}
                     </div>
@@ -533,10 +532,6 @@ const DraftLobbyPage: React.FC = () => {
                     <span className="pin-value">{draftPin}</span>
                   </div>
                 )}
-                <div className="user-info">
-                  <h3>You are {currentUserNickname}</h3>
-                  <p>Position {currentUserPosition}</p>
-                </div>
                 <div className="action-buttons">
                   <StartDraftButton
                     isCreator={isCreator()}
@@ -598,7 +593,6 @@ const DraftLobbyPage: React.FC = () => {
               placeholder="Enter 4-digit PIN"
               maxLength={4}
               className={pinError ? 'error' : ''}
-              autoFocus
             />
             {pinError && <span className="error-message">{pinError}</span>}
             <div className="pin-modal-actions">
