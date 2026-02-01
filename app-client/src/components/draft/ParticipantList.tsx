@@ -13,25 +13,23 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
   participantCount,
   currentUserPosition,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isExpanded, setIsExpanded] = useState(!isMobile);
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      // Collapse by default on mobile
-      if (mobile && isExpanded) {
-        setIsExpanded(false);
+      // Collapse by default on mobile, expand on desktop
+      if (mobile !== isMobile) {
+        setIsExpanded(!mobile);
       }
     };
 
     window.addEventListener('resize', handleResize);
-    // Set initial state
-    handleResize();
 
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isMobile]);
 
   // Create array of all positions (A-Z based on participant count)
   const allPositions = Array.from({ length: participantCount }, (_, i) =>

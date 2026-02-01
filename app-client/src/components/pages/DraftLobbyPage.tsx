@@ -544,22 +544,24 @@ const DraftLobbyPage: React.FC = () => {
                     onStart={handleStartDraft}
                     loading={startingDraft}
                   />
-                  {(lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
-                    <button 
-                      className="share-link-btn"
-                      onClick={handleCopyLink}
-                    >
-                      📋 Copy Lobby Link
-                    </button>
-                  )}
-                  {isCreator() && (
-                    <button 
-                      className="delete-draft-btn"
-                      onClick={handleDeleteDraft}
-                    >
-                      🗑️ Delete Draft
-                    </button>
-                  )}
+                  <div className="secondary-actions">
+                    {(lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
+                      <button 
+                        className="share-link-btn"
+                        onClick={handleCopyLink}
+                      >
+                        📋 Copy Lobby Link
+                      </button>
+                    )}
+                    {isCreator() && (
+                      <button 
+                        className="delete-draft-btn"
+                        onClick={handleDeleteDraft}
+                      >
+                        🗑️ Delete Draft
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
