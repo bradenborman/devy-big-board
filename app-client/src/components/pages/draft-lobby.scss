@@ -353,6 +353,79 @@
       }
     }
 
+    // Mobile-specific styles
+    @media (max-width: 768px) {
+      padding: 1rem 0.75rem;
+
+      .lobby-header {
+        h1 {
+          font-size: 1.75rem;
+        }
+
+        .draft-info {
+          font-size: 1rem;
+        }
+      }
+
+      .lobby-main {
+        gap: 1rem;
+
+        .lobby-left {
+          .user-controls {
+            padding: 1.5rem;
+
+            .pin-display-large {
+              padding: 1rem;
+
+              .pin-value {
+                font-size: 2rem;
+                letter-spacing: 0.5rem;
+              }
+            }
+
+            .user-info {
+              h3 {
+                font-size: 1.25rem;
+              }
+
+              p {
+                font-size: 1rem;
+              }
+            }
+          }
+
+          .position-selector {
+            padding: 1.5rem;
+
+            h2 {
+              font-size: 1.5rem;
+            }
+
+            .position-grid {
+              grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+              gap: 0.75rem;
+
+              .position-spot {
+                padding: 0.5rem;
+
+                .position-number {
+                  font-size: 0.75rem;
+                }
+
+                .position-letter {
+                  font-size: 1.5rem;
+                }
+
+                .position-owner {
+                  font-size: 0.7rem;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     .waiting-message {
       text-align: center;
       color: white;

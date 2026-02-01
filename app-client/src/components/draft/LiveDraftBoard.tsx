@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useWebSocket } from '../../contexts/WebSocketContext';
 import { DraftStateMessage, PickMessage } from '../../models/WebSocketMessages';
+import { useMobile } from '../../hooks/useMobile';
+import MobileLiveDraftBoard from '../mobile/MobileLiveDraftBoard';
 import LivePlayerPool from './LivePlayerPool';
 import LiveDraftGrid from './LiveDraftGrid';
 import Toast from '../shared/Toast';
@@ -20,6 +22,12 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { connect, subscribeToDraft, sendMessage, isConnected } = useWebSocket();
+  const isMobile = useMobile();
+
+  // If mobile, render mobile component
+  if (isMobile) {
+    return <MobileLiveDraftBoard />;
+  }
 
   const [draftState, setDraftState] = useState<DraftStateMessage | null>(null);
   const [loading, setLoading] = useState(true);

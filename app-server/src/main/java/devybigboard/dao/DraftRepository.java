@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,4 +45,14 @@ public interface DraftRepository extends JpaRepository<Draft, Long> {
      * @return List of drafts with the specified status, most recent first
      */
     List<Draft> findByStatusOrderByCreatedAtDesc(String status);
+    
+    /**
+     * Find all lobby drafts that are older than the specified time and haven't been started.
+     * 
+     * @param status The status to filter by (should be "LOBBY")
+     * @param cutoffTime The time before which drafts should be considered stale
+     * @return List of stale lobby drafts
+     */
+    @Query("SELECT d FROM Draft d WHERE d.status = :status AND d.createdAt < :cutoffTime AND d.startedAt IS NULL")
+    List<Draft> findStaleLobbyDrafts(@Param("status") String status, @Param("cutoffTime") LocalDateTime cutoffTime);
 }

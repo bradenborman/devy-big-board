@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ParticipantInfo } from '../../models/WebSocketMessages';
 import './participant-list.scss';
 
@@ -13,6 +13,26 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
   participantCount,
   currentUserPosition,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      // Collapse by default on mobile
+      if (mobile && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Set initial state
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Create array of all positions (A-Z based on participant count)
   const allPositions = Array.from({ length: participantCount }, (_, i) =>
     String.fromCharCode(65 + i)
@@ -23,10 +43,21 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
     participants.map((p) => [p.position, p])
   );
 
+  const handleToggle = () => {
+    if (isMobile) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   return (
     <div className="participant-list">
-      <h3>Participants ({participants.length}/{participantCount})</h3>
-      <div className="participants">
+      <h3 onClick={handleToggle}>
+        Participants ({participants.length}/{participantCount})
+        {isMobile && (
+          <span className={`toggle-icon ${isExpanded ? '' : 'collapsed'}`}>▼</span>
+        )}
+      </h3>
+      <div className={`participants ${isExpanded ? 'expanded' : ''}`}>
         {allPositions.map((position) => {
           const participant = participantMap.get(position);
           const isCurrentUser = position === currentUserPosition;

@@ -8,6 +8,22 @@
     margin-bottom: 1rem;
     color: #333;
     font-size: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+
+    .toggle-icon {
+      display: none;
+      font-size: 0.875rem;
+      color: #666;
+      transition: transform 0.3s ease;
+
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+    }
   }
 
   .participants {
@@ -98,6 +114,58 @@
 
         .empty-indicator {
           color: #999;
+        }
+      }
+    }
+  }
+
+  // Mobile-specific styles
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    h3 {
+      .toggle-icon {
+        display: block;
+      }
+    }
+
+    .participants {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+
+      &.expanded {
+        max-height: 1000px;
+      }
+    }
+
+    .participant {
+      padding: 0.625rem 0.875rem;
+
+      .participant-info {
+        .position {
+          font-size: 0.875rem;
+        }
+
+        .nickname {
+          font-size: 0.875rem;
+
+          .you-badge {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.4rem;
+          }
+        }
+      }
+
+      .status {
+        font-size: 0.875rem;
+
+        .ready-indicator {
+          .checkmark {
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+          }
         }
       }
     }
