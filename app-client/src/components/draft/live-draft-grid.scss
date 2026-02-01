@@ -4,45 +4,6 @@
   padding: 0;
   overflow-x: auto;
 
-  .undo-button-container {
-    display: flex;
-    justify-content: center;
-    padding: 1rem 0;
-    margin-bottom: 0.5rem;
-
-    .undo-last-pick-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      font-size: 1.25rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-
-      &:hover {
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-        transform: scale(1.1);
-        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5);
-        border-color: rgba(255, 255, 255, 0.5);
-      }
-
-      &:active {
-        transform: scale(0.95);
-      }
-    }
-  }
-
   .grid-header {
     display: grid;
     grid-template-columns: 60px repeat(auto-fit, minmax(80px, 1fr));
@@ -245,6 +206,38 @@
             padding: 0.125rem 0.375rem;
             border-radius: 4px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+          }
+
+          .undo-btn {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: 2px solid white;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+            &:hover {
+              background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+              transform: translateX(-50%) scale(1.1);
+              box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5);
+            }
+
+            &:active {
+              transform: translateX(-50%) scale(0.95);
+            }
           }
         }
 

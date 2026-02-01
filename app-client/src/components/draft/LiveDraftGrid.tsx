@@ -167,7 +167,7 @@ const LiveDraftGrid: React.FC<LiveDraftGridProps> = ({
                         )}
                         {isLastPick(pick) && (
                           <button 
-                            className="undo-last-pick-btn"
+                            className="undo-btn"
                             onClick={onUndoLastPick}
                             title="Undo last pick"
                           >
