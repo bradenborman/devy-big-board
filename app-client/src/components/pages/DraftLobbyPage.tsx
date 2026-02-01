@@ -42,10 +42,10 @@ const DraftLobbyPage: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!lobbyState && isConnected && showPositionSelector) {
-        console.error('Lobby state not received after 10 seconds');
+        console.error('Lobby state not received after 5 seconds');
         setLobbyStateTimeout(true);
       }
-    }, 10000); // Increased to 10 seconds
+    }, 5000); // Reduced to 5 seconds to show retry sooner
 
     return () => clearTimeout(timer);
   }, [lobbyState, isConnected, showPositionSelector]);
@@ -166,25 +166,21 @@ const DraftLobbyPage: React.FC = () => {
             setError(errorMessage.message || 'An error occurred');
           }
         });
+        
+        // Request initial lobby state after subscriptions are set up
+        console.log('Requesting initial lobby state for draft:', uuid);
+        // Increased delay to ensure subscriptions are fully registered
+        setTimeout(() => {
+          sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
+          console.log('Lobby state request sent successfully');
+        }, 300);
       } else {
         console.error('WebSocket not connected, cannot subscribe to user queue');
       }
     } catch (err) {
       console.error('Error subscribing to user queue:', err);
     }
-
-    // Request initial lobby state
-    console.log('Requesting initial lobby state for draft:', uuid);
-    try {
-      // Add a small delay to ensure WebSocket is fully connected
-      setTimeout(() => {
-        sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
-        console.log('Lobby state request sent successfully');
-      }, 100);
-    } catch (err) {
-      console.error('Error sending lobby state request:', err);
-    }
-  }, [uuid, isConnected, subscribeToLobby, sendMessage]);
+  }, [uuid, isConnected, subscribeToLobby, sendMessage, navigate, currentUserPosition]);
 
   const handleJoin = useCallback(
     async (nickname: string, position: string) => {

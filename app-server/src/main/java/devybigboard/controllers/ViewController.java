@@ -9,7 +9,8 @@ public class ViewController {
     @GetMapping({
         "/", 
         "/offline-draft", 
-        "/live-draft", 
+        "/live-draft",
+        "/live-draft/**",
         "/player-management",
         "/draft/**", 
         "/drafts/**",
