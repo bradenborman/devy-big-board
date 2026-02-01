@@ -142,8 +142,27 @@ const DraftLobbyPage: React.FC = () => {
         console.log('Subscribing to /user/queue/errors');
         webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
           console.error('Received error message:', errorMessage);
-          setStartingDraft(false); // Reset loading state on error
-          setError(errorMessage.message || 'An error occurred');
+          
+          // Handle PIN verification errors
+          if (errorMessage.code === 'READY_ERROR' && errorMessage.message.includes('PIN')) {
+            setPinError('Invalid PIN');
+            
+            // Remove participant and navigate away after showing error
+            setTimeout(() => {
+              if (uuid && currentUserPosition) {
+                sendMessage(`/app/draft/${uuid}/leave`, {
+                  draftUuid: uuid,
+                  position: currentUserPosition,
+                });
+              }
+              
+              // Navigate back to live draft page
+              navigate('/live-draft');
+            }, 1500);
+          } else {
+            setStartingDraft(false); // Reset loading state on other errors
+            setError(errorMessage.message || 'An error occurred');
+          }
         });
       } else {
         console.error('WebSocket not connected, cannot subscribe to user queue');
@@ -319,26 +338,6 @@ const DraftLobbyPage: React.FC = () => {
       return;
     }
     
-    // Subscribe to error response for this specific request
-    webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
-      console.error('Received error message:', errorMessage);
-      
-      if (errorMessage.code === 'READY_ERROR') {
-        setPinError('Invalid PIN');
-        
-        // Remove participant and navigate away after showing error
-        setTimeout(() => {
-          sendMessage(`/app/draft/${uuid}/leave`, {
-            draftUuid: uuid,
-            position: currentUserPosition,
-          });
-          
-          // Navigate back to live draft page
-          navigate('/live-draft');
-        }, 1500);
-      }
-    });
-    
     try {
       sendMessage(`/app/draft/${uuid}/ready`, {
         draftUuid: uuid,
@@ -347,7 +346,7 @@ const DraftLobbyPage: React.FC = () => {
         pin: pinInput,
       });
       
-      // If successful, close modal
+      // If successful, close modal after a short delay
       setTimeout(() => {
         setShowPinModal(false);
         setPinInput('');
@@ -357,7 +356,7 @@ const DraftLobbyPage: React.FC = () => {
       console.error('Failed to verify PIN:', err);
       setPinError('Failed to verify PIN. Please try again.');
     }
-  }, [uuid, currentUserPosition, pinInput, sendMessage, navigate]);
+  }, [uuid, currentUserPosition, pinInput, sendMessage]);
 
   const handlePinCancel = useCallback(() => {
     if (!uuid || !currentUserPosition) return;
