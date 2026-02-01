@@ -280,6 +280,31 @@ public class ApiController {
     }
     
     /**
+     * Get share link for a draft with PIN included.
+     * GET /api/drafts/{uuid}/share-link
+     * 
+     * @param uuid the unique identifier of the draft
+     * @param servletRequest the HTTP servlet request to extract base URL
+     * @return 200 OK with share URL including PIN
+     */
+    @GetMapping("/drafts/{uuid}/share-link")
+    public java.util.Map<String, String> getShareLink(
+            @PathVariable String uuid,
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        
+        devybigboard.models.Draft draft = draftService.getDraftByUuid(uuid);
+        String baseUrl = getBaseUrl(servletRequest);
+        
+        // Build share URL with PIN
+        String shareUrl = baseUrl + "/draft/" + draft.getUuid() + "/lobby";
+        if (draft.getPin() != null && !draft.getPin().isEmpty()) {
+            shareUrl += "?pin=" + draft.getPin();
+        }
+        
+        return java.util.Map.of("shareUrl", shareUrl);
+    }
+    
+    /**
      * Get all drafts currently in LOBBY status.
      * GET /api/live-drafts/lobbies
      * 

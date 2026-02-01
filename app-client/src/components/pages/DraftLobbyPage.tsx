@@ -261,15 +261,29 @@ const DraftLobbyPage: React.FC = () => {
     return currentUserNickname === lobbyState.createdBy;
   };
 
-  const handleCopyLink = useCallback(() => {
-    const lobbyUrl = `${window.location.origin}/draft/${uuid}/lobby${draftPin ? `?pin=${draftPin}` : ''}`;
-    navigator.clipboard.writeText(lobbyUrl).then(() => {
-      setShowCopiedToast(true);
-      setTimeout(() => setShowCopiedToast(false), 3000);
-    }).catch(err => {
-      console.error('Failed to copy link:', err);
-    });
-  }, [uuid, draftPin]);
+  const handleCopyLink = useCallback(async () => {
+    if (!uuid) return;
+    
+    try {
+      // Fetch share link from backend (includes PIN)
+      const response = await fetch(`/api/drafts/${uuid}/share-link`);
+      if (!response.ok) {
+        throw new Error('Failed to get share link');
+      }
+      
+      const data = await response.json();
+      const shareUrl = data.shareUrl;
+      
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setShowCopiedToast(true);
+        setTimeout(() => setShowCopiedToast(false), 3000);
+      }).catch(err => {
+        console.error('Failed to copy link:', err);
+      });
+    } catch (err) {
+      console.error('Failed to get share link:', err);
+    }
+  }, [uuid]);
 
   const handlePinSubmit = useCallback(() => {
     if (!uuid || !currentUserPosition) return;
@@ -295,6 +309,61 @@ const DraftLobbyPage: React.FC = () => {
       setPinError('Failed to verify PIN. Please try again.');
     }
   }, [uuid, currentUserPosition, pinInput, sendMessage]);
+
+  const handlePinCancel = useCallback(() => {
+    if (!uuid || !currentUserPosition) return;
+    
+    // Leave the lobby when canceling PIN verification
+    try {
+      sendMessage(`/app/draft/${uuid}/leave`, {
+        draftUuid: uuid,
+        position: currentUserPosition,
+      });
+      
+      // Clear URL params and reset state
+      setSearchParams({});
+      setShowPinModal(false);
+      setPinInput('');
+      setPinError('');
+      setShowPositionSelector(true);
+    } catch (err) {
+      console.error('Failed to leave lobby:', err);
+    }
+  }, [uuid, currentUserPosition, sendMessage, setSearchParams]);
+
+  // Listen for PIN verification errors and remove participant
+  useEffect(() => {
+    if (!isConnected || !uuid) return;
+
+    try {
+      webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
+        console.error('Received error message:', errorMessage);
+        
+        // If PIN verification failed, remove participant from lobby
+        if (errorMessage.code === 'READY_ERROR' && errorMessage.message?.includes('PIN')) {
+          setPinError(errorMessage.message);
+          
+          // After showing error, remove participant
+          setTimeout(() => {
+            if (currentUserPosition) {
+              sendMessage(`/app/draft/${uuid}/leave`, {
+                draftUuid: uuid,
+                position: currentUserPosition,
+              });
+              
+              setSearchParams({});
+              setShowPinModal(false);
+              setPinInput('');
+              setPinError('');
+              setShowPositionSelector(true);
+            }
+          }, 2000); // Give user 2 seconds to see the error
+        }
+      });
+    } catch (err) {
+      console.error('Error subscribing to error queue:', err);
+    }
+  }, [isConnected, uuid, currentUserPosition, sendMessage, setSearchParams]);
 
   if (loading) {
     return (
@@ -356,9 +425,11 @@ const DraftLobbyPage: React.FC = () => {
               <strong>{lobbyState?.totalRounds}</strong> Rounds
             </span>
           </div>
-          <button onClick={handleCopyLink} className="share-link-btn">
-            📋 Copy Lobby Link
-          </button>
+          {currentUserPosition && (lobbyState?.participants.find(p => p.position === currentUserPosition)?.isVerified || isCreator()) && (
+            <button onClick={handleCopyLink} className="share-link-btn">
+              📋 Copy Lobby Link
+            </button>
+          )}
           {showCopiedToast && (
             <div className="copied-toast">Link copied to clipboard!</div>
           )}
@@ -512,7 +583,7 @@ const DraftLobbyPage: React.FC = () => {
             />
             {pinError && <span className="error-message">{pinError}</span>}
             <div className="pin-modal-actions">
-              <button onClick={() => setShowPinModal(false)} className="btn btn-secondary">
+              <button onClick={handlePinCancel} className="btn btn-secondary">
                 Cancel
               </button>
               <button onClick={handlePinSubmit} className="btn btn-primary">
