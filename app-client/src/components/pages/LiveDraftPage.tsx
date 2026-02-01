@@ -53,78 +53,61 @@ const LiveDraftPage: React.FC = () => {
                 </div>
             </nav>
 
-            <div className="stub-content">
-                <div className="page-header">
-                    <div className="stub-icon">🚀</div>
-                    <h1>Live Draft Mode</h1>
-                    <p className="subtitle">Real-time drafting with your league</p>
-                </div>
-
-                <div className="content-wrapper">
-                    <div className="create-draft-section">
-                        <div className="section-content">
-                            <h2>Start a New Draft</h2>
-                            <p>Create a draft lobby and invite your league members</p>
-                            <button className="create-btn" onClick={() => navigate('/live-draft/setup')}>
-                                <span className="btn-icon">➕</span>
-                                Create Draft
-                            </button>
-                        </div>
+            <div className="live-draft-grid-container">
+                <h1 className="page-title">Live Drafts</h1>
+                
+                <div className="drafts-grid">
+                    {/* Create New Draft Card */}
+                    <div className="draft-card create-card" onClick={() => navigate('/live-draft/setup')}>
+                        <div className="card-icon">+</div>
+                        <h3>Create New Draft</h3>
+                        <p>Start a new draft lobby</p>
                     </div>
 
-                    {loading ? (
-                        <div className="lobbies-section">
-                            <h2>Available Lobbies</h2>
-                            <div className="lobbies-loading">
-                                <div className="spinner"></div>
-                                <p>Loading lobbies...</p>
+                    {/* Loading State */}
+                    {loading && (
+                        <div className="draft-card loading-card">
+                            <div className="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                    )}
+
+                    {/* Lobby Cards */}
+                    {!loading && lobbyDrafts.map((draft) => (
+                        <div 
+                            key={draft.uuid} 
+                            className="draft-card lobby-card"
+                            onClick={() => handleJoinLobby(draft.uuid)}
+                        >
+                            <div className="card-header">
+                                <h3>{draft.draftName}</h3>
+                                <span className="badge">Open</span>
+                            </div>
+                            <div className="card-details">
+                                <div className="detail-item">
+                                    <span className="label">Host:</span>
+                                    <span className="value">{draft.createdBy}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="label">Teams:</span>
+                                    <span className="value">{draft.participantCount}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="label">Rounds:</span>
+                                    <span className="value">{draft.totalRounds}</span>
+                                </div>
+                            </div>
+                            <div className="card-action">
+                                Join →
                             </div>
                         </div>
-                    ) : lobbyDrafts.length > 0 ? (
-                        <div className="lobbies-section">
-                            <h2>Available Lobbies</h2>
-                            <p className="section-subtitle">Join an existing draft</p>
-                            <div className="lobbies-grid">
-                                {lobbyDrafts.map((draft) => (
-                                    <div key={draft.uuid} className="lobby-card">
-                                        <div className="lobby-card-header">
-                                            <h3>{draft.draftName}</h3>
-                                            <span className="status-badge">Open</span>
-                                        </div>
-                                        <div className="lobby-card-body">
-                                            <div className="lobby-info">
-                                                <div className="info-row">
-                                                    <span className="info-icon">👤</span>
-                                                    <span className="info-text">{draft.createdBy}</span>
-                                                </div>
-                                                <div className="info-row">
-                                                    <span className="info-icon">👥</span>
-                                                    <span className="info-text">{draft.participantCount} Teams</span>
-                                                </div>
-                                                <div className="info-row">
-                                                    <span className="info-icon">🔄</span>
-                                                    <span className="info-text">{draft.totalRounds} Rounds</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button 
-                                            className="join-lobby-btn"
-                                            onClick={() => handleJoinLobby(draft.uuid)}
-                                        >
-                                            Join Lobby →
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="lobbies-section">
-                            <h2>Available Lobbies</h2>
-                            <div className="empty-lobbies">
-                                <div className="empty-icon">📭</div>
-                                <h3>No Open Lobbies</h3>
-                                <p>Be the first to create a draft!</p>
-                            </div>
+                    ))}
+
+                    {/* Empty State */}
+                    {!loading && lobbyDrafts.length === 0 && (
+                        <div className="draft-card empty-card">
+                            <div className="empty-icon">📭</div>
+                            <p>No open lobbies</p>
                         </div>
                     )}
                 </div>
