@@ -590,11 +590,6 @@ const DraftLobbyPage: React.FC = () => {
           <div className="pin-modal" onClick={(e) => e.stopPropagation()}>
             <h2>Enter Draft PIN</h2>
             <p>Please enter the 4-digit PIN to verify your participation</p>
-            {draftPin && (
-              <div className="pin-hint">
-                <strong>Your PIN:</strong> {draftPin}
-              </div>
-            )}
             <input
               type="text"
               value={pinInput}
