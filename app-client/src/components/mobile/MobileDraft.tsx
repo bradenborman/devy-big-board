@@ -30,6 +30,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const [showPlayerSheet, setShowPlayerSheet] = useState(false);
     const [positionFilter, setPositionFilter] = useState<string>('ALL');
     const [yearFilters, setYearFilters] = useState<number[]>([]);
+    const [showFilters, setShowFilters] = useState(false);
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
     const carouselRef = React.useRef<HTMLDivElement>(null);
 
@@ -253,41 +254,55 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                             </button>
                         </div>
 
-                        {/* Position Filter */}
-                        <div className="sheet-filters">
-                            <div className="filter-label">Position:</div>
-                            {['ALL', 'QB', 'RB', 'WR', 'TE'].map(pos => (
-                                <button
-                                    key={pos}
-                                    className={`filter-btn ${positionFilter === pos ? 'active' : ''}`}
-                                    onClick={() => setPositionFilter(pos)}
-                                >
-                                    {pos}
-                                </button>
-                            ))}
+                        {/* Filter Toggle Button */}
+                        <div className="filter-toggle-container">
+                            <button 
+                                className="filter-toggle-btn"
+                                onClick={() => setShowFilters(!showFilters)}
+                            >
+                                <span>Filters</span>
+                                <span className={`chevron ${showFilters ? 'open' : ''}`}>▼</span>
+                            </button>
                         </div>
 
-                        {/* Year Filter - Only show if not rookiesOnly */}
-                        {!rookiesOnly && (
+                        {/* Collapsible Filters */}
+                        <div className={`filters-container ${showFilters ? 'open' : ''}`}>
+                            {/* Position Filter */}
                             <div className="sheet-filters">
-                                <div className="filter-label">Year:</div>
-                                <button
-                                    className={`filter-btn ${yearFilters.length === 0 ? 'active' : ''}`}
-                                    onClick={() => setYearFilters([])}
-                                >
-                                    ALL
-                                </button>
-                                {availableYears.map(year => (
+                                <div className="filter-label">Position:</div>
+                                {['ALL', 'QB', 'RB', 'WR', 'TE'].map(pos => (
                                     <button
-                                        key={year}
-                                        className={`filter-btn ${yearFilters.includes(year) ? 'active' : ''}`}
-                                        onClick={() => toggleYearFilter(year)}
+                                        key={pos}
+                                        className={`filter-btn ${positionFilter === pos ? 'active' : ''}`}
+                                        onClick={() => setPositionFilter(pos)}
                                     >
-                                        {year}
+                                        {pos}
                                     </button>
                                 ))}
                             </div>
-                        )}
+
+                            {/* Year Filter - Only show if not rookiesOnly */}
+                            {!rookiesOnly && (
+                                <div className="sheet-filters">
+                                    <div className="filter-label">Year:</div>
+                                    <button
+                                        className={`filter-btn ${yearFilters.length === 0 ? 'active' : ''}`}
+                                        onClick={() => setYearFilters([])}
+                                    >
+                                        ALL
+                                    </button>
+                                    {availableYears.map(year => (
+                                        <button
+                                            key={year}
+                                            className={`filter-btn ${yearFilters.includes(year) ? 'active' : ''}`}
+                                            onClick={() => toggleYearFilter(year)}
+                                        >
+                                            {year}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* Player List */}
                         <div className="sheet-player-list">

@@ -476,6 +476,53 @@
             }
         }
 
+        .filter-toggle-container {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0;
+
+            .filter-toggle-btn {
+                width: 100%;
+                background: #f8fafc;
+                border: 2px solid #e2e8f0;
+                color: #1a202c;
+                padding: 0.875rem 1.25rem;
+                border-radius: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 1rem;
+                transition: all 0.2s;
+
+                &:active {
+                    transform: scale(0.98);
+                    background: #f1f5f9;
+                }
+
+                .chevron {
+                    font-size: 0.75rem;
+                    transition: transform 0.3s ease;
+                    color: #64748b;
+
+                    &.open {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+        }
+
+        .filters-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+
+            &.open {
+                max-height: 300px;
+            }
+        }
+
         .sheet-filters {
             display: flex;
             gap: 0.625rem;
