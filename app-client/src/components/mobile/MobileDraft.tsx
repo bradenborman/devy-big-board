@@ -22,15 +22,19 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     onDraftPlayer,
     onRemovePlayer,
     onExport,
-    onExit
-    // rookiesOnly is handled by parent component filtering
+    onExit,
+    rookiesOnly
 }) => {
     const [currentRound, setCurrentRound] = useState(1);
     const [currentPick, setCurrentPick] = useState(1);
     const [showPlayerSheet, setShowPlayerSheet] = useState(false);
     const [positionFilter, setPositionFilter] = useState<string>('ALL');
+    const [yearFilters, setYearFilters] = useState<number[]>([]);
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
     const carouselRef = React.useRef<HTMLDivElement>(null);
+
+    const currentYear = new Date().getFullYear();
+    const availableYears = Array.from({ length: 5 }, (_, i) => currentYear + i);
 
     useEffect(() => {
         fetch('/api/players/manage/headshots/available')
@@ -72,9 +76,16 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const currentPickNumber = getPickNumber(currentRound, currentPick);
     const progress = (currentPickNumber / totalPicks) * 100;
     
+    const toggleYearFilter = (year: number) => {
+        setYearFilters(prev => 
+            prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]
+        );
+    };
+    
     const filteredPlayers = playerPool.filter(player => {
         const matchesPosition = positionFilter === 'ALL' || player.position === positionFilter;
-        return matchesPosition;
+        const matchesYear = yearFilters.length === 0 || yearFilters.includes(player.draftyear);
+        return matchesPosition && matchesYear;
     });
     
     // Check if draft is complete
@@ -244,6 +255,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
 
                         {/* Position Filter */}
                         <div className="sheet-filters">
+                            <div className="filter-label">Position:</div>
                             {['ALL', 'QB', 'RB', 'WR', 'TE'].map(pos => (
                                 <button
                                     key={pos}
@@ -254,6 +266,28 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                                 </button>
                             ))}
                         </div>
+
+                        {/* Year Filter - Only show if not rookiesOnly */}
+                        {!rookiesOnly && (
+                            <div className="sheet-filters">
+                                <div className="filter-label">Year:</div>
+                                <button
+                                    className={`filter-btn ${yearFilters.length === 0 ? 'active' : ''}`}
+                                    onClick={() => setYearFilters([])}
+                                >
+                                    ALL
+                                </button>
+                                {availableYears.map(year => (
+                                    <button
+                                        key={year}
+                                        className={`filter-btn ${yearFilters.includes(year) ? 'active' : ''}`}
+                                        onClick={() => toggleYearFilter(year)}
+                                    >
+                                        {year}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
                         {/* Player List */}
                         <div className="sheet-player-list">

@@ -483,6 +483,17 @@
             border-bottom: 1px solid #e2e8f0;
             overflow-x: auto;
             flex-shrink: 0;
+            align-items: center;
+
+            .filter-label {
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                white-space: nowrap;
+                margin-right: 0.25rem;
+            }
 
             .filter-btn {
                 background: #f1f5f9;
