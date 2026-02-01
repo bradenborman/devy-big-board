@@ -105,6 +105,9 @@ const DraftSetupPage: React.FC = () => {
 
       const data: CreateDraftResponse = await response.json();
       
+      // Add a small delay before navigating to allow backend to fully initialize
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       navigate(`/draft/${data.uuid}/lobby`, {
         state: { 
           creatorNickname: formData.creatorNickname,
