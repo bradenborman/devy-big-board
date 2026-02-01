@@ -403,7 +403,7 @@
 // Live Draft Page specific styles
 .live-draft-page {
     .stub-content {
-        max-width: 1400px;
+        max-width: 1200px;
         padding: 3rem 2rem;
         margin: 0 auto;
 
@@ -412,20 +412,23 @@
             margin-bottom: 4rem;
 
             .stub-icon {
-                font-size: 4rem;
+                font-size: 3.5rem;
                 margin-bottom: 1rem;
-                animation: bounce 2s ease-in-out infinite;
             }
 
             h1 {
-                font-size: 3rem;
-                margin-bottom: 0.5rem;
+                font-size: 2.75rem;
+                margin-bottom: 0.75rem;
                 font-weight: 800;
+                background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
             }
 
             .subtitle {
-                font-size: 1.25rem;
-                opacity: 0.9;
+                font-size: 1.125rem;
+                opacity: 0.85;
                 margin-bottom: 0;
             }
         }
@@ -433,17 +436,35 @@
         .content-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 3rem;
+            gap: 2.5rem;
         }
 
-        .create-draft-card {
-            background: linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.15) 100%);
+        .create-draft-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(79, 172, 254, 0.3);
+            border: 2px solid rgba(102, 126, 234, 0.3);
             border-radius: 20px;
             padding: 3rem;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+                animation: pulse 4s ease-in-out infinite;
+            }
+
+            .section-content {
+                position: relative;
+                z-index: 1;
+            }
 
             h2 {
                 font-size: 2rem;
@@ -461,16 +482,16 @@
             }
 
             .create-btn {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
                 border: none;
-                padding: 1.25rem 3rem;
+                padding: 1.25rem 3.5rem;
                 border-radius: 12px;
                 font-weight: 700;
                 font-size: 1.25rem;
                 cursor: pointer;
                 transition: all 0.3s ease;
-                box-shadow: 0 4px 20px rgba(79, 172, 254, 0.5);
+                box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
                 display: inline-flex;
                 align-items: center;
                 gap: 0.75rem;
@@ -481,7 +502,7 @@
 
                 &:hover {
                     transform: translateY(-3px);
-                    box-shadow: 0 8px 30px rgba(79, 172, 254, 0.6);
+                    box-shadow: 0 10px 35px rgba(102, 126, 234, 0.5);
                 }
 
                 &:active {
@@ -494,15 +515,17 @@
             h2 {
                 font-size: 2.25rem;
                 font-weight: 700;
-                margin-bottom: 0.75rem;
-                text-align: center;
+                margin-bottom: 0.5rem;
+                text-align: left;
+                color: white;
             }
 
             .section-subtitle {
-                text-align: center;
-                opacity: 0.85;
-                margin-bottom: 2.5rem;
+                text-align: left;
+                opacity: 0.8;
+                margin-bottom: 2rem;
                 font-size: 1.125rem;
+                color: rgba(255, 255, 255, 0.8);
             }
 
             .lobbies-loading {
@@ -512,6 +535,8 @@
                 gap: 1.5rem;
                 padding: 5rem 2rem;
                 opacity: 0.7;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 16px;
 
                 .spinner {
                     width: 50px;
@@ -530,8 +555,8 @@
 
             .lobbies-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-                gap: 2rem;
+                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+                gap: 1.75rem;
 
                 @media (max-width: 768px) {
                     grid-template-columns: 1fr;
@@ -550,9 +575,9 @@
 
                     &:hover {
                         background: rgba(255, 255, 255, 0.15);
-                        border-color: rgba(255, 255, 255, 0.35);
+                        border-color: rgba(102, 126, 234, 0.5);
                         transform: translateY(-6px);
-                        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+                        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.3);
                     }
 
                     .lobby-card-header {
@@ -562,7 +587,7 @@
                         justify-content: space-between;
                         align-items: center;
                         gap: 1rem;
-                        background: rgba(255, 255, 255, 0.05);
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
 
                         h3 {
                             font-size: 1.5rem;
@@ -591,6 +616,7 @@
                     .lobby-card-body {
                         padding: 1.5rem;
                         flex: 1;
+                        background: rgba(0, 0, 0, 0.2);
 
                         .lobby-info {
                             display: flex;
@@ -602,9 +628,10 @@
                                 align-items: center;
                                 gap: 0.875rem;
                                 font-size: 1rem;
-                                padding: 0.5rem;
-                                background: rgba(255, 255, 255, 0.05);
+                                padding: 0.75rem;
+                                background: rgba(255, 255, 255, 0.08);
                                 border-radius: 8px;
+                                border: 1px solid rgba(255, 255, 255, 0.1);
 
                                 .info-icon {
                                     font-size: 1.25rem;
@@ -677,6 +704,17 @@
     }
 }
 
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.1) rotate(180deg);
+        opacity: 0.5;
+    }
+}
+
 // Mobile responsive for live draft page
 @media (max-width: 768px) {
     .live-draft-page {
@@ -703,7 +741,7 @@
                 gap: 2.5rem;
             }
 
-            .create-draft-card {
+            .create-draft-section {
                 padding: 2rem 1.5rem;
 
                 h2 {

@@ -61,13 +61,15 @@ const LiveDraftPage: React.FC = () => {
                 </div>
 
                 <div className="content-wrapper">
-                    <div className="create-draft-card">
-                        <h2>Start a New Draft</h2>
-                        <p>Create a draft lobby and invite your league members</p>
-                        <button className="create-btn" onClick={() => navigate('/live-draft/setup')}>
-                            <span className="btn-icon">➕</span>
-                            Create Draft
-                        </button>
+                    <div className="create-draft-section">
+                        <div className="section-content">
+                            <h2>Start a New Draft</h2>
+                            <p>Create a draft lobby and invite your league members</p>
+                            <button className="create-btn" onClick={() => navigate('/live-draft/setup')}>
+                                <span className="btn-icon">➕</span>
+                                Create Draft
+                            </button>
+                        </div>
                     </div>
 
                     {loading ? (
