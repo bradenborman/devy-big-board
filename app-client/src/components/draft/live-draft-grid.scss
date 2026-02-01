@@ -210,9 +210,9 @@
 
           .undo-btn {
             position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 50%;
+            left: -16px;
+            transform: translateY(-50%);
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             border: 2px solid white;
             color: white;
@@ -231,12 +231,12 @@
 
             &:hover {
               background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-              transform: translateX(-50%) scale(1.1);
+              transform: translateY(-50%) scale(1.1);
               box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5);
             }
 
             &:active {
-              transform: translateX(-50%) scale(0.95);
+              transform: translateY(-50%) scale(0.95);
             }
           }
         }
