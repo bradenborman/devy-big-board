@@ -8,10 +8,19 @@ interface Props {
 }
 
 const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
-  // Group picks by participant
-  const picksByParticipant = (participant: ParticipantInfo): PickMessage[] =>
+  // Build columns from picks so we always have all teams even if participants array is partial
+  const allPositions = Array.from({ length: draftState.participantCount }, (_, i) => String.fromCharCode(65 + i));
+  const nicknameByPosition: Record<string, string> = {};
+  draftState.participants.forEach(p => { nicknameByPosition[p.position] = p.nickname; });
+  // Fall back to position letter if nickname not available
+  const teamColumns = allPositions.map(pos => ({
+    position: pos,
+    nickname: nicknameByPosition[pos] || pos,
+  }));
+
+  const picksByPosition = (position: string): PickMessage[] =>
     draftState.picks
-      .filter((p) => p.pickedByPosition === participant.position)
+      .filter((p) => p.pickedByPosition === position)
       .sort((a, b) => a.pickNumber - b.pickNumber);
 
   const handlePrint = () => {
@@ -23,26 +32,36 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
       TE: '#d97706', K: '#6b7280', DEF: '#374151', DST: '#374151',
     };
 
-    const participants = draftState.participants;
     const totalRounds = draftState.totalRounds;
+    const participantCount = draftState.participantCount;
 
-    // Build a lookup: roundNumber -> position -> pick
+    // Build position->nickname map from participants we have
+    const nicknameByPosition: Record<string, string> = {};
+    draftState.participants.forEach(p => { nicknameByPosition[p.position] = p.nickname; });
+
+    // Derive all positions from picks (covers cases where participants array is incomplete)
+    const positionsFromPicks = Array.from(new Set(draftState.picks.map(p => p.pickedByPosition))).sort();
+    // Fill any gaps up to participantCount using letter positions
+    const allPositions = Array.from({ length: participantCount }, (_, i) => String.fromCharCode(65 + i));
+    // Use positions that actually have picks, falling back to letter sequence
+    const columns = allPositions.length >= positionsFromPicks.length ? allPositions : positionsFromPicks;
+
+    // Build lookup: roundNumber -> pickedByPosition -> pick
     const pickMap: Record<number, Record<string, PickMessage>> = {};
     draftState.picks.forEach((pick) => {
       if (!pickMap[pick.roundNumber]) pickMap[pick.roundNumber] = {};
       pickMap[pick.roundNumber][pick.pickedByPosition] = pick;
     });
 
-    // Header row — one column per team
-    const headerCells = participants.map(p =>
-      `<th>${p.nickname}</th>`
-    ).join('');
+    const headerCells = columns.map(pos => {
+      const name = nicknameByPosition[pos] || pos;
+      return `<th>${name}</th>`;
+    }).join('');
 
-    // One row per round
     const roundRows = Array.from({ length: totalRounds }, (_, i) => {
       const round = i + 1;
-      const cells = participants.map(p => {
-        const pick = pickMap[round]?.[p.position];
+      const cells = columns.map(pos => {
+        const pick = pickMap[round]?.[pos];
         if (!pick) return `<td class="empty-cell"></td>`;
         const color = posColors[pick.position] || '#555';
         return `
@@ -84,7 +103,7 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
 <body>
   <div class="header">
     <h1>Draft Results</h1>
-    <p class="subtitle">${participants.length} Teams &nbsp;·&nbsp; ${totalRounds} Rounds &nbsp;·&nbsp; ${draftState.picks.length} Picks</p>
+    <p class="subtitle">${participantCount} Teams &nbsp;·&nbsp; ${totalRounds} Rounds &nbsp;·&nbsp; ${draftState.picks.length} Picks</p>
   </div>
   <table>
     <thead><tr><th></th>${headerCells}</tr></thead>
@@ -105,7 +124,7 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
         </div>
 
         <div className="modal-summary">
-          <span>{draftState.participants.length} teams</span>
+          <span>{draftState.participantCount} teams</span>
           <span>·</span>
           <span>{draftState.totalRounds} rounds</span>
           <span>·</span>
@@ -113,11 +132,12 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
         </div>
 
         <div className="modal-tables">
-          {draftState.participants.map((participant) => {
-            const picks = picksByParticipant(participant);
+          {teamColumns.map(({ position, nickname }) => {
+            const picks = picksByPosition(position);
+            if (picks.length === 0) return null;
             return (
-              <div key={participant.position} className="participant-section">
-                <h3 className="participant-name">{participant.nickname}</h3>
+              <div key={position} className="participant-section">
+                <h3 className="participant-name">{nickname}</h3>
                 <table className="picks-table">
                   <thead>
                     <tr>
