@@ -153,7 +153,7 @@ const MobileLiveDraftBoard: React.FC = () => {
     if (draftState?.status === 'COMPLETED') {
       setShowCompleteModal(true);
     }
-  }, [draftState?.status]);
+  }, [draftState]);
 
   const handleMakePick = useCallback(
     async (playerId: number) => {

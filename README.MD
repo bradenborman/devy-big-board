@@ -1,3 +1,5 @@
+https://console.cloud.google.com/auth/audience?project=devyboard
+
 # Devy BigBoard
 
 Fantasy football rookie draft application with database persistence, player verification, and draft sharing capabilities.

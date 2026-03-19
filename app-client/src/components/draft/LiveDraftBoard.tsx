@@ -6,6 +6,7 @@ import { useMobile } from '../../hooks/useMobile';
 import MobileLiveDraftBoard from '../mobile/MobileLiveDraftBoard';
 import LivePlayerPool from './LivePlayerPool';
 import LiveDraftGrid from './LiveDraftGrid';
+import DraftCompleteModal from './DraftCompleteModal';
 import Toast from '../shared/Toast';
 import './live-draft-board.scss';
 
@@ -24,22 +25,23 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
   const { connect, subscribeToDraft, sendMessage, isConnected } = useWebSocket();
   const isMobile = useMobile();
 
-  // If mobile, render mobile component
-  if (isMobile) {
-    return <MobileLiveDraftBoard />;
-  }
-
   const [draftState, setDraftState] = useState<DraftStateMessage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   const previousPicksRef = useRef<PickMessage[]>([]);
   const toastIdCounter = useRef(0);
 
   // Get user's position from URL query param
   const userPosition = searchParams.get('x');
+
+  // If mobile, render mobile component (must be after all hooks)
+  if (isMobile) {
+    return <MobileLiveDraftBoard />;
+  }
 
   // Validate position
   useEffect(() => {
@@ -181,6 +183,13 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
     if (!draftState || !userPosition) return false;
     return draftState.currentTurnPosition === userPosition;
   }, [draftState, userPosition]);
+
+  // Show completion modal when draft finishes
+  useEffect(() => {
+    if (draftState?.status === 'COMPLETED') {
+      setShowCompleteModal(true);
+    }
+  }, [draftState]);
 
   const handleMakePick = useCallback(
     async (playerId: number) => {
@@ -338,6 +347,13 @@ const LiveDraftBoard: React.FC<LiveDraftBoardProps> = () => {
           </>
         )}
       </div>
+
+      {draftState && showCompleteModal && (
+        <DraftCompleteModal
+          draftState={draftState}
+          onClose={() => setShowCompleteModal(false)}
+        />
+      )}
 
       <div className="toast-container">
         {toasts.map((toast) => (
