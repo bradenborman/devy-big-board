@@ -40,7 +40,7 @@ const DraftLobbyPage: React.FC = () => {
 
   // Set a timeout for lobby state loading — only after connected and position selector is shown
   useEffect(() => {
-    if (!isConnected || lobbyState || !showPositionSelector) return;
+    if (loading || lobbyState || !showPositionSelector) return;
 
     const timer = setTimeout(() => {
       console.error('Lobby state not received after 10 seconds');
@@ -48,7 +48,7 @@ const DraftLobbyPage: React.FC = () => {
     }, 10000);
 
     return () => clearTimeout(timer);
-  }, [isConnected, lobbyState, showPositionSelector]);
+  }, [loading, lobbyState, showPositionSelector]);
 
   // Check if user needs to select position
   useEffect(() => {
