@@ -219,14 +219,20 @@ const MobileLiveDraftBoard: React.FC = () => {
       })
     : [];
 
-  // Calculate current pick info
-  // Use picks.length for the next pick number since currentPick from the backend
-  // represents the next pick to be made (already incremented after each pick).
+  // Use the backend's authoritative currentPick (overall pick number) and currentRound directly.
+  // currentPick is the OVERALL pick number (1-based, global across all rounds).
+  // e.g. in a 4-team draft: pick 1-4 = round 1, pick 5-8 = round 2, etc.
   const getCurrentPickInfo = () => {
     if (!draftState) return null;
-    const pickNumber = draftState.picks.length + 1;
     const totalPicks = draftState.totalRounds * draftState.participantCount;
-    return { pickNumber, totalPicks };
+    const overallPickNumber = draftState.currentPick;
+    const pickInRound = ((overallPickNumber - 1) % draftState.participantCount) + 1;
+    return {
+      pickNumber: overallPickNumber,
+      pickInRound,
+      round: draftState.currentRound,
+      totalPicks,
+    };
   };
 
   const pickInfo = getCurrentPickInfo();
@@ -273,7 +279,6 @@ const MobileLiveDraftBoard: React.FC = () => {
   const currentTurnParticipant = draftState.participants.find(
     (p) => p.position === draftState.currentTurnPosition
   );
-
   return (
     <div className="mobile-live-draft">
       {/* Header */}
@@ -282,9 +287,9 @@ const MobileLiveDraftBoard: React.FC = () => {
           ✕
         </button>
         <div className="header-title">
-          <div className="round-info">Round {draftState.currentRound}</div>
+          <div className="round-info">Round {pickInfo.round}</div>
           <div className="pick-info">
-            Pick {pickInfo.pickNumber - (draftState.currentRound - 1) * draftState.participantCount} of {draftState.participantCount}
+            Pick {pickInfo.pickInRound} of {draftState.participantCount}
           </div>
         </div>
         <div className="header-spacer"></div>

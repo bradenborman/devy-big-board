@@ -1,5 +1,5 @@
 import React from 'react';
-import { DraftStateMessage, PickMessage, ParticipantInfo } from '../../models/WebSocketMessages';
+import { DraftStateMessage, PickMessage } from '../../models/WebSocketMessages';
 import './draft-complete-modal.scss';
 
 interface Props {
