@@ -12,7 +12,7 @@ const DraftLobbyPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { connect, subscribeToLobby, sendMessage, isConnected } = useWebSocket();
+  const { connect, subscribeToLobby, sendMessage } = useWebSocket();
 
   const [lobbyState, setLobbyState] = useState<LobbyStateMessage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,17 +38,17 @@ const DraftLobbyPage: React.FC = () => {
   // Get PIN from lobbyState (backend) or fallback to URL/state
   const draftPin = lobbyState?.pin || (location.state as any)?.pin || urlPin;
 
-  // Set a timeout for lobby state loading
+  // Set a timeout for lobby state loading — only after connected and position selector is shown
   useEffect(() => {
+    if (!isConnected || lobbyState || !showPositionSelector) return;
+
     const timer = setTimeout(() => {
-      if (!lobbyState && isConnected && showPositionSelector) {
-        console.error('Lobby state not received after 5 seconds');
-        setLobbyStateTimeout(true);
-      }
-    }, 5000); // Reduced to 5 seconds to show retry sooner
+      console.error('Lobby state not received after 10 seconds');
+      setLobbyStateTimeout(true);
+    }, 10000);
 
     return () => clearTimeout(timer);
-  }, [lobbyState, isConnected, showPositionSelector]);
+  }, [isConnected, lobbyState, showPositionSelector]);
 
   // Check if user needs to select position
   useEffect(() => {
@@ -61,7 +61,7 @@ const DraftLobbyPage: React.FC = () => {
     }
   }, [currentUserPosition, currentUserNickname, creatorNickname]);
 
-  // Connect to WebSocket
+  // Connect, subscribe, and request lobby state in one sequential flow
   useEffect(() => {
     if (!uuid) {
       setError('Invalid draft UUID');
@@ -69,10 +69,55 @@ const DraftLobbyPage: React.FC = () => {
       return;
     }
 
-    const connectToLobby = async () => {
+    const setup = async () => {
       try {
+        // 1. Ensure connected
         await connect(uuid);
         setLoading(false);
+
+        // 2. Subscribe to broadcast lobby topic (join/leave/ready/draft-started)
+        subscribeToLobby(uuid, (message: any) => {
+          if (
+            message.firstTurnPosition !== undefined ||
+            (message.message && typeof message.message === 'string' && message.message.toLowerCase().includes('started'))
+          ) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentPosition = urlParams.get('position');
+            setStartingDraft(false);
+            if (currentPosition) {
+              navigate(`/draft/${uuid}?x=${currentPosition}`);
+            }
+            return;
+          }
+          if (message.participants) {
+            setLobbyState(message as LobbyStateMessage);
+          }
+        });
+
+        // 3. Subscribe to user-specific queues
+        webSocketService.subscribe('/user/queue/lobby-state', (message: LobbyStateMessage) => {
+          setLobbyState(message);
+          setLobbyStateTimeout(false);
+        });
+
+        webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
+          if (errorMessage.code === 'READY_ERROR' && errorMessage.message.includes('PIN')) {
+            setPinError('Invalid PIN');
+            setTimeout(() => {
+              if (uuid && currentUserPosition) {
+                sendMessage(`/app/draft/${uuid}/leave`, { draftUuid: uuid, position: currentUserPosition });
+              }
+              navigate('/live-draft');
+            }, 1500);
+          } else {
+            setStartingDraft(false);
+            setError(errorMessage.message || 'An error occurred');
+          }
+        });
+
+        // 4. Request initial lobby state — subscriptions are registered above so response will be caught
+        sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
+
       } catch (err) {
         console.error('Failed to connect to lobby:', err);
         setError('Failed to connect to lobby. Please try again.');
@@ -80,107 +125,8 @@ const DraftLobbyPage: React.FC = () => {
       }
     };
 
-    connectToLobby();
-
-    // Don't disconnect on unmount - let the draft board reuse the connection
-    // return () => {
-    //   disconnect();
-    // };
-  }, [uuid, connect]);
-
-  // Subscribe to lobby updates
-  useEffect(() => {
-    if (!uuid || !isConnected) {
-      console.log('Cannot subscribe - uuid:', uuid, 'isConnected:', isConnected);
-      return;
-    }
-
-    console.log('Subscribing to lobby updates for draft:', uuid);
-    console.log('WebSocket connected:', webSocketService.isConnected());
-
-    // Subscribe to broadcast lobby updates (for join/leave/ready events and draft started)
-    subscribeToLobby(uuid, (message: any) => {
-      console.log('Received lobby state from broadcast:', message);
-      console.log('Message type check - firstTurnPosition:', message.firstTurnPosition);
-      console.log('Message type check - message field:', message.message);
-      console.log('Message type check - participants:', message.participants);
-      
-      // Check if this is a draft started message by checking for firstTurnPosition field
-      if (message.firstTurnPosition !== undefined || (message.message && typeof message.message === 'string' && message.message.toLowerCase().includes('started'))) {
-        console.log('✅ Draft started detected! Redirecting to draft board...');
-        // Get the current position from URL params at the time of navigation
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentPosition = urlParams.get('position');
-        console.log('Current user position from URL:', currentPosition);
-        setStartingDraft(false); // Reset loading state
-        // Redirect to draft board
-        if (currentPosition) {
-          console.log('Navigating to:', `/draft/${uuid}?x=${currentPosition}`);
-          navigate(`/draft/${uuid}?x=${currentPosition}`);
-        } else {
-          console.error('❌ Cannot navigate: position not found in URL params');
-          console.error('Current URL:', window.location.href);
-        }
-        return;
-      }
-      
-      // Otherwise, treat it as a lobby state message
-      if (message.participants) {
-        console.log('Treating as lobby state message');
-        setLobbyState(message as LobbyStateMessage);
-      }
-    });
-
-    // Also subscribe to user-specific lobby state responses
-    try {
-      if (webSocketService.isConnected()) {
-        console.log('Subscribing to /user/queue/lobby-state');
-        webSocketService.subscribe('/user/queue/lobby-state', (message: LobbyStateMessage) => {
-          console.log('Received lobby state from user queue:', message);
-          setLobbyState(message);
-        });
-        
-        // Subscribe to error messages
-        console.log('Subscribing to /user/queue/errors');
-        webSocketService.subscribe('/user/queue/errors', (errorMessage: any) => {
-          console.error('Received error message:', errorMessage);
-          
-          // Handle PIN verification errors
-          if (errorMessage.code === 'READY_ERROR' && errorMessage.message.includes('PIN')) {
-            setPinError('Invalid PIN');
-            
-            // Remove participant and navigate away after showing error
-            setTimeout(() => {
-              if (uuid && currentUserPosition) {
-                sendMessage(`/app/draft/${uuid}/leave`, {
-                  draftUuid: uuid,
-                  position: currentUserPosition,
-                });
-              }
-              
-              // Navigate back to live draft page
-              navigate('/live-draft');
-            }, 1500);
-          } else {
-            setStartingDraft(false); // Reset loading state on other errors
-            setError(errorMessage.message || 'An error occurred');
-          }
-        });
-        
-        // Request initial lobby state after subscriptions are set up
-        console.log('Requesting initial lobby state for draft:', uuid);
-        // Increased delay to ensure subscriptions are fully registered
-        setTimeout(() => {
-          sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
-          console.log('Lobby state request sent successfully');
-        }, 300);
-      } else {
-        console.error('WebSocket not connected, cannot subscribe to user queue');
-      }
-    } catch (err) {
-      console.error('Error subscribing to user queue:', err);
-    }
-  }, [uuid, isConnected, subscribeToLobby, sendMessage, navigate, currentUserPosition]);
+    setup();
+  }, [uuid]); // intentionally only re-run if uuid changes
 
   const handleJoin = useCallback(
     async (nickname: string, position: string) => {
@@ -479,8 +425,8 @@ const DraftLobbyPage: React.FC = () => {
                           <button 
                             onClick={() => {
                               console.log('Retrying lobby state request');
-                              sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
                               setLobbyStateTimeout(false);
+                              sendMessage(`/app/draft/${uuid}/lobby/state`, { draftUuid: uuid });
                             }}
                             className="btn-retry"
                           >
