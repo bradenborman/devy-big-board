@@ -211,9 +211,11 @@ const MobileLiveDraftBoard: React.FC = () => {
     : [];
 
   // Calculate current pick info
+  // Use picks.length for the next pick number since currentPick from the backend
+  // represents the next pick to be made (already incremented after each pick).
   const getCurrentPickInfo = () => {
     if (!draftState) return null;
-    const pickNumber = (draftState.currentRound - 1) * draftState.participantCount + draftState.currentPick;
+    const pickNumber = draftState.picks.length + 1;
     const totalPicks = draftState.totalRounds * draftState.participantCount;
     return { pickNumber, totalPicks };
   };
@@ -273,7 +275,7 @@ const MobileLiveDraftBoard: React.FC = () => {
         <div className="header-title">
           <div className="round-info">Round {draftState.currentRound}</div>
           <div className="pick-info">
-            Pick {draftState.currentPick} of {draftState.participantCount}
+            Pick {pickInfo.pickNumber - (draftState.currentRound - 1) * draftState.participantCount} of {draftState.participantCount}
           </div>
         </div>
         <div className="header-spacer"></div>
