@@ -15,7 +15,7 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
       .sort((a, b) => a.pickNumber - b.pickNumber);
 
   const handlePrint = () => {
-    const win = window.open('', '_blank', 'width=900,height=700');
+    const win = window.open('', '_blank', 'width=1100,height=800');
     if (!win) return;
 
     const posColors: Record<string, string> = {
@@ -23,28 +23,38 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
       TE: '#d97706', K: '#6b7280', DEF: '#374151', DST: '#374151',
     };
 
-    const participantSections = draftState.participants.map((participant) => {
-      const picks = picksByParticipant(participant);
-      const rows = picks.map((pick) => {
+    const participants = draftState.participants;
+    const totalRounds = draftState.totalRounds;
+
+    // Build a lookup: roundNumber -> position -> pick
+    const pickMap: Record<number, Record<string, PickMessage>> = {};
+    draftState.picks.forEach((pick) => {
+      if (!pickMap[pick.roundNumber]) pickMap[pick.roundNumber] = {};
+      pickMap[pick.roundNumber][pick.pickedByPosition] = pick;
+    });
+
+    // Header row — one column per team
+    const headerCells = participants.map(p =>
+      `<th>${p.nickname}</th>`
+    ).join('');
+
+    // One row per round
+    const roundRows = Array.from({ length: totalRounds }, (_, i) => {
+      const round = i + 1;
+      const cells = participants.map(p => {
+        const pick = pickMap[round]?.[p.position];
+        if (!pick) return `<td class="empty-cell"></td>`;
         const color = posColors[pick.position] || '#555';
         return `
-          <tr>
-            <td>${pick.roundNumber}</td>
-            <td>${pick.pickNumber}</td>
-            <td>${pick.playerName}</td>
-            <td><span style="background:${color};color:#fff;padding:2px 7px;border-radius:4px;font-size:8pt;font-weight:700">${pick.position}</span></td>
-            <td>${pick.team || '—'}</td>
-          </tr>`;
+          <td>
+            <div class="player-name">${pick.playerName}</div>
+            <div class="pick-meta">
+              <span class="pos-tag" style="background:${color}">${pick.position}</span>
+              <span class="pick-num">Pick ${pick.pickNumber}</span>
+            </div>
+          </td>`;
       }).join('');
-
-      return `
-        <div class="participant">
-          <h2>${participant.nickname}</h2>
-          <table>
-            <thead><tr><th>Rd</th><th>Pick</th><th>Player</th><th>Pos</th><th>Team</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>`;
+      return `<tr><td class="round-col">Rd ${round}</td>${cells}</tr>`;
     }).join('');
 
     win.document.write(`<!DOCTYPE html>
@@ -54,26 +64,32 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
   <title>Draft Results</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #111; padding: 24px; }
-    h1 { font-size: 22pt; margin-bottom: 4px; }
-    .subtitle { font-size: 10pt; color: #555; margin-bottom: 20px; }
-    .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .participant { break-inside: avoid; }
-    .participant h2 { font-size: 11pt; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1.5px solid #333; }
-    table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
-    th { text-align: left; padding: 3px 5px; border-bottom: 1px solid #999; font-weight: 600; color: #333; }
-    td { padding: 3px 5px; border-bottom: 1px solid #ddd; }
-    tr:nth-child(even) td { background: #f5f5f5; }
-    @media print { body { padding: 16px; } }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #111; padding: 20px; }
+    .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 16px; }
+    h1 { font-size: 20pt; margin-bottom: 3px; }
+    .subtitle { font-size: 9pt; color: #555; }
+    table { width: 100%; border-collapse: collapse; font-size: 8pt; table-layout: fixed; }
+    th { background: #222; color: #fff; padding: 6px 4px; text-align: center; font-size: 8.5pt; border: 1px solid #444; }
+    td { padding: 5px 4px; border: 1px solid #ddd; vertical-align: top; }
+    .round-col { background: #f0f0f0; font-weight: 700; text-align: center; width: 36px; color: #333; font-size: 7.5pt; }
+    .player-name { font-weight: 600; font-size: 8pt; margin-bottom: 2px; }
+    .pick-meta { display: flex; align-items: center; gap: 4px; }
+    .pos-tag { color: #fff; padding: 1px 4px; border-radius: 3px; font-size: 7pt; font-weight: 700; }
+    .pick-num { font-size: 7pt; color: #888; }
+    .empty-cell { background: #fafafa; }
+    tr:nth-child(even) td:not(.round-col) { background: #f9f9f9; }
+    @media print { body { padding: 10px; } }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Draft Results</h1>
-    <p class="subtitle">${draftState.participants.length} Teams &nbsp;·&nbsp; ${draftState.totalRounds} Rounds &nbsp;·&nbsp; ${draftState.picks.length} Picks</p>
+    <p class="subtitle">${participants.length} Teams &nbsp;·&nbsp; ${totalRounds} Rounds &nbsp;·&nbsp; ${draftState.picks.length} Picks</p>
   </div>
-  <div class="grid">${participantSections}</div>
+  <table>
+    <thead><tr><th></th>${headerCells}</tr></thead>
+    <tbody>${roundRows}</tbody>
+  </table>
   <script>window.onload = function() { window.print(); }</script>
 </body>
 </html>`);
@@ -133,7 +149,7 @@ const DraftCompleteModal: React.FC<Props> = ({ draftState, onClose }) => {
 
         <div className="modal-actions">
           <button className="btn-pdf" onClick={handlePrint}>
-            🖨️ Save as PDF
+            💾 Save Draft
           </button>
           <button className="btn-close" onClick={onClose}>
             Close
