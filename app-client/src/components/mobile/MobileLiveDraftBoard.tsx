@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useWebSocket } from '../../contexts/WebSocketContext';
 import { DraftStateMessage, PickMessage } from '../../models/WebSocketMessages';
 import Toast from '../shared/Toast';
+import DraftCompleteModal from '../draft/DraftCompleteModal';
 import './mobileLiveDraft.scss';
 
 interface ToastNotification {
@@ -26,6 +27,7 @@ const MobileLiveDraftBoard: React.FC = () => {
   const [positionFilter, setPositionFilter] = useState<string>('');
   const [yearFilter, setYearFilter] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   const previousPicksRef = useRef<PickMessage[]>([]);
   const toastIdCounter = useRef(0);
@@ -145,6 +147,13 @@ const MobileLiveDraftBoard: React.FC = () => {
     if (!draftState || !userPosition) return false;
     return draftState.currentTurnPosition === userPosition;
   }, [draftState, userPosition]);
+
+  // Show completion modal when draft finishes
+  useEffect(() => {
+    if (draftState?.status === 'COMPLETED') {
+      setShowCompleteModal(true);
+    }
+  }, [draftState?.status]);
 
   const handleMakePick = useCallback(
     async (playerId: number) => {
@@ -473,6 +482,14 @@ const MobileLiveDraftBoard: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Draft Complete Modal */}
+      {showCompleteModal && (
+        <DraftCompleteModal
+          draftState={draftState}
+          onClose={() => setShowCompleteModal(false)}
+        />
       )}
 
       {/* Toast Notifications */}

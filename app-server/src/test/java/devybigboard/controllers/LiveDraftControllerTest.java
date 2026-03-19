@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ class LiveDraftControllerTest {
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
+
+    @Mock
+    private SimpMessageHeaderAccessor headerAccessor;
 
     @InjectMocks
     private LiveDraftController controller;
@@ -78,7 +82,7 @@ class LiveDraftControllerTest {
         when(draftService.canStartDraft("test-uuid-123")).thenReturn(false);
 
         // Act
-        controller.joinLobby(request);
+        controller.joinLobby(request, headerAccessor);
 
         // Assert
         verify(draftService).getDraftByUuid("test-uuid-123");
@@ -95,7 +99,7 @@ class LiveDraftControllerTest {
             .thenThrow(new DraftNotFoundException("invalid-uuid"));
 
         // Act
-        controller.joinLobby(request);
+        controller.joinLobby(request, headerAccessor);
 
         // Assert
         verify(draftService).getDraftByUuid("invalid-uuid");
@@ -112,7 +116,7 @@ class LiveDraftControllerTest {
             .thenThrow(new ValidationException("Position A is already taken"));
 
         // Act
-        controller.joinLobby(request);
+        controller.joinLobby(request, headerAccessor);
 
         // Assert
         verify(participantService).joinDraft(1L, "Bob", "A");
@@ -131,7 +135,7 @@ class LiveDraftControllerTest {
         when(draftService.canStartDraft("test-uuid-123")).thenReturn(false);
 
         // Act
-        controller.toggleReady(request);
+        controller.toggleReady(request, headerAccessor);
 
         // Assert
         verify(draftService).getDraftByUuid("test-uuid-123");
@@ -152,7 +156,7 @@ class LiveDraftControllerTest {
         when(draftService.canStartDraft("test-uuid-123")).thenReturn(false);
 
         // Act
-        controller.leaveLobby(request);
+        controller.leaveLobby(request, headerAccessor);
 
         // Assert
         verify(draftService).getDraftByUuid("test-uuid-123");
@@ -202,7 +206,7 @@ class LiveDraftControllerTest {
         when(draftService.getDraftState("test-uuid-123")).thenReturn(draftState);
 
         // Act
-        controller.startDraft(request);
+        controller.startDraft(request, headerAccessor);
 
         // Assert
         verify(draftService).canStartDraft("test-uuid-123");
@@ -221,7 +225,7 @@ class LiveDraftControllerTest {
         when(participantService.getParticipants(1L)).thenReturn(List.of(bobParticipant));
 
         // Act
-        controller.startDraft(request);
+        controller.startDraft(request, headerAccessor);
 
         // Assert
         verify(draftService, never()).startDraft(anyString());
@@ -254,7 +258,7 @@ class LiveDraftControllerTest {
         when(draftService.getDraftState("test-uuid-123")).thenReturn(draftState);
 
         // Act
-        controller.makePick(request);
+        controller.makePick(request, headerAccessor);
 
         // Assert
         verify(draftService).isValidPick("test-uuid-123", "A");
@@ -269,7 +273,7 @@ class LiveDraftControllerTest {
         when(draftService.isValidPick("test-uuid-123", "B")).thenReturn(false);
 
         // Act
-        controller.makePick(request);
+        controller.makePick(request, headerAccessor);
 
         // Assert
         verify(draftService).isValidPick("test-uuid-123", "B");
@@ -302,7 +306,7 @@ class LiveDraftControllerTest {
         when(draftService.getDraftState("test-uuid-123")).thenReturn(draftState);
 
         // Act
-        controller.forcePick(request);
+        controller.forcePick(request, headerAccessor);
 
         // Assert
         verify(draftService).forcePick("test-uuid-123", 100L, "B", "A");
@@ -332,7 +336,7 @@ class LiveDraftControllerTest {
         when(draftService.getDraftState("test-uuid-123")).thenReturn(draftState);
 
         // Act
-        DraftStateMessage result = controller.getDraftState(request);
+        DraftStateMessage result = controller.getDraftState(request, headerAccessor);
 
         // Assert
         assertNotNull(result);
@@ -348,7 +352,7 @@ class LiveDraftControllerTest {
         when(draftService.getLobbyState("test-uuid-123")).thenReturn(testDraft);
 
         // Act
-        LobbyStateMessage result = controller.getLobbyState(request);
+        LobbyStateMessage result = controller.getLobbyState(request, headerAccessor);
 
         // Assert
         assertNotNull(result);
