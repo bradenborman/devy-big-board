@@ -53,19 +53,19 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="hero-image">
                     <div className="floating-card card-1">
-                        <div className="card-header">QB</div>
-                        <div className="card-body">Caleb Williams</div>
+                        <div className="card-header">RB</div>
+                        <div className="card-body">Jeremiah Smith</div>
                         <div className="card-footer">ADP: 1.02</div>
                     </div>
                     <div className="floating-card card-2">
-                        <div className="card-header">RB</div>
-                        <div className="card-body">Bijan Robinson</div>
-                        <div className="card-footer">ADP: 1.01</div>
+                        <div className="card-header">QB</div>
+                        <div className="card-body">Arch Manning</div>
+                        <div className="card-footer">ADP: 1.04</div>
                     </div>
                     <div className="floating-card card-3">
-                        <div className="card-header">WR</div>
-                        <div className="card-body">Marvin Harrison Jr</div>
-                        <div className="card-footer">ADP: 1.03</div>
+                        <div className="card-header">RB</div>
+                        <div className="card-body">Bo Jackson</div>
+                        <div className="card-footer">ADP: 2.02</div>
                     </div>
                 </div>
             </section>
