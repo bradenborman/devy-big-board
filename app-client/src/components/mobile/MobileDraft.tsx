@@ -2,6 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Player } from '../draft/BigBoard';
 import './mobileDraft.scss';
 
+interface StatMap { [statType: string]: string; }
+interface StatsResponse {
+    season: number;
+    team: string;
+    position: string;
+    stats: { [category: string]: StatMap };
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+    passing: 'Passing', rushing: 'Rushing', receiving: 'Receiving',
+};
+
+const STAT_LABELS: Record<string, string> = {
+    ATT: 'Att', COMPLETIONS: 'Cmp', PCT: 'Pct', YDS: 'Yds',
+    TD: 'TD', INT: 'Int', YPA: 'Y/A', CAR: 'Car', YPC: 'Y/C',
+    REC: 'Rec', YPR: 'Y/R', LONG: 'Lng',
+};
+
 interface MobileDraftProps {
     teams: number;
     rounds: number;
@@ -32,6 +50,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const [yearFilters, setYearFilters] = useState<number[]>([]);
     const [showFilters, setShowFilters] = useState(false);
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
+    const [playerStats, setPlayerStats] = useState<StatsResponse | null>(null);
     const carouselRef = React.useRef<HTMLDivElement>(null);
 
     const currentYear = new Date().getFullYear();
@@ -49,6 +68,17 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const getCurrentPickPlayer = () => {
         return players[currentRound - 1]?.[currentPick - 1];
     };
+
+    // Fetch stats when current pick player changes
+    const currentPlayer = getCurrentPickPlayer();
+    useEffect(() => {
+        setPlayerStats(null);
+        if (!currentPlayer?.id) return;
+        fetch(`/api/players/${currentPlayer.id}/stats`)
+            .then(res => res.status === 204 ? null : res.json())
+            .then(data => setPlayerStats(data))
+            .catch(() => {});
+    }, [currentPlayer?.id]);
 
     const getPickNumber = (round: number, pick: number) => {
         return (round - 1) * teams + pick;
@@ -72,7 +102,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         }, 100); // Small delay to show the selection
     };
 
-    const currentPlayer = getCurrentPickPlayer();
     const totalPicks = teams * rounds;
     const currentPickNumber = getPickNumber(currentRound, currentPick);
     const progress = (currentPickNumber / totalPicks) * 100;
@@ -230,6 +259,24 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                         >
                             ✕
                         </button>
+                        {playerStats && (
+                            <div className="mobile-player-stats">
+                                <div className="mobile-stats-season">{playerStats.season} Season</div>
+                                {Object.entries(playerStats.stats).map(([category, statMap]) => (
+                                    <div key={category} className="mobile-stats-category">
+                                        <div className="mobile-stats-cat-label">{CATEGORY_LABELS[category] ?? category}</div>
+                                        <div className="mobile-stats-grid">
+                                            {Object.entries(statMap).map(([type, val]) => (
+                                                <div key={type} className="mobile-stat-chip">
+                                                    <span className="mobile-stat-val">{val}</span>
+                                                    <span className="mobile-stat-key">{STAT_LABELS[type] ?? type}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="empty-pick-card">

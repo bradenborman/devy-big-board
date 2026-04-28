@@ -642,14 +642,14 @@
 
     .stats-toast-pos-toggle {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 12px;
+        right: 12px;
         background: rgba(255, 255, 255, 0.08);
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 6px;
-        padding: 4px 6px;
+        padding: 2px 5px;
         cursor: pointer;
-        font-size: 0.8em;
+        font-size: 0.65em;
         line-height: 1;
         pointer-events: auto;
         transition: all 0.2s;
@@ -694,6 +694,7 @@
         gap: 10px;
         margin-bottom: 12px;
         padding-bottom: 10px;
+        padding-right: 30px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
         .stats-toast-name {
