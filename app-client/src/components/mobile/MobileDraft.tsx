@@ -96,10 +96,6 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     const handleDraftPlayer = (player: Player) => {
         onDraftPlayer(player, currentRound, currentPick);
         setShowPlayerSheet(false);
-        // Auto-advance to next pick
-        setTimeout(() => {
-            goToNextPick();
-        }, 100); // Small delay to show the selection
     };
 
     const totalPicks = teams * rounds;
@@ -230,25 +226,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                 
                 {currentPlayer ? (
                     <div className="selected-player-display">
-                        <div className="player-details">
-                            <div className="player-meta">
-                                <span className={`position-badge ${currentPlayer.position}`}>
-                                    {currentPlayer.position}
-                                </span>
-                                <span className="team-name">{currentPlayer.team}</span>
-                            </div>
-                            <div className="player-name">{currentPlayer.name}</div>
-                            {currentPlayer.college && (
-                                <div className="player-college">{currentPlayer.college}</div>
-                            )}
-                        </div>
-                        <button 
-                            className="undo-btn"
-                            onClick={() => onRemovePlayer(currentRound, currentPick)}
-                        >
-                            ✕
-                        </button>
-                        {playerStats && (
+                        {playerStats ? (
                             <div className="mobile-player-stats">
                                 <div className="mobile-stats-season">{playerStats.season} Season</div>
                                 {Object.entries(playerStats.stats).map(([category, statMap]) => (
@@ -265,7 +243,15 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                                     </div>
                                 ))}
                             </div>
+                        ) : (
+                            <div className="mobile-no-stats">No stats available</div>
                         )}
+                        <button 
+                            className="next-pick-btn"
+                            onClick={goToNextPick}
+                        >
+                            Next Pick →
+                        </button>
                     </div>
                 ) : (
                     <div className="empty-pick-card">

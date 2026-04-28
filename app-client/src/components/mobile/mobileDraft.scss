@@ -287,102 +287,36 @@
         .selected-player-display {
             background: white;
             border-radius: 20px;
-            padding: 2rem 1.5rem;
+            padding: 1.25rem 1.25rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 0.5rem;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             position: relative;
 
-            .player-avatar-large {
-                width: 140px;
-                height: 140px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 4px solid #e2e8f0;
-                overflow: hidden;
-                flex-shrink: 0;
-
-                .avatar-icon {
-                    font-size: 70px;
-                }
-
-                .avatar-image {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    object-position: center;
-                }
+            .mobile-no-stats {
+                color: #94a3b8;
+                font-size: 0.9rem;
+                font-style: italic;
+                padding: 0.5rem 0;
             }
 
-            .player-details {
-                text-align: center;
-                color: #1a202c;
+            .next-pick-btn {
                 width: 100%;
-
-                .player-name {
-                    font-size: 1.75rem;
-                    font-weight: 700;
-                    margin-bottom: 0.75rem;
-                    line-height: 1.2;
-                }
-
-                .player-meta {
-                    display: flex;
-                    gap: 0.625rem;
-                    justify-content: center;
-                    margin-bottom: 0.5rem;
-                    flex-wrap: wrap;
-
-                    .position-badge {
-                        font-weight: 700;
-                        padding: 6px 14px;
-                        border-radius: 8px;
-                        text-transform: uppercase;
-                        font-size: 0.9rem;
-
-                        &.QB { background: #dbeafe; color: #1e40af; }
-                        &.RB { background: #f3e8ff; color: #7c3aed; }
-                        &.WR { background: #d1fae5; color: #065f46; }
-                        &.TE { background: #fef3c7; color: #92400e; }
-                    }
-
-                    .team-name {
-                        color: #64748b;
-                        font-weight: 600;
-                        font-size: 0.95rem;
-                    }
-                }
-
-                .player-college {
-                    color: #64748b;
-                    font-size: 0.9rem;
-                }
-            }
-
-            .undo-btn {
-                position: absolute;
-                top: 1.25rem;
-                right: 1.25rem;
-                background: #ef4444;
+                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
                 color: white;
                 border: none;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                font-size: 1.3rem;
+                padding: 0.75rem;
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 700;
                 cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+                box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+                margin-top: 0.5rem;
 
                 &:active {
-                    transform: scale(0.9);
+                    transform: scale(0.98);
                 }
             }
 
