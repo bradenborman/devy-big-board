@@ -38,7 +38,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     players,
     playerPool,
     onDraftPlayer,
-    onRemovePlayer,
+    onRemovePlayer: _onRemovePlayer,
     onExport,
     onExit,
     rookiesOnly
