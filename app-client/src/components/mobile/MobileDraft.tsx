@@ -38,7 +38,7 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
     players,
     playerPool,
     onDraftPlayer,
-    onRemovePlayer: _onRemovePlayer,
+    onRemovePlayer,
     onExport,
     onExit,
     rookiesOnly
@@ -188,6 +188,13 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                                     <div className="carousel-pick-label">{round}.{pick}</div>
                                     {player ? (
                                         <>
+                                            <button
+                                                className="carousel-remove-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onRemovePlayer(round, pick);
+                                                }}
+                                            >✕</button>
                                             <div className="carousel-avatar">
                                                 {playersWithHeadshots.has(player.id!) ? (
                                                     <img 
