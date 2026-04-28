@@ -8,60 +8,56 @@ interface DraftSpotProps {
     removeDraftedPlayer: (row: number, col: number) => void;
     isTierBreak?: boolean;
     onRightClick?: (row: number, col: number) => void;
+    showStats: boolean;
+    onPlayerDrafted?: (player: Player) => void;
 }
 
 const DraftSpot: React.FC<DraftSpotProps> = ({
-    player,
-    row,
-    col,
-    removeDraftedPlayer,
-    isTierBreak = false,
-    onRightClick
+    player, row, col, removeDraftedPlayer,
+    isTierBreak = false, onRightClick, showStats, onPlayerDrafted
 }) => {
     const [playersWithHeadshots, setPlayersWithHeadshots] = useState<Set<number>>(new Set());
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [prevPlayerId, setPrevPlayerId] = useState<number | undefined>(undefined);
 
     useEffect(() => {
-        // Fetch list of players with headshots once
         fetch('/api/players/manage/headshots/available')
             .then(res => res.json())
-            .then((playerIds: number[]) => {
-                setPlayersWithHeadshots(new Set(playerIds));
-            })
-            .catch(err => console.error('Failed to fetch headshot info:', err));
+            .then((ids: number[]) => setPlayersWithHeadshots(new Set(ids)))
+            .catch(() => {});
     }, []);
+
+    // Fire toast when a NEW player lands in this slot
+    useEffect(() => {
+        if (player?.id && player.id !== prevPlayerId && showStats && onPlayerDrafted) {
+            onPlayerDrafted(player);
+        }
+        setPrevPlayerId(player?.id);
+    }, [player?.id]);
 
     const getPositionIcon = (position: string) => {
         switch (position) {
             case 'QB': return '🏈';
-            case 'RB': return '🏈';
-            case 'WR': return '🏈';
-            case 'TE': return '🏈';
-            default: return '👤';
+            case 'RB': return '🏃';
+            case 'WR': return '🙌';
+            case 'TE': return '💪';
+            default:   return '👤';
         }
     };
 
     const hasHeadshot = player?.id && playersWithHeadshots.has(player.id);
 
     const splitName = (fullName: string) => {
-        const firstSpaceIndex = fullName.indexOf(' ');
-        if (firstSpaceIndex === -1) {
-            // No space found, return as single name
-            return { firstName: fullName, lastName: '' };
-        }
-        const firstName = fullName.substring(0, firstSpaceIndex);
-        const lastName = fullName.substring(firstSpaceIndex + 1);
-        return { firstName, lastName };
+        const i = fullName.indexOf(' ');
+        if (i === -1) return { firstName: fullName, lastName: '' };
+        return { firstName: fullName.substring(0, i), lastName: fullName.substring(i + 1) };
     };
 
     return (
         <div
             className={`draft-spot${isTierBreak ? ' tier-break' : ''}`}
             onDoubleClick={() => player && removeDraftedPlayer(row, col)}
-            onContextMenu={(e) => {
-                e.preventDefault();
-                onRightClick?.(row, col);
-            }}
+            onContextMenu={(e) => { e.preventDefault(); onRightClick?.(row, col); }}
         >
             {player ? (
                 <>
@@ -69,7 +65,7 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
                     <div className="player-avatar">
                         {hasHeadshot ? (
                             <>
-                                <img 
+                                <img
                                     src={`/api/players/manage/${player.id}/headshot`}
                                     alt={player.name}
                                     className="avatar-image"
@@ -92,12 +88,7 @@ const DraftSpot: React.FC<DraftSpotProps> = ({
                                 return (
                                     <>
                                         <span className="first-name">{firstName}</span>
-                                        {lastName && (
-                                            <>
-                                                <br />
-                                                <span className="last-name">{lastName}</span>
-                                            </>
-                                        )}
+                                        {lastName && <><br /><span className="last-name">{lastName}</span></>}
                                     </>
                                 );
                             })()}

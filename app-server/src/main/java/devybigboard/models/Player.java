@@ -34,7 +34,13 @@ public class Player {
     
     @Column(nullable = false)
     private Boolean verified = false;
-    
+
+    @Column(name = "cfbd_player_id")
+    private String cfbdPlayerId;
+
+    @Column(name = "stats_last_synced_at")
+    private LocalDateTime statsLastSyncedAt;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -111,7 +117,23 @@ public class Player {
     public void setVerified(Boolean verified) {
         this.verified = verified;
     }
-    
+
+    public String getCfbdPlayerId() {
+        return cfbdPlayerId;
+    }
+
+    public void setCfbdPlayerId(String cfbdPlayerId) {
+        this.cfbdPlayerId = cfbdPlayerId;
+    }
+
+    public LocalDateTime getStatsLastSyncedAt() {
+        return statsLastSyncedAt;
+    }
+
+    public void setStatsLastSyncedAt(LocalDateTime statsLastSyncedAt) {
+        this.statsLastSyncedAt = statsLastSyncedAt;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

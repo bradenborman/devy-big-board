@@ -37,6 +37,8 @@ dependencies {
 	// Export dependencies
 	implementation 'com.opencsv:opencsv:5.9'
 	implementation 'org.apache.pdfbox:pdfbox:3.0.1'
+	// Name similarity matching for CFBD player lookup
+	implementation 'org.apache.commons:commons-text:1.12.0'
 	// Jackson is already included via spring-boot-starter-web
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

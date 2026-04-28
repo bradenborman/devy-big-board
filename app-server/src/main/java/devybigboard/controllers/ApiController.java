@@ -3,10 +3,13 @@ package devybigboard.controllers;
 import devybigboard.models.CompletedDraftResponse;
 import devybigboard.models.LeagueFilter;
 import devybigboard.models.Player;
+import devybigboard.models.PlayerStatsResponse;
 import devybigboard.models.PlayerWithAdp;
+import devybigboard.services.CfbdStatsService;
 import devybigboard.services.DevyBoardService;
 import devybigboard.services.DraftService;
 import devybigboard.services.ExportService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +21,14 @@ public class ApiController {
     private final DevyBoardService devyBoardService;
     private final DraftService draftService;
     private final ExportService exportService;
+    private final CfbdStatsService cfbdStatsService;
 
-    public ApiController(DevyBoardService devyBoardService, DraftService draftService, ExportService exportService) {
+    public ApiController(DevyBoardService devyBoardService, DraftService draftService,
+                         ExportService exportService, CfbdStatsService cfbdStatsService) {
         this.devyBoardService = devyBoardService;
         this.draftService = draftService;
         this.exportService = exportService;
+        this.cfbdStatsService = cfbdStatsService;
     }
 
     @GetMapping("/draft/count")
@@ -33,6 +39,20 @@ public class ApiController {
     @GetMapping("/players")
     public List<PlayerWithAdp> allPlayers() {
         return devyBoardService.getAllPlayers();
+    }
+
+    /**
+     * GET /api/players/{id}/stats
+     * Returns the most recent season stats for a player from the CFBD cache.
+     * Returns 204 No Content if the player has no CFBD ID linked or no stats available.
+     */
+    @GetMapping("/players/{id}/stats")
+    public ResponseEntity<PlayerStatsResponse> getPlayerStats(@PathVariable Long id) {
+        PlayerStatsResponse stats = cfbdStatsService.getLatestStatsForPlayer(id);
+        if (stats == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(stats);
     }
 
     @PostMapping("/draft/complete")

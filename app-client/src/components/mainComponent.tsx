@@ -7,6 +7,7 @@ import MobileDraft from './mobile/MobileDraft';
 import PlayerList from './draft/PlayerList';
 import BoardParameters from './draft/BoardParameters';
 import BubbleMenu from './shared/BubbleMenu';
+import StatsToast from './draft/StatsToast';
 
 import './maincomponent.scss';
 
@@ -35,6 +36,9 @@ const MainComponent: React.FC = () => {
     const [playerListOpen, setPlayerListOpen] = useState<boolean>(true);
     const [activePositionFilters, setActivePositionFilters] = useState<string[]>([]);
     const [activeYearFilters, setActiveYearFilters] = useState<number[]>([]);
+    const [showStats, setShowStats] = useState<boolean>(true);
+    const [toastPlayer, setToastPlayer] = useState<Player | null>(null);
+    const [statsPosition, setStatsPosition] = useState<'center' | 'right'>('center');
 
     const [playerPool, setPlayerPool] = useState<Player[]>([]);
     const [tierBreaks, setTierBreaks] = useState<{ row: number; col: number }[]>([]);
@@ -394,6 +398,23 @@ const MainComponent: React.FC = () => {
                                         ➖
                                     </button>
                                 </div>
+                                <div className="tier-break-group">
+                                    <button
+                                        className={`helper-btn stats-toggle-btn${showStats ? ' active' : ''}`}
+                                        onClick={() => setShowStats(v => !v)}
+                                        title="Toggle player stats on hover"
+                                    >
+                                        {showStats ? '📊' : '✕'}
+                                    </button>
+                                    <button
+                                        className="helper-btn stats-pos-btn"
+                                        onClick={() => setStatsPosition(p => p === 'center' ? 'right' : 'center')}
+                                        title={`Stats position: ${statsPosition}`}
+                                    >
+                                        {statsPosition === 'center' ? '⬇️' : '➡️'}
+                                    </button>
+                                    <span className="helper-label">Stats</span>
+                                </div>
                             </div>
                             <div className="actions-section">
                                 {isDraftComplete && (
@@ -436,7 +457,10 @@ const MainComponent: React.FC = () => {
                                 players={players}
                                 removeDraftedPlayer={removeDraftedPlayer}
                                 tierBreaks={tierBreaks}
+                                showStats={showStats}
+                                onPlayerDrafted={(p) => setToastPlayer({...p})}
                             />
+                            {showStats && <StatsToast player={toastPlayer} position={statsPosition} />}
                         </div>
                     )}
                 </div>

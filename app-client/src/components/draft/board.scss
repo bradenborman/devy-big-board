@@ -91,6 +91,12 @@
                     opacity: 0.3;
                     cursor: not-allowed;
                 }
+
+                &.stats-toggle-btn.active {
+                    background: rgba(76, 175, 80, 0.2);
+                    border-color: #4CAF50;
+                    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+                }
             }
 
             .tier-break-group {
@@ -615,6 +621,139 @@
         .big-board-header,
         .big-board-footer {
             display: none;
+        }
+    }
+}
+
+// Stats toast — pops up when a player is drafted
+.stats-toast {
+    position: fixed;
+    bottom: 32px;
+    background: rgba(15, 23, 42, 0.97);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 18px 22px;
+    min-width: 260px;
+    max-width: 340px;
+    z-index: 9999;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(76, 175, 80, 0.15);
+    pointer-events: none;
+
+    &.stats-toast-center {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &.stats-toast-right {
+        right: 32px;
+    }
+
+    &.stats-toast-enter {
+        animation: toast-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes toast-slide-in {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    // Override for center so transform includes the translateX
+    &.stats-toast-center.stats-toast-enter {
+        animation: toast-slide-in-center 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes toast-slide-in-center {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.95); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+
+    .stats-toast-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+        .stats-toast-name {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: white;
+        }
+
+        .stats-toast-pos {
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 5px;
+            text-transform: uppercase;
+
+            &.QB { background: #dbeafe; color: #1e40af; }
+            &.RB { background: #f3e8ff; color: #7c3aed; }
+            &.WR { background: #d1fae5; color: #065f46; }
+            &.TE { background: #fef3c7; color: #92400e; }
+        }
+
+        .stats-toast-season {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+            margin-left: auto;
+        }
+    }
+
+    .stats-toast-loading {
+        font-size: 0.85em;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
+        padding: 8px 0;
+    }
+
+    .stats-toast-category {
+        margin-bottom: 10px;
+
+        &:last-child { margin-bottom: 0; }
+
+        .stats-toast-cat-label {
+            font-size: 0.7em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #4CAF50;
+            margin-bottom: 6px;
+        }
+
+        .stats-toast-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .stats-toast-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            padding: 6px 10px;
+            min-width: 44px;
+
+            .stats-toast-val {
+                font-size: 1em;
+                font-weight: 700;
+                color: white;
+                line-height: 1.2;
+            }
+
+            .stats-toast-key {
+                font-size: 0.6em;
+                color: rgba(255, 255, 255, 0.4);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                margin-top: 2px;
+            }
         }
     }
 }

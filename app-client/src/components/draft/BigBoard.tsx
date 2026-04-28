@@ -19,6 +19,8 @@ interface BigBoardProps {
     players: (Player | null)[][];
     removeDraftedPlayer: (row: number, col: number) => void;
     tierBreaks: { row: number; col: number }[];
+    showStats: boolean;
+    onPlayerDrafted?: (player: Player) => void;
 }
 
 const BigBoard: React.FC<BigBoardProps> = ({
@@ -26,7 +28,9 @@ const BigBoard: React.FC<BigBoardProps> = ({
     rounds,
     players,
     removeDraftedPlayer,
-    tierBreaks
+    tierBreaks,
+    showStats,
+    onPlayerDrafted
 }) => {
 
     const isTierBreak = (row: number, col: number) =>
@@ -48,6 +52,8 @@ const BigBoard: React.FC<BigBoardProps> = ({
                                 col={colIndex + 1}
                                 removeDraftedPlayer={removeDraftedPlayer}
                                 isTierBreak={isTierBreak(rowIndex, colIndex)}
+                                showStats={showStats}
+                                onPlayerDrafted={onPlayerDrafted}
                             />
                         ))}
                     </div>
