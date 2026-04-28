@@ -230,25 +230,14 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
                 
                 {currentPlayer ? (
                     <div className="selected-player-display">
-                        <div className="player-avatar-large">
-                            {playersWithHeadshots.has(currentPlayer.id!) ? (
-                                <img 
-                                    src={`/api/players/manage/${currentPlayer.id}/headshot`}
-                                    alt={currentPlayer.name}
-                                    className="avatar-image"
-                                />
-                            ) : (
-                                <span className="avatar-icon">🏈</span>
-                            )}
-                        </div>
                         <div className="player-details">
-                            <div className="player-name">{currentPlayer.name}</div>
                             <div className="player-meta">
                                 <span className={`position-badge ${currentPlayer.position}`}>
                                     {currentPlayer.position}
                                 </span>
                                 <span className="team-name">{currentPlayer.team}</span>
                             </div>
+                            <div className="player-name">{currentPlayer.name}</div>
                             {currentPlayer.college && (
                                 <div className="player-college">{currentPlayer.college}</div>
                             )}
