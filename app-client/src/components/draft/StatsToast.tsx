@@ -13,6 +13,7 @@ interface StatsResponse {
 interface StatsToastProps {
     player: Player | null;
     position: 'center' | 'right';
+    onTogglePosition: () => void;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -25,7 +26,7 @@ const STAT_LABELS: Record<string, string> = {
     REC: 'Rec', YPR: 'Y/R', LONG: 'Lng',
 };
 
-const StatsToast: React.FC<StatsToastProps> = ({ player, position }) => {
+const StatsToast: React.FC<StatsToastProps> = ({ player, position, onTogglePosition }) => {
     const [stats, setStats] = useState<StatsResponse | null>(null);
     const [visible, setVisible] = useState(false);
     const [animating, setAnimating] = useState(false);
@@ -49,6 +50,12 @@ const StatsToast: React.FC<StatsToastProps> = ({ player, position }) => {
 
     const toast = (
         <div className={`stats-toast stats-toast-enter ${posClass}`}>
+            <button
+                className="stats-toast-pos-toggle"
+                onClick={onTogglePosition}
+            >
+                {position === 'center' ? '➡️' : '⬇️'}
+            </button>
             <div className="stats-toast-header">
                 <span className="stats-toast-name">{player.name}</span>
                 <span className={`stats-toast-pos ${player.position}`}>{player.position}</span>

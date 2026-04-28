@@ -50,7 +50,11 @@ public class CfbdStatsService {
      */
     public void linkAndSyncPlayer(Player player) {
         try {
-            String cfbdId = searchCfbdIdByName(player.getName(), resolveTargetSeason(player));
+            String cfbdId = null;
+            for (int season : resolveTargetSeasons(player)) {
+                cfbdId = searchCfbdIdByName(player.getName(), season);
+                if (cfbdId != null) break;
+            }
             if (cfbdId == null) {
                 System.out.println("[CfbdStatsService] No CFBD match for: " + player.getName());
                 // Still stamp the date so we don't retry every startup
@@ -86,8 +90,17 @@ public class CfbdStatsService {
     // -------------------------------------------------------------------------
 
     private void syncStatsForPlayer(Player player) {
-        int season = resolveTargetSeason(player);
-        List<CfbdPlayerStat> fetched = fetchFromApi(player.getCfbdPlayerId(), player.getCollege(), season);
+        List<CfbdPlayerStat> fetched = List.of();
+        int season = 0;
+
+        // Try seasons going backwards until we find data
+        for (int s : resolveTargetSeasons(player)) {
+            fetched = fetchFromApi(player.getCfbdPlayerId(), player.getCollege(), s);
+            if (!fetched.isEmpty()) {
+                season = s;
+                break;
+            }
+        }
 
         if (!fetched.isEmpty()) {
             statRepository.deleteByCfbdPlayerIdAndSeason(player.getCfbdPlayerId(), season);
@@ -163,37 +176,34 @@ public class CfbdStatsService {
             .orElseThrow(() -> new PlayerNotFoundException("Player not found: " + playerId));
 
         if (player.getCfbdPlayerId() == null || player.getCfbdPlayerId().isBlank()) {
-            return null; // No CFBD ID linked yet
+            return null;
         }
 
         String cfbdId = player.getCfbdPlayerId();
         Integer latestCachedSeason = statRepository.findLatestSeasonByCfbdPlayerId(cfbdId);
 
-        // Determine which season to query — use current year or most recent draft year
-        int targetSeason = resolveTargetSeason(player);
-
-        // Use cache if we have it for the target season and it's fresh
-        if (latestCachedSeason != null && latestCachedSeason.equals(targetSeason)) {
-            List<CfbdPlayerStat> cached = statRepository.findByCfbdPlayerIdAndSeason(cfbdId, targetSeason);
+        // If we have fresh cached data, use it
+        if (latestCachedSeason != null) {
+            List<CfbdPlayerStat> cached = statRepository.findByCfbdPlayerIdAndSeason(cfbdId, latestCachedSeason);
             if (!cached.isEmpty() && isFresh(cached.get(0).getFetchedAt())) {
-                return buildResponse(targetSeason, cached);
+                return buildResponse(latestCachedSeason, cached);
             }
         }
 
-        // Fetch from CFBD API
-        List<CfbdPlayerStat> fetched = fetchFromApi(cfbdId, player.getCollege(), targetSeason);
-
-        if (fetched.isEmpty() && latestCachedSeason != null) {
-            // No data for target season — fall back to whatever we have cached
-            List<CfbdPlayerStat> fallback = statRepository.findByCfbdPlayerIdAndSeason(cfbdId, latestCachedSeason);
-            return buildResponse(latestCachedSeason, fallback);
+        // Try seasons going backwards until we find data
+        for (int season : resolveTargetSeasons(player)) {
+            List<CfbdPlayerStat> fetched = fetchFromApi(cfbdId, player.getCollege(), season);
+            if (!fetched.isEmpty()) {
+                statRepository.deleteByCfbdPlayerIdAndSeason(cfbdId, season);
+                statRepository.saveAll(fetched);
+                return buildResponse(season, fetched);
+            }
         }
 
-        if (!fetched.isEmpty()) {
-            // Upsert: delete old rows for this season then save fresh ones
-            statRepository.deleteByCfbdPlayerIdAndSeason(cfbdId, targetSeason);
-            statRepository.saveAll(fetched);
-            return buildResponse(targetSeason, fetched);
+        // Fall back to whatever we have cached
+        if (latestCachedSeason != null) {
+            List<CfbdPlayerStat> fallback = statRepository.findByCfbdPlayerIdAndSeason(cfbdId, latestCachedSeason);
+            return buildResponse(latestCachedSeason, fallback);
         }
 
         return null;
@@ -201,13 +211,25 @@ public class CfbdStatsService {
 
     // -------------------------------------------------------------------------
 
-    private int resolveTargetSeason(Player player) {
-        // If player has a draft year, their last college season is draftyear - 1
+    /**
+     * Returns a list of seasons to try, most recent first.
+     * e.g. draftyear=2026 -> [2025, 2024, 2023]
+     * This handles players whose draft year is in the future (no stats for draftyear-1 yet).
+     */
+    private List<Integer> resolveTargetSeasons(Player player) {
+        int currentYear = LocalDateTime.now().getYear();
+        int startYear;
         if (player.getDraftyear() != null && player.getDraftyear() > 0) {
-            return player.getDraftyear() - 1;
+            startYear = player.getDraftyear() - 1;
+        } else {
+            startYear = currentYear;
         }
-        // Otherwise use current calendar year
-        return LocalDateTime.now().getYear();
+        // Try up to 3 years back
+        List<Integer> seasons = new ArrayList<>();
+        for (int y = startYear; y >= startYear - 2 && y >= 2020; y--) {
+            seasons.add(y);
+        }
+        return seasons;
     }
 
     private boolean isFresh(LocalDateTime fetchedAt) {

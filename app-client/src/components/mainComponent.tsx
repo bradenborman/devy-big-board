@@ -406,13 +406,6 @@ const MainComponent: React.FC = () => {
                                     >
                                         {showStats ? '📊' : '✕'}
                                     </button>
-                                    <button
-                                        className="helper-btn stats-pos-btn"
-                                        onClick={() => setStatsPosition(p => p === 'center' ? 'right' : 'center')}
-                                        title={`Stats position: ${statsPosition}`}
-                                    >
-                                        {statsPosition === 'center' ? '⬇️' : '➡️'}
-                                    </button>
                                     <span className="helper-label">Stats</span>
                                 </div>
                             </div>
@@ -460,7 +453,7 @@ const MainComponent: React.FC = () => {
                                 showStats={showStats}
                                 onPlayerDrafted={(p) => setToastPlayer({...p})}
                             />
-                            {showStats && <StatsToast player={toastPlayer} position={statsPosition} />}
+                            {showStats && <StatsToast player={toastPlayer} position={statsPosition} onTogglePosition={() => setStatsPosition(p => p === 'center' ? 'right' : 'center')} />}
                         </div>
                     )}
                 </div>
