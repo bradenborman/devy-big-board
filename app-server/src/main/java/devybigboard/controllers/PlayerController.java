@@ -217,7 +217,6 @@ public class PlayerController {
         List<Long> playerIds = assets.stream()
                 .map(PlayerAsset::getPlayerId)
                 .collect(Collectors.toList());
-        System.out.println("[PlayerController] " + playerIds.size() + " players have headshots");
         return ResponseEntity.ok(playerIds);
     }
     
