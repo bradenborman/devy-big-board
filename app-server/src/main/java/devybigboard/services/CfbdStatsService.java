@@ -10,6 +10,7 @@ import devybigboard.models.Player;
 import devybigboard.models.PlayerStatsResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -171,6 +172,7 @@ public class CfbdStatsService {
      * Returns stats for the most recent season we have data for.
      * Fetches from CFBD if not cached or cache is stale.
      */
+    @Transactional
     public PlayerStatsResponse getLatestStatsForPlayer(Long playerId) {
         Player player = playerRepository.findById(playerId)
             .orElseThrow(() -> new PlayerNotFoundException("Player not found: " + playerId));
