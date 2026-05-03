@@ -75,9 +75,12 @@ const MobileDraft: React.FC<MobileDraftProps> = ({
         setPlayerStats(null);
         if (!currentPlayer?.id) return;
         fetch(`/api/players/${currentPlayer.id}/stats`)
-            .then(res => res.status === 204 ? null : res.json())
+            .then(res => {
+                if (!res.ok || res.status === 204) return null;
+                return res.json();
+            })
             .then(data => setPlayerStats(data))
-            .catch(() => {});
+            .catch(() => setPlayerStats(null));
     }, [currentPlayer?.id]);
 
     const getPickNumber = (round: number, pick: number) => {

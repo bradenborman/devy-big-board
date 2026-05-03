@@ -39,9 +39,12 @@ const StatsToast: React.FC<StatsToastProps> = ({ player, position, onTogglePosit
         setVisible(true);
 
         fetch(`/api/players/${player.id}/stats`)
-            .then(res => res.status === 204 ? null : res.json())
+            .then(res => {
+                if (!res.ok || res.status === 204) return null;
+                return res.json();
+            })
             .then(data => { setStats(data); setAnimating(false); })
-            .catch(() => setAnimating(false));
+            .catch(() => { setStats(null); setAnimating(false); });
     }, [player?.id]);
 
     if (!visible || !player) return null;
