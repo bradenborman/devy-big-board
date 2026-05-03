@@ -184,25 +184,10 @@ public class CfbdStatsService {
         String cfbdId = player.getCfbdPlayerId();
         Integer latestCachedSeason = statRepository.findLatestSeasonByCfbdPlayerId(cfbdId);
 
-        // Always serve from cache if we have anything
-        if (latestCachedSeason != null) {
-            List<CfbdPlayerStat> cached = statRepository.findByCfbdPlayerIdAndSeason(cfbdId, latestCachedSeason);
-            if (!cached.isEmpty()) {
-                return buildResponse(latestCachedSeason, cached);
-            }
-        }
+        if (latestCachedSeason == null) return null;
 
-        // Nothing cached — try to fetch live
-        for (int season : resolveTargetSeasons(player)) {
-            List<CfbdPlayerStat> fetched = fetchFromApi(cfbdId, player.getCollege(), season);
-            if (!fetched.isEmpty()) {
-                statRepository.deleteByCfbdPlayerIdAndSeason(cfbdId, season);
-                statRepository.saveAll(fetched);
-                return buildResponse(season, fetched);
-            }
-        }
-
-        return null;
+        List<CfbdPlayerStat> cached = statRepository.findByCfbdPlayerIdAndSeason(cfbdId, latestCachedSeason);
+        return cached.isEmpty() ? null : buildResponse(latestCachedSeason, cached);
     }
 
     // -------------------------------------------------------------------------
